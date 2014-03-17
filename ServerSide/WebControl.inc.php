@@ -25,6 +25,16 @@
 			$this->VerticalAlignment = VerticalAlignment::Inherit;
 		}
 		
+		public function GetClientProperty($name, $defaultValue = null)
+		{
+			if (!isset($_COOKIE[$this->ID . "__ClientProperty_" . $name])) return $defaultValue;
+			return $_COOKIE[$this->ID . "__ClientProperty_" . $name];
+		}
+		public function SetClientProperty($name, $value, $expires = null)
+		{
+			setcookie($this->ID . "__ClientProperty_" . $name, $value, $expires);
+		}
+		
         private $isInitialized;
         protected function Initialize()
         {

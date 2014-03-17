@@ -31,10 +31,20 @@
 			$this->Tabs = array();
 		}
 		
+		protected function Initialize()
+		{
+			$this->Collapsed = ($this->GetClientProperty("Collapsed", "false") == "true");
+			$SelectedTabID = ($this->GetClientProperty("ActiveTabID", null));
+			if ($SelectedTabID != null)
+			{
+				$this->SelectedTab = $this->GetTabByID($SelectedTabID);
+			}
+		}
+		
 		private function RenderRibbonTab($tab)
 		{
 			echo("<a class=\"RibbonTab");
-			if ($this->SelectedTab === $tab)
+			if ($this->SelectedTab->ID === $tab->ID)
 			{
 				echo(" Selected");
 			}
@@ -60,6 +70,14 @@
 			}
 			return null;
 		}
+		private function GetTabByID($id)
+		{
+			foreach ($this->Tabs as $tab)
+			{
+				if ($tab->ID === $id) return $tab;
+			}
+			return null;
+		}
 		private function RenderRibbonItem($item)
 		{
 			if (get_class($item) == "WebFX\\Controls\\RibbonCommandReferenceItem")
@@ -75,8 +93,21 @@
 		{
 			if ($command == null) return;
 
+			echo("<div data-tooltip-title=\"" . $command->ToolTipTitle . "\" data-tooltip-content=\"" . $command->ToolTipText . "\" class=\"RibbonCommand Ribbon_" . $this->ID . "_Commands_" . $command->ID);
+			if ($command->Selected)
+			{
+				echo(" Selected");
+			}
+			if (!$command->Enabled)
+			{
+				echo(" Disabled");
+			}
+			
 			if (get_class($command) == "WebFX\\Controls\\RibbonButtonCommand")
 			{
+				echo(" RibbonButtonCommand");
+				echo("\">");
+				
 				$titleText = $command->Title;
 				$accessKey = null;
 				$iof = stripos($titleText, "&");
@@ -88,7 +119,7 @@
 					$titleText = $titleTextBefore . "<u>" . $accessKey . "</u>" . $titleTextAfter;
 				}
 
-				echo("<a class=\"RibbonButtonCommand Ribbon_" . $this->ID . "_Commands_" . $command->ID . "\" data-tooltip-title=\"" . $command->ToolTipTitle . "\" data-tooltip-content=\"" . $command->ToolTipText . "\"");
+				echo("<a class=\"RibbonButtonCommand \" ");
 
 				if ($accessKey != null)
 				{
@@ -133,11 +164,15 @@
 
 				echo("</a>");
 			}
+			echo("</div>");
 		}
 		
 		private function RenderRibbonTabGroup($group)
 		{
-			echo("<div class=\"RibbonTabGroup\">");
+			echo("<div class=\"RibbonTabGroup\"");
+			if (!$group->Visible) echo(" style=\"display: none;\"");
+			echo(">");
+			echo("<div class=\"RibbonTabGroupBackground\">&nbsp;</div>");
 			echo("<div class=\"RibbonTabGroupContent\">");
 			foreach ($group->Items as $item)
 			{
@@ -146,6 +181,9 @@
 			echo("</div>");
 			echo("<div class=\"RibbonTabGroupTitle\">" . $group->Title . "</div>");
 			echo("</div>");
+			echo("<span class=\"Separator\"");
+			if (!$group->Visible) echo(" style=\"display: none;\"");
+			echo(">&nbsp;</span>");
 		}
 		
 		protected function RenderContent()
@@ -228,11 +266,12 @@
 			echo("<div class=\"RibbonTabContentContainer\" id=\"Ribbon_" . $this->ID . "_TabContentContainer\">");
 			foreach ($this->Tabs as $tab)
 			{
-				echo("<div class=\"RibbonTabContent\" data-tab-id=\"" . $tab->ID . "\"");
-				if ($tab == $this->SelectedTab)
+				echo("<div class=\"RibbonTabContent");
+				if ($tab->ID === $this->SelectedTab->ID)
 				{
-					echo(" style=\"display: block;\"");
+					echo(" Selected");
 				}
+				echo("\" data-tab-id=\"" . $tab->ID . "\"");
 				echo(">");
 				foreach ($tab->Groups as $tgroup)
 				{
@@ -310,22 +349,26 @@
 		public $ID;
 		public $Title;
 		public $Items;
+		public $Visible;
 		
 		public function __construct($id, $title, $items)
 		{
 			$this->ID = $id;
 			$this->Title = $title;
 			$this->Items = $items;
+			$this->Visible = true;
 		}
 	}
 	
 	abstract class RibbonCommand
 	{
 		public $ID;
+		public $Enabled;
 		
 		public function __construct($id)
 		{
 			$this->ID = $id;
+			$this->Enabled = true;
 		}
 	}
 	class RibbonButtonCommand extends RibbonCommand
