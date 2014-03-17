@@ -1,0 +1,395 @@
+<?php
+	namespace WebFX\Controls;
+	
+	use WebFX\WebControl;
+	use WebFX\System;
+	
+	class Ribbon extends WebControl
+	{
+		public $Title;
+		public $ImageURL;
+		
+		public $Collapsed;
+		
+		public $ApplicationMenu;
+		public $Commands;
+		public $HelpButton;
+		public $Tabs;
+		
+		public $SelectedTab;
+		
+		public $UserName;
+		
+		public function __construct($id, $title)
+		{
+			parent::__construct($id);
+			$this->Title = $title;
+			$this->Collapsed = false;
+			$this->ApplicationMenu = new RibbonApplicationMenuSettings();
+			$this->HelpButton = new RibbonHelpButtonSettings();
+			$this->Commands = array();
+			$this->Tabs = array();
+		}
+		
+		private function RenderRibbonTab($tab)
+		{
+			echo("<a class=\"RibbonTab");
+			if ($this->SelectedTab === $tab)
+			{
+				echo(" Selected");
+			}
+			echo("\" data-tab-id=\"" . $tab->ID . "\" data-tooltip-title=\"" . $tab->ToolTipTitle . "\" data-tooltip-content=\"" . $tab->ToolTipText . "\" href=\"#\"");
+			if (!$tab->Visible)
+			{
+				echo(" style=\"display: none;\"");
+			}
+			echo(">");
+			if ($tab->ImageURL != null)
+			{
+				echo("<img src=\"" . System::ExpandRelativePath($tab->ImageURL) . "\" />");
+			}
+			echo($tab->Title);
+
+			echo("</a>");
+		}
+		private function GetCommandByID($id)
+		{
+			foreach ($this->Commands as $command)
+			{
+				if ($command->ID == $id) return $command;
+			}
+			return null;
+		}
+		private function RenderRibbonItem($item)
+		{
+			if (get_class($item) == "WebFX\\Controls\\RibbonCommandReferenceItem")
+			{
+				$this->RenderRibbonCommand($this->GetCommandByID($item->TargetID));
+			}
+			else if (get_class($item) == "WebFX\\Controls\\RibbonSeparatorItem")
+			{
+				echo("<span class=\"Separator\">&nbsp;</span>");
+			}
+		}
+		private function RenderRibbonCommand($command)
+		{
+			if ($command == null) return;
+
+			if (get_class($command) == "WebFX\\Controls\\RibbonButtonCommand")
+			{
+				$titleText = $command->Title;
+				$accessKey = null;
+				$iof = stripos($titleText, "&");
+				if ($iof !== false)
+				{
+					$titleTextBefore = substr($titleText, 0, $iof);
+					$titleTextAfter = substr($titleText, $iof . 2);
+					$accessKey = substr($titleText, $iof . 1, 1);
+					$titleText = $titleTextBefore . "<u>" . $accessKey . "</u>" . $titleTextAfter;
+				}
+
+				echo("<a class=\"RibbonButtonCommand Ribbon_" . $this->ID . "_Commands_" . $command->ID . "\" data-tooltip-title=\"" . $command->ToolTipTitle . "\" data-tooltip-content=\"" . $command->ToolTipText . "\"");
+
+				if ($accessKey != null)
+				{
+					echo(" data-accesskey=\"" . $accessKey . "\"");
+				}
+				if ($command->TargetURL != null)
+				{
+					echo(" href=\"" . System::ExpandRelativePath($command->TargetURL) . "\"");
+				}
+				else
+				{
+					echo(" href=\"#\"");
+				}
+				if ($command->TargetFrame != null)
+				{
+					echo(" target=\"" . $command->TargetFrame . "\"");
+				}
+
+				$onclickstr = "var ribbon = Ribbon.FromID('" . $this->ID . "'); ribbon.SetApplicationMenuVisible(false);";
+
+				$onclickstr .= "if (ribbon.IsCollapsed() && ribbon.IsOpened())";
+				$onclickstr .= "{ ribbon.SetOpened(false); };";
+				if ($command->TargetScript != null)
+				{
+					$onclickstr .= $command->TargetScript;
+				}
+				echo(" onclick=\"" . $onclickstr . "\"");
+				echo(">");
+
+				if ($command->ImageURL != null)
+				{
+					echo("<img class=\"Icon\" src=\"" . System::ExpandRelativePath($command->ImageURL) . "\" />");
+				}
+
+				echo("<span class=\"Text\">");
+				echo($titleText);
+				echo("</span>");
+
+				echo("<span class=\"SpacerText\">");
+				echo($titleText);
+				echo("</span>");
+
+				echo("</a>");
+			}
+		}
+		
+		private function RenderRibbonTabGroup($group)
+		{
+			echo("<div class=\"RibbonTabGroup\">");
+			echo("<div class=\"RibbonTabGroupContent\">");
+			foreach ($group->Items as $item)
+			{
+				$this->RenderRibbonItem($item);
+			}
+			echo("</div>");
+			echo("<div class=\"RibbonTabGroupTitle\">" . $group->Title . "</div>");
+			echo("</div>");
+		}
+		
+		protected function RenderContent()
+		{
+			echo("<div class=\"RibbonContainer\">");
+			if ($this->Title != null || $this->ImageURL != null)
+			{
+				echo("<div class=\"RibbonTitleBar\">");
+				if ($this->ImageURL != null)
+				{
+					echo("<img src=\"" . System::ExpandRelativePath($this->ImageURL) . "\" /> ");
+				}
+				if ($this->Title != null)
+				{
+					echo("<span class=\"Text\">" . $this->Title . "</span>");
+				}
+				echo("</div>");
+			}
+			echo ("<div class=\"Ribbon");
+			if ($this->Collapsed)
+			{
+				echo(" Collapsed");
+			}
+			echo("\" data-id=\"" . $this->ID . "\">");
+			
+			echo("<a id=\"Ribbon_" . $this->ID . "_ApplicationButton\" class=\"ApplicationButton\" data-tooltip-title=\"" . $this->ApplicationMenu->ToolTipTitle . "\" data-tooltip-content=\"" . $this->ApplicationMenu->ToolTipText . "\">");
+			echo("<img class=\"Icon\" src=\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAALCAYAAABhwJ3wAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH3gIcEwcFpaQT2QAAAB1pVFh0Q29tbWVudAAAAAAAQ3JlYXRlZCB3aXRoIEdJTVBkLmUHAAACW0lEQVQ4y3WTS4sVVxSFv33vqUduJ62ooQUVGhRaElQcBASTQaATW3CoE9H8CSeC0JHuQWfgLwgZCf4B8RVQBCGIBJJBHghOkoCgA1/d9PXWedRyUFW3b2vnTHadfdbZq9baZ9vj/16wf+8O0a6//n1tR2a3j/dbrX+er9rZlZuU23YDILVwCdQEBCBUN9HN7dshHxtg7mx8qctttWZnpuWHQ3NTdYPvoGJir4awjU5AShHJyJwjtbgYE/Pf37dNDIJ7y19LzhGDCD5NnLWFJ4gmc66qPDEmJKiqGl95utydxS9lEz8MEGLAqIkpEkMaWxfWXxJHaw2o1geWOh8CMSSEAIcPAR8CIUTmF3+xSTUAd5ePCzlSECHUYwWjtTc8+vH8Fn43quzV6zd6O/IYoiwLfv3jqX1xaI9GowoBNsHTfZdlwdy3l80NZpqkIPk1FIY8/nlRo9GI9eGQqcGAsiw5eGLJnOqa4CtAFHmGJFTXeF9x7LtrTW0DU1Px4dVzKvIMsdnSfv4JCZhbWLK/b11SmQqyPOPgwpJZNsClOuG9ByDViVo1TS7w4Kcz4j1Fla8Y1CX0etDvjYkM6H20DSrj81Mr9uf1i/rs1Ir18ymsmMal2BIZpJhIEikmfPAsXLhtnV+dottXTirFRD93uDLbIBL0AMqdpGqVw6evWDY1Tb+cBoGTRIyxbZqwXjNLMQRu/PBNU942BjDGgCT6RU6/LNuD7nX1ENArirZ1rQ8y3IPfnthXRw+oe44d0ae7dv3vwP7+5Jllg49xRY4h1DSxLdrIa8aiozPeARJkctn1QJKkAAAAAElFTkSuQmCC\" />");
+			echo("</a>");
+
+			echo("<div class=\"ApplicationMenu\" id=\"Ribbon_" . $this->ID . "_ApplicationMenu\">");
+			echo("<div class=\"ApplicationMenuHeader\">&nbsp;</div>");
+			echo("<div class=\"ApplicationMenuItems\">");
+			foreach ($this->ApplicationMenu->Commands as $item)
+			{
+				$this->RenderRibbonCommand($item);
+			}
+			echo("</div>");
+			echo("</div>");
+
+			echo("<div class=\"RibbonTabContainer\" id=\"Ribbon_" . $this->ID . "_TabContainer\">");
+			foreach ($this->Tabs as $tab)
+			{
+				$this->RenderRibbonTab($tab);
+			}
+			/*
+			foreach (RibbonTabContext ctx in $this->Contexts)
+			{
+				echo("<div class=\"RibbonTabContext\" style=\"");
+
+				HSLColor borderColor = new HSLColor(ctx.BackgroundColor);
+				HSLColor startColor = new HSLColor(borderColor);
+				startColor.Hue .= 10;
+				startColor.Saturation -= 54;
+				startColor.Luminosity .= 10;
+				HSLColor endColor = new HSLColor(borderColor);
+				endColor.Saturation -= 54;
+				endColor.Luminosity .= 20;
+
+				string css = "border-color: " . GradientGenerator.GetColorCSS(borderColor) . ";";
+				css .= GradientGenerator.GenerateCSS(new GradientColorStop(0.0, startColor), new GradientColorStop(1.0, endColor));
+				echo(css);
+
+				if (ctx.Active)
+				{
+					echo(" display: block;\"");
+				}
+				echo("\">");
+				echo("<div class=\"Title\">");
+				echo(ctx.Title);
+				echo("</div>");
+				foreach (RibbonTab tab in ctx.Tabs)
+				{
+					$this->RenderRibbonTab(tab, writer);
+				}
+				echo("</div>");
+			}
+			*/
+			echo("</div>");
+
+			echo("<div class=\"RibbonTabContentContainer\" id=\"Ribbon_" . $this->ID . "_TabContentContainer\">");
+			foreach ($this->Tabs as $tab)
+			{
+				echo("<div class=\"RibbonTabContent\" data-tab-id=\"" . $tab->ID . "\"");
+				if ($tab == $this->SelectedTab)
+				{
+					echo(" style=\"display: block;\"");
+				}
+				echo(">");
+				foreach ($tab->Groups as $tgroup)
+				{
+					$this->RenderRibbonTabGroup($tgroup);
+				}
+				echo("</div>");
+			}
+			echo("</div>");
+
+			if ($this->UserName != null)
+			{
+				echo("<span class=\"UserName\">" . $this->UserName . "</span>");
+			}
+
+			echo("<a class=\"HelpButton\" id=\"Ribbon_" . $this->ID . "_HelpButton\" data-tooltip-title=\"" . $this->HelpButton->ToolTipTitle . "\" data-tooltip-content=\"" . $this->HelpButton->ToolTipText . "\"");
+			if ($this->HelpButton->TargetURL != null)
+			{
+				echo(" href=\"" . $this->HelpButton->TargetURL . "\"");
+				if ($this->HelpButton->TargetFrame != null)
+				{
+					echo(" target=\"" . $this->HelpButton->TargetFrame . "\"");
+				}
+			}
+			else
+			{
+				echo(" href=\"#\"");
+			}
+			if ($this->HelpButton->TargetScript != null)
+			{
+				echo(" onclick=\"" . $this->HelpButton->TargetScript . "\"");
+			}
+			if ($this->HelpButton->Visible)
+			{
+				echo(" style=\"display: inline-block\"");
+			}
+			echo(">");
+
+			echo("<img src=\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAOCAYAAAAfSC3RAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH3gMDEQIZ+kwBxAAAAB1pVFh0Q29tbWVudAAAAAAAQ3JlYXRlZCB3aXRoIEdJTVBkLmUHAAACPklEQVQoz0WST0gUYRjGf7Nqu4kxg2n+Kd0BIwapGNgQpQ5DpzoEe8ujN7vlsUu0l87VTbpkkGDQYQ0KDyojRGypMEjlSJJjbamZ9H2xa6PQvh0G9T0/v+eB53mNta0qhyfC9p+/Cyvl/dzmz39sV39zuq2ZgXOZxVbr+CXEOJQaB2Blt8bLxR25fN7CtU3MdCLQexBEmpmgzOBAp9GYSR+Bld0awbcdudGXJQjBDyGIEtC1wXM0tm0yPr3ENffMcPOJzGPWNivcfxGJikXGfBHvjsjYlIiKRUREIiUyMioyNqUkUiJ3n76V1Y0Kxvsv2wu7+w05YpPCRJLwYBgm30GxBPl+8FzIFzQjeQBFU6ae1NyH/Zxrm/ghEEOk4NEkFCbADzV+SWOmwcpA0Y/wnCzzH9dJLa7+wkxDEIICogjGpkDF4DlQuGUyt6IJggA/UJgmzM4vU39Qr4qTRIWGGFwHntw2mZzTjIwGKBTW0XCk2prq0Hvg2hoVa1AKYoVnJ4Khh1FiCri2hdaai90d1Of7ThFEGs+Foq9QKIiTSdRzBSRGAHnPJggVV/q6SHW1NxqvFxSuYyatxYnYc+DezewhNDJo4/VbvAlXudCTNYy1rSplvSszn6oMeVn80jrFkiIIE8B1LPL9Fp5rMf5qiasDWdpPtiRgyjD4ulOVZ7PLXM914zkWpmkmL6c1QahYLq/j9tp0trQaNZGjXwWgJoTff8h06TPR6gb22Q5ajjXg9Lbj9mSNVF0DNREA/gPgtSGQXugIvQAAAABJRU5ErkJggg==\" alt=\"Help\" />");
+			echo("</a>");
+
+			echo("</div>");
+			echo("</div>");
+			echo("<div id=\"Ribbon_" . $this->ID . "_Spacer\" class=\"RibbonSpacer");
+			if ($this->Collapsed) echo(" Collapsed");
+			echo("\"></div>");
+
+			echo("<div class=\"RibbonTooltip\" id=\"Tooltip\"><div class=\"Title\" id=\"Tooltip_Title\"></div><div class=\"Content\" id=\"Tooltip_Content\"></div></div>");
+		}
+	}
+	class RibbonTab
+	{
+		public $ID;
+		public $Title;
+		public $ImageURL;
+		public $ToolTipTitle;
+		public $ToolTipText;
+		
+		public $Groups;
+		
+		public $Visible;
+		
+		public function __construct($id, $title, $groups, $imageURL = null, $tooltipTitle = null, $tooltipText = null, $visible = true)
+		{
+			$this->ID = $id;
+			$this->Title = $title;
+			$this->Groups = $groups;
+			$this->ImageURL = $imageURL;
+			$this->ToolTipTitle = $tooltipTitle;
+			$this->ToolTipText = $tooltipText;
+			$this->Visible = $visible;
+		}
+	}
+	class RibbonTabGroup
+	{
+		public $ID;
+		public $Title;
+		public $Items;
+		
+		public function __construct($id, $title, $items)
+		{
+			$this->ID = $id;
+			$this->Title = $title;
+			$this->Items = $items;
+		}
+	}
+	
+	abstract class RibbonCommand
+	{
+		public $ID;
+		
+		public function __construct($id)
+		{
+			$this->ID = $id;
+		}
+	}
+	class RibbonButtonCommand extends RibbonCommand
+	{
+		public $Title;
+		public $ImageURL;
+		
+		public $TargetURL;
+		public $TargetScript;
+		
+		public $ToolTipTitle;
+		public $ToolTipText;
+		
+		public function __construct($id, $title, $targetURL = null, $targetScript = null, $imageURL = null, $toolTipTitle = null, $toolTipText = null)
+		{
+			parent::__construct($id);
+			$this->Title = $title;
+			
+			$this->TargetURL = $targetURL;
+			$this->TargetScript = $targetScript;
+			
+			$this->ImageURL = $imageURL;
+			$this->ToolTipTitle = $toolTipTitle;
+			$this->ToolTipText = $toolTipText;
+		}
+	}
+	
+	abstract class RibbonItem
+	{
+	}
+	class RibbonCommandReferenceItem extends RibbonItem
+	{
+		public $TargetID;
+		public function __construct($targetID)
+		{
+			$this->TargetID = $targetID;
+		}
+	}
+	class RibbonSeparatorItem extends RibbonItem
+	{
+	}
+	
+	class RibbonApplicationMenuSettings
+	{
+		public $Title;
+		public $Commands;
+		
+		public $ToolTipTitle;
+		public $ToolTipText;
+		
+		public function __construct()
+		{
+			$this->Commands = array();
+		}
+	}
+	class RibbonHelpButtonSettings
+	{
+		public $ToolTipTitle;
+		public $ToolTipText;
+		
+		public $TargetURL;
+		public $TargetFrame;
+		public $TargetScript;
+		
+		public $Visible;
+	}
+?>

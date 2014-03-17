@@ -1,0 +1,61 @@
+/* ListView (as TABLE) */
+table.ListView tr td
+{
+	cursor: default;
+	input.Filter
+	{
+		width: 100%;
+	}
+	a.Wrapper
+	{
+		display: block;
+		text-decoration: none;
+		color: inherit;
+	}
+}
+
+table.ListView
+{
+	position: relative;
+	a.NavigateURL
+	{
+		cursor: pointer;
+		position: absolute;
+		right: 0px;
+	}
+}
+
+/* ListView (as DIV) */
+div.ListView
+{
+	position: relative;
+	
+	a
+	{
+		cursor: default;
+		&:hover
+		{
+			background-color: #EEEEEE;
+		}
+	}
+	a.Selected, span.Selected
+	{
+		background-color: Highlight;
+		color: HighlightText;
+	}
+	&.TileView a
+	{
+		display: block;
+		padding: 8px;
+		color: #000000;
+		text-decoration: none;
+		span
+		{
+			display: block;
+			&.ItemText
+			{
+				font-weight: bold;
+			}
+		}
+	}
+}
