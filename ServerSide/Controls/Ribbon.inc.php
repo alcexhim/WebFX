@@ -318,7 +318,7 @@
 			if ($this->Collapsed) echo(" Collapsed");
 			echo("\"></div>");
 
-			echo("<div class=\"RibbonTooltip\" id=\"Tooltip\"><div class=\"Title\" id=\"Tooltip_Title\"></div><div class=\"Content\" id=\"Tooltip_Content\"></div></div>");
+			echo("<div class=\"RibbonTooltip\" id=\"Tooltip\"><div class=\"Title\" id=\"Tooltip_Title\"></div><div class=\"Content\" id=\"Tooltip_Content\"></div><div class=\"ContextHelp\" id=\"Tooltip_ContextHelp\"><span class=\"Separator\">&nbsp;</span><div class=\"Content\">Press F1 for more help.</div></div></div>");
 		}
 	}
 	class RibbonTab
