@@ -4,7 +4,7 @@
 	this.ID = id;
 	this.ParentElement = parent;
 
-	WebFramework.AddEventListener(parent, WebFramework.Events.MouseWheel, function(e)
+	SlickUI.AddEventListener(parent, SlickUI.Events.MouseWheel, function(e)
 	{
 		if (e.Delta > 0)
 		{
@@ -88,11 +88,11 @@
 
 		if (tab == null)
 		{
-			// WebFramework.ClearClientProperty(this.ID, "ActiveTabID");
+			// SlickUI.ClearClientProperty(this.ID, "ActiveTabID");
 		}
 		else
 		{
-			WebFramework.SetClientProperty(this.ID, "ActiveTabID", tab.attributes["data-tab-id"].value);
+			SlickUI.SetClientProperty(this.ID, "ActiveTabID", tab.attributes["data-tab-id"].value);
 		}
 	};
 
@@ -164,7 +164,7 @@
 			}
 		}
 
-		WebFramework.SetClientProperty(this.ID, "Collapsed", value);
+		SlickUI.SetClientProperty(this.ID, "Collapsed", value);
 	};
 	this.SetApplicationMenuVisible = function (value)
 	{
@@ -205,7 +205,7 @@
 		return null;
 	};
 
-	WebFramework.AddEventListener(applicationButton, WebFramework.Events.MouseClick, function (e)
+	SlickUI.AddEventListener(applicationButton, SlickUI.Events.MouseClick, function (e)
 	{
 		if (applicationButton.className == "ApplicationButton")
 		{

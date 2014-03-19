@@ -28,44 +28,44 @@ div.Ribbon
 
 	cursor: default;
 	-moz-user-select: none;
-	&.Collapsed
-	{
-		height: 23px;
-	}
-	*
-	{
-		font-size: 8pt !important;
-		font-family: "Segoe UI" !important;
-		color: #1e395b;
-		
-		line-height: normal;
-	}
+}
+div.Ribbon.Collapsed
+{
+	height: 23px;
+}
+div.Ribbon *
+{
+	font-size: 8pt !important;
+	font-family: "Segoe UI" !important;
+	color: #1e395b;
+	
+	line-height: normal;
 }
 div.RibbonTitleBar
 {
 	font-size: 9pt !important;
 	font-family: "Segoe UI" !important;
 	text-align: center;
-	img
-	{
-		vertical-align: middle;
-		width: 24px;
-		height: 24px;
-	}
-	span.Text
-	{
-		position: relative;
-		top: 2px;
-		padding-left: 4px;
-	}
+}
+div.RibbonTitleBar img
+{
+	vertical-align: middle;
+	width: 24px;
+	height: 24px;
+}
+div.RibbonTitleBar span.Text
+{
+	position: relative;
+	top: 2px;
+	padding-left: 4px;
 }
 div.RibbonSpacer
 {
 	height: 160px;
-	&.Collapsed
-	{
-		height: 60px;
-	}
+}
+div.RibbonSpacer.Collapsed
+{
+	height: 60px;
 }
 div.Ribbon a.ApplicationButton
 {
@@ -86,40 +86,32 @@ div.Ribbon a.ApplicationButton
 	background: -ms-linear-gradient(top, #4883c0 0%,#2c64b0 50%,#204388 51%,#419acf 100%); /* IE10+ */
 	background: linear-gradient(to bottom, #4883c0 0%,#2c64b0 50%,#204388 51%,#419acf 100%); /* W3C */
 	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#4883c0', endColorstr='#419acf',GradientType=0 ); /* IE6-9 */
-	&:hover
-	{
-		background: #a2c9f1; /* Old browsers */
-		background: -moz-linear-gradient(top, #a2c9f1 0%, #4782d0 50%, #114eaf 51%, #1793e8 77%, #58cfff 95%, #80e1ff 100%); /* FF3.6+ */
-		background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#a2c9f1), color-stop(50%,#4782d0), color-stop(51%,#114eaf), color-stop(77%,#1793e8), color-stop(95%,#58cfff), color-stop(100%,#80e1ff)); /* Chrome,Safari4+ */
-		background: -webkit-linear-gradient(top, #a2c9f1 0%,#4782d0 50%,#114eaf 51%,#1793e8 77%,#58cfff 95%,#80e1ff 100%); /* Chrome10+,Safari5.1+ */
-		background: -o-linear-gradient(top, #a2c9f1 0%,#4782d0 50%,#114eaf 51%,#1793e8 77%,#58cfff 95%,#80e1ff 100%); /* Opera 11.10+ */
-		background: -ms-linear-gradient(top, #a2c9f1 0%,#4782d0 50%,#114eaf 51%,#1793e8 77%,#58cfff 95%,#80e1ff 100%); /* IE10+ */
-		background: linear-gradient(to bottom, #a2c9f1 0%,#4782d0 50%,#114eaf 51%,#1793e8 77%,#58cfff 95%,#80e1ff 100%); /* W3C */
-		filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#a2c9f1', endColorstr='#80e1ff',GradientType=0 ); /* IE6-9 */
-	}
-	&:active, &.Selected
-	{
-		border: none 0px;
-		border-radius: 0px;
-		padding: 1px;
+}
+div.Ribbon a.ApplicationButton:hover
+{
+	background: #a2c9f1; /* Old browsers */
+	background: -moz-linear-gradient(top, #a2c9f1 0%, #4782d0 50%, #114eaf 51%, #1793e8 77%, #58cfff 95%, #80e1ff 100%); /* FF3.6+ */
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#a2c9f1), color-stop(50%,#4782d0), color-stop(51%,#114eaf), color-stop(77%,#1793e8), color-stop(95%,#58cfff), color-stop(100%,#80e1ff)); /* Chrome,Safari4+ */
+	background: -webkit-linear-gradient(top, #a2c9f1 0%,#4782d0 50%,#114eaf 51%,#1793e8 77%,#58cfff 95%,#80e1ff 100%); /* Chrome10+,Safari5.1+ */
+	background: -o-linear-gradient(top, #a2c9f1 0%,#4782d0 50%,#114eaf 51%,#1793e8 77%,#58cfff 95%,#80e1ff 100%); /* Opera 11.10+ */
+	background: -ms-linear-gradient(top, #a2c9f1 0%,#4782d0 50%,#114eaf 51%,#1793e8 77%,#58cfff 95%,#80e1ff 100%); /* IE10+ */
+	background: linear-gradient(to bottom, #a2c9f1 0%,#4782d0 50%,#114eaf 51%,#1793e8 77%,#58cfff 95%,#80e1ff 100%); /* W3C */
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#a2c9f1', endColorstr='#80e1ff',GradientType=0 ); /* IE6-9 */
+}
+div.Ribbon a.ApplicationButton:active, div.Ribbon a.ApplicationButton.Selected
+{
+	border: none 0px;
+	border-radius: 0px;
+	padding: 1px;
 
-		background: #4a88c4; /* Old browsers */
-		background: -moz-linear-gradient(top, #4a88c4 0%, #3065ae 50%, #1c438a 51%, #358bc9 100%); /* FF3.6+ */
-		background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#4a88c4), color-stop(50%,#3065ae), color-stop(51%,#1c438a), color-stop(100%,#358bc9)); /* Chrome,Safari4+ */
-		background: -webkit-linear-gradient(top, #4a88c4 0%,#3065ae 50%,#1c438a 51%,#358bc9 100%); /* Chrome10+,Safari5.1+ */
-		background: -o-linear-gradient(top, #4a88c4 0%,#3065ae 50%,#1c438a 51%,#358bc9 100%); /* Opera 11.10+ */
-		background: -ms-linear-gradient(top, #4a88c4 0%,#3065ae 50%,#1c438a 51%,#358bc9 100%); /* IE10+ */
-		background: linear-gradient(to bottom, #4a88c4 0%,#3065ae 50%,#1c438a 51%,#358bc9 100%); /* W3C */
-		filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#4a88c4', endColorstr='#358bc9',GradientType=0 ); /* IE6-9 */
-	}
-	img.Icon
-	{
-		display: block;
-		margin-left: auto;
-		margin-right: auto;
-		position: relative;
-		top: 5px;
-	}
+	background: #4a88c4; /* Old browsers */
+	background: -moz-linear-gradient(top, #4a88c4 0%, #3065ae 50%, #1c438a 51%, #358bc9 100%); /* FF3.6+ */
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#4a88c4), color-stop(50%,#3065ae), color-stop(51%,#1c438a), color-stop(100%,#358bc9)); /* Chrome,Safari4+ */
+	background: -webkit-linear-gradient(top, #4a88c4 0%,#3065ae 50%,#1c438a 51%,#358bc9 100%); /* Chrome10+,Safari5.1+ */
+	background: -o-linear-gradient(top, #4a88c4 0%,#3065ae 50%,#1c438a 51%,#358bc9 100%); /* Opera 11.10+ */
+	background: -ms-linear-gradient(top, #4a88c4 0%,#3065ae 50%,#1c438a 51%,#358bc9 100%); /* IE10+ */
+	background: linear-gradient(to bottom, #4a88c4 0%,#3065ae 50%,#1c438a 51%,#358bc9 100%); /* W3C */
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#4a88c4', endColorstr='#358bc9',GradientType=0 ); /* IE6-9 */
 }
 
 div.Ribbon div.RibbonTabContainer, div.RibbonTitleBar
@@ -138,6 +130,14 @@ div.Ribbon div.RibbonTabContainer
 	padding-left: 60px;
 }
 
+div.Ribbon a.ApplicationButton img.Icon
+{
+	display: block;
+	margin-left: auto;
+	margin-right: auto;
+	position: relative;
+	top: 5px;
+}
 div.Ribbon a.RibbonTab
 {
 	padding-top: 4px;
@@ -160,20 +160,20 @@ div.Ribbon a.RibbonTab
 	transition: border-color linear 0.3s, background-color linear 0.3s;
 
 	margin-right: 5px;
-	&:hover
-	{
-		background-color: #eaf0f9;
-	}
-	&.Selected
-	{
-		background-color: #fbfdff;
-		border-color: #bac9db;
-		padding-bottom: 5px;
-	}
-	&:hover, &.Selected:hover
-	{
-		border-color: #ffb700;
-	}
+}
+div.Ribbon a.RibbonTab:hover
+{
+	background-color: #eaf0f9;
+}
+div.Ribbon a.RibbonTab.Selected
+{
+	background-color: #fbfdff;
+	border-color: #bac9db;
+	padding-bottom: 5px;
+}
+div.Ribbon a.RibbonTab:hover, div.Ribbon a.RibbonTab.Selected:hover
+{
+	border-color: #ffb700;
 }
 
 div.Ribbon div.ApplicationMenu
@@ -187,43 +187,44 @@ div.Ribbon div.ApplicationMenu
 	opacity: 0;
 
 	box-shadow: 4px 4px 4px rgba(0, 0, 0, 0.3);
-	&:not(.Visible)
-	{
-		transition: visibility 0.5s, opacity 0.5s;
-	}
-	&.Visible
-	{
-		visibility: visible;
-		opacity: 1;
-	}
-	img.Icon
-	{
-		width: 40px;
-	}
-	div.ApplicationMenuItems
-	{
-		min-height: 56px;
-		background-color: #eff5fa;
-		margin-top: 23px;
-	}
-	div.ApplicationMenuHeader
-	{
-		position: absolute;
-		top: 0px;
-		left: 56px;
-		height: 23px;
-		right: 0px;
-
-		background: #fcfeff; /* Old browsers */
-		background: -moz-linear-gradient(top, #fcfeff 0%, #e8f1fb 50%, #dce6f4 51%, #e4effb 100%); /* FF3.6+ */
-		background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#fcfeff), color-stop(50%,#e8f1fb), color-stop(51%,#dce6f4), color-stop(100%,#e4effb)); /* Chrome,Safari4+ */
-		background: -webkit-linear-gradient(top, #fcfeff 0%,#e8f1fb 50%,#dce6f4 51%,#e4effb 100%); /* Chrome10+,Safari5.1+ */
-		background: -o-linear-gradient(top, #fcfeff 0%,#e8f1fb 50%,#dce6f4 51%,#e4effb 100%); /* Opera 11.10+ */
-		background: -ms-linear-gradient(top, #fcfeff 0%,#e8f1fb 50%,#dce6f4 51%,#e4effb 100%); /* IE10+ */
-		background: linear-gradient(to bottom, #fcfeff 0%,#e8f1fb 50%,#dce6f4 51%,#e4effb 100%); /* W3C */
-		filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#fcfeff', endColorstr='#e4effb',GradientType=0 ); /* IE6-9 */
-	}
 }
+div.Ribbon div.ApplicationMenu:not(.Visible)
+{
+	transition: visibility 0.5s, opacity 0.5s;
+}
+div.Ribbon div.ApplicationMenu.Visible
+{
+	visibility: visible;
+	opacity: 1;
+}
+div.Ribbon div.ApplicationMenu img.Icon
+{
+	width: 40px;
+}
+div.Ribbon div.ApplicationMenu div.ApplicationMenuItems
+{
+	min-height: 56px;
+	background-color: #eff5fa;
+	margin-top: 23px;
+}
+div.Ribbon div.ApplicationMenu div.ApplicationMenuHeader
+{
+	position: absolute;
+	top: 0px;
+	left: 56px;
+	height: 23px;
+	right: 0px;
+
+	background: #fcfeff; /* Old browsers */
+	background: -moz-linear-gradient(top, #fcfeff 0%, #e8f1fb 50%, #dce6f4 51%, #e4effb 100%); /* FF3.6+ */
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#fcfeff), color-stop(50%,#e8f1fb), color-stop(51%,#dce6f4), color-stop(100%,#e4effb)); /* Chrome,Safari4+ */
+	background: -webkit-linear-gradient(top, #fcfeff 0%,#e8f1fb 50%,#dce6f4 51%,#e4effb 100%); /* Chrome10+,Safari5.1+ */
+	background: -o-linear-gradient(top, #fcfeff 0%,#e8f1fb 50%,#dce6f4 51%,#e4effb 100%); /* Opera 11.10+ */
+	background: -ms-linear-gradient(top, #fcfeff 0%,#e8f1fb 50%,#dce6f4 51%,#e4effb 100%); /* IE10+ */
+	background: linear-gradient(to bottom, #fcfeff 0%,#e8f1fb 50%,#dce6f4 51%,#e4effb 100%); /* W3C */
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#fcfeff', endColorstr='#e4effb',GradientType=0 ); /* IE6-9 */
+}
+
 div.Ribbon div.RibbonTabContentContainer
 {
 	position: absolute;
@@ -266,12 +267,12 @@ div.Ribbon div.RibbonCommand a:hover, div.Ribbon a.HelpButton:hover
 	border: solid 1px #f6b71a;
 
 	background: #fef9f4; /* Old browsers */
-	background: -moz-linear-gradient(top, #fef9f4 0%, #fddeb8 40%, #ffce68 41%, #fff3c4 100%); /* FF3.6+ */
-	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#fef9f4), color-stop(40%,#fddeb8), color-stop(41%,#ffce68), color-stop(100%,#fff3c4)); /* Chrome,Safari4+ */
-	background: -webkit-linear-gradient(top, #fef9f4 0%,#fddeb8 40%,#ffce68 41%,#fff3c4 100%); /* Chrome10+,Safari5.1+ */
-	background: -o-linear-gradient(top, #fef9f4 0%,#fddeb8 40%,#ffce68 41%,#fff3c4 100%); /* Opera 11.10+ */
-	background: -ms-linear-gradient(top, #fef9f4 0%,#fddeb8 40%,#ffce68 41%,#fff3c4 100%); /* IE10+ */
-	background: linear-gradient(to bottom, #fef9f4 0%,#fddeb8 40%,#ffce68 41%,#fff3c4 100%); /* W3C */
+	background: -moz-linear-gradient(top, #fef9f4 0%, #fddeb8 40%, #ffce69 41%, #ffea7f 71%, #fff8a8 95%, #fff3c4 100%); /* FF3.6+ */
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#fef9f4), color-stop(40%,#fddeb8), color-stop(41%,#ffce69), color-stop(71%,#ffea7f), color-stop(95%,#fff8a8), color-stop(100%,#fff3c4)); /* Chrome,Safari4+ */
+	background: -webkit-linear-gradient(top, #fef9f4 0%,#fddeb8 40%,#ffce69 41%,#ffea7f 71%,#fff8a8 95%,#fff3c4 100%); /* Chrome10+,Safari5.1+ */
+	background: -o-linear-gradient(top, #fef9f4 0%,#fddeb8 40%,#ffce69 41%,#ffea7f 71%,#fff8a8 95%,#fff3c4 100%); /* Opera 11.10+ */
+	background: -ms-linear-gradient(top, #fef9f4 0%,#fddeb8 40%,#ffce69 41%,#ffea7f 71%,#fff8a8 95%,#fff3c4 100%); /* IE10+ */
+	background: linear-gradient(to bottom, #fef9f4 0%,#fddeb8 40%,#ffce69 41%,#ffea7f 71%,#fff8a8 95%,#fff3c4 100%); /* W3C */
 	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#fef9f4', endColorstr='#fff3c4',GradientType=0 ); /* IE6-9 */
 }
 div.Ribbon div.RibbonCommand a:active, div.Ribbon div.RibbonCommand.Selected > a,
@@ -701,7 +702,7 @@ div.Ribbon div.RibbonCommand div.RibbonDropDownItems
 	width: 148px;
 
 	box-shadow: 3px 3px 2px rgba(0, 0, 0, 0.3);
-	transition: opacity linear 0.5s, visibility linear 0.5s;
+	transition: opacity linear 0.3s, visibility linear 0.3s;
 }
 div.Ribbon div.RibbonCommand.Selected > div.RibbonDropDownItems
 {
@@ -840,4 +841,20 @@ div.Ribbon div.RibbonButtonCommandGroup div.RibbonButtonCommandGroupButton:first
 div.Ribbon div.RibbonButtonCommandGroup div.RibbonButtonCommandGroupButton:last-child:active a
 {
 	border-right-color: #c29b29;
+}
+
+div.Ribbon div.InlineContainer div.RibbonCommand div.RibbonDropDownItems
+{
+	bottom: inherit;
+	top: 30px;
+}
+div.Ribbon div.RibbonTabContent div.InlineContainer div.RibbonDropDownCommand > a > img.DropDownImage
+{
+	top: 10px;
+	right: 4px;
+	position: absolute;
+}
+div.Ribbon div.InlineContainer div.RibbonCommand.RibbonDropDownCommand > a
+{
+	padding-right: 8px;
 }

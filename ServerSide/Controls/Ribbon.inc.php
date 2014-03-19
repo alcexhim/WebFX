@@ -103,7 +103,76 @@
 				echo(" Disabled");
 			}
 			
-			if (get_class($command) == "WebFX\\Controls\\RibbonButtonCommand")
+			if (get_class($command) == "WebFX\\Controls\\RibbonDropDownCommand")
+			{
+				echo(" RibbonDropDownCommand");
+				echo("\">");
+				
+				$titleText = $command->Title;
+				$accessKey = null;
+				$iof = stripos($titleText, "&");
+				if ($iof !== false)
+				{
+					$titleTextBefore = substr($titleText, 0, $iof);
+					$titleTextAfter = substr($titleText, $iof . 2);
+					$accessKey = substr($titleText, $iof . 1, 1);
+					$titleText = $titleTextBefore . "<u>" . $accessKey . "</u>" . $titleTextAfter;
+				}
+
+				echo("<a ");
+
+				if ($accessKey != null)
+				{
+					echo(" data-accesskey=\"" . $accessKey . "\"");
+				}
+				if ($command->TargetURL != null)
+				{
+					echo(" href=\"" . System::ExpandRelativePath($command->TargetURL) . "\"");
+				}
+				else
+				{
+					echo(" href=\"#\"");
+				}
+				if ($command->TargetFrame != null)
+				{
+					echo(" target=\"" . $command->TargetFrame . "\"");
+				}
+
+				$onclickstr = "var ribbon = Ribbon.FromID('" . $this->ID . "'); ribbon.SetApplicationMenuVisible(false);";
+
+				$onclickstr .= "if (ribbon.IsCollapsed() && ribbon.IsOpened())";
+				$onclickstr .= "{ ribbon.SetOpened(false); };";
+				if ($command->TargetScript != null)
+				{
+					$onclickstr .= $command->TargetScript;
+				}
+				echo(" onclick=\"" . $onclickstr . "\"");
+				echo(">");
+
+				if ($command->ImageURL != null)
+				{
+					echo("<img class=\"Icon\" src=\"" . System::ExpandRelativePath($command->ImageURL) . "\" />");
+				}
+
+				echo("<span class=\"Text\">");
+				echo($titleText);
+				echo("</span>");
+
+				echo("<span class=\"SpacerText\">");
+				echo($titleText);
+				echo("</span>");
+
+				echo("</a>");
+				
+				echo("<div class=\"RibbonDropDownItems Ribbon_" . $this->ID . "_Commands_" . $command->ID . "_DropDownItems\">");
+				echo("<div class=\"ImageMarginBackground\">&nbsp;</div>");
+				foreach ($command->Commands as $item)
+				{
+					$this->RenderRibbonItem($item);
+				}
+				echo("</div>");
+			}
+			else if (get_class($command) == "WebFX\\Controls\\RibbonButtonCommand")
 			{
 				echo(" RibbonButtonCommand");
 				echo("\">");
@@ -378,9 +447,12 @@
 		
 		public $TargetURL;
 		public $TargetScript;
+		public $TargetFrame;
 		
 		public $ToolTipTitle;
 		public $ToolTipText;
+		
+		public $Selected;
 		
 		public function __construct($id, $title, $targetURL = null, $targetScript = null, $imageURL = null, $toolTipTitle = null, $toolTipText = null)
 		{
@@ -393,6 +465,18 @@
 			$this->ImageURL = $imageURL;
 			$this->ToolTipTitle = $toolTipTitle;
 			$this->ToolTipText = $toolTipText;
+		}
+	}
+	class RibbonDropDownCommand extends RibbonButtonCommand
+	{
+		public $Commands;
+		
+		public function __construct($id, $title, $targetURL = null, $targetScript = null, $imageURL = null, $toolTipTitle = null, $toolTipText = null, $commands = null)
+		{
+			parent::__construct($id, $title, $targetURL, $targetScript, $imageURL, $toolTipTitle, $toolTipText);
+			
+			if ($commands == null) $commands = array();
+			$this->Commands = $commands;
 		}
 	}
 	
