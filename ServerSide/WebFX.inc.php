@@ -30,6 +30,7 @@
 		public static $Configuration;
 		public static $IncludeFiles;
 		public static $EnableTenantedHosting;
+		public static $TenantName;
 		
 		public static function GetConfigurationValue($key, $defaultValue = null)
 		{
@@ -92,7 +93,16 @@
 		{
 			if (isset($_GET["virtualpath"]))
 			{
-				if ($_GET["virtualpath"] != null) return explode("/", $_GET["virtualpath"]);
+				if ($_GET["virtualpath"] != null)
+				{
+					$array = explode("/", $_GET["virtualpath"]);
+					if (System::$EnableTenantedHosting)
+					{
+						System::$TenantName = $array[0];
+						$array = array_shift($array);
+					}
+					return $array;
+				}
 			}
 			return array();
 		}
