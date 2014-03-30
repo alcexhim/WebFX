@@ -70,7 +70,7 @@
 			$torepl = System::GetConfigurationValue("Application.BasePath");
 			if (System::$EnableTenantedHosting)
 			{
-				if (System::$TenantName == "")
+				if (System::$TenantName != "")
 				{
 					$torepl .= "/" . System::$TenantName;
 				}
