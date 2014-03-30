@@ -99,7 +99,7 @@
 					if (System::$EnableTenantedHosting)
 					{
 						System::$TenantName = $array[0];
-						$array = array_shift($array);
+						array_shift($array);
 					}
 					return $array;
 				}
@@ -129,6 +129,19 @@
 			}
 			
 			$path = System::GetVirtualPath();
+			if (System::$EnableTenantedHosting && $path[0] == "")
+			{
+				$DefaultTenant = System::GetConfigurationValue("Application.DefaultTenant");
+				if ($DefaultTenant == "")
+				{
+					$retval = call_user_func(System::$ErrorEventHandler, new ErrorEventArgs("No tenant name was specified for this tenanted hosting application."));
+					return false;
+				}
+				else
+				{
+					System::Redirect("~/" . $DefaultTenant);
+				}
+			}
 			
 			if (is_callable(System::$BeforeLaunchEventHandler))
 			{
