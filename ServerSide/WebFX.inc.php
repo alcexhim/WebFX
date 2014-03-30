@@ -61,7 +61,8 @@
 		
 		public static function Redirect($path)
 		{
-			header("Location: " . System::ExpandRelativePath($path));
+			$realpath = System::ExpandRelativePath($path);
+			header("Location: " . $realpath);
 			return;
 		}
 		public static function ExpandRelativePath($path, $includeServerInfo = false)
@@ -69,7 +70,14 @@
 			$torepl = System::GetConfigurationValue("Application.BasePath");
 			if (System::$EnableTenantedHosting)
 			{
-				$torepl .= "/" . System::GetConfigurationValue("Application.DefaultTenant");
+				if (System::$TenantName == "")
+				{
+					$torepl .= "/" . System::$TenantName;
+				}
+				else
+				{
+					$torepl .= "/" . System::GetConfigurationValue("Application.DefaultTenant");
+				}
 			}
 			
 			$retval = str_replace("~", $torepl, $path);
@@ -129,7 +137,7 @@
 			}
 			
 			$path = System::GetVirtualPath();
-			if (System::$EnableTenantedHosting && $path[0] == "")
+			if (System::$EnableTenantedHosting && System::$TenantName == "")
 			{
 				$DefaultTenant = System::GetConfigurationValue("Application.DefaultTenant");
 				if ($DefaultTenant == "")
@@ -139,7 +147,8 @@
 				}
 				else
 				{
-					System::Redirect("~/" . $DefaultTenant);
+					System::$TenantName = $DefaultTenant;
+					System::Redirect("~/");
 				}
 			}
 			
