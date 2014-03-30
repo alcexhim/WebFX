@@ -29,6 +29,7 @@
 	{
 		public static $Configuration;
 		public static $IncludeFiles;
+		public static $EnableTenantedHosting;
 		
 		public static function GetConfigurationValue($key, $defaultValue = null)
 		{
@@ -64,7 +65,13 @@
 		}
 		public static function ExpandRelativePath($path, $includeServerInfo = false)
 		{
-			$retval = str_replace("~", System::$Configuration["Application.BasePath"], $path);
+			$torepl = System::GetConfigurationValue("Application.BasePath");
+			if (System::$EnableTenantedHosting)
+			{
+				$torepl .= "/" . System::GetConfigurationValue("Application.DefaultTenant");
+			}
+			
+			$retval = str_replace("~", $torepl, $path);
 			if ($includeServerInfo)
 			{
 				// from http://stackoverflow.com/questions/6768793/php-get-the-full-url
@@ -280,6 +287,8 @@
 	require("WebPageVariable.inc.php");
 	
 	System::$Configuration = array();
+	System::$EnableTenantedHosting = false;
+	
 	System::$IncludeFiles = array();
 	System::$Modules = array();
 	System::$ErrorEventHandler = function($e)
