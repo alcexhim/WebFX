@@ -29,6 +29,8 @@
 	{
 		public static $Configuration;
 		public static $IncludeFiles;
+		public static $EnableTenantedHosting;
+		public static $TenantName;
 		
 		public static function GetConfigurationValue($key, $defaultValue = null)
 		{
@@ -59,12 +61,26 @@
 		
 		public static function Redirect($path)
 		{
-			header("Location: " . System::ExpandRelativePath($path));
+			$realpath = System::ExpandRelativePath($path);
+			header("Location: " . $realpath);
 			return;
 		}
 		public static function ExpandRelativePath($path, $includeServerInfo = false)
 		{
-			$retval = str_replace("~", System::$Configuration["Application.BasePath"], $path);
+			$torepl = System::GetConfigurationValue("Application.BasePath");
+			if (System::$EnableTenantedHosting)
+			{
+				if (System::$TenantName != "")
+				{
+					$torepl .= "/" . System::$TenantName;
+				}
+				else
+				{
+					$torepl .= "/" . System::GetConfigurationValue("Application.DefaultTenant");
+				}
+			}
+			
+			$retval = str_replace("~", $torepl, $path);
 			if ($includeServerInfo)
 			{
 				// from http://stackoverflow.com/questions/6768793/php-get-the-full-url
@@ -85,7 +101,16 @@
 		{
 			if (isset($_GET["virtualpath"]))
 			{
-				if ($_GET["virtualpath"] != null) return explode("/", $_GET["virtualpath"]);
+				if ($_GET["virtualpath"] != null)
+				{
+					$array = explode("/", $_GET["virtualpath"]);
+					if (System::$EnableTenantedHosting)
+					{
+						System::$TenantName = $array[0];
+						array_shift($array);
+					}
+					return $array;
+				}
 			}
 			return array();
 		}
@@ -112,6 +137,20 @@
 			}
 			
 			$path = System::GetVirtualPath();
+			if (System::$EnableTenantedHosting && System::$TenantName == "")
+			{
+				$DefaultTenant = System::GetConfigurationValue("Application.DefaultTenant");
+				if ($DefaultTenant == "")
+				{
+					$retval = call_user_func(System::$ErrorEventHandler, new ErrorEventArgs("No tenant name was specified for this tenanted hosting application."));
+					return false;
+				}
+				else
+				{
+					System::$TenantName = $DefaultTenant;
+					System::Redirect("~/");
+				}
+			}
 			
 			if (is_callable(System::$BeforeLaunchEventHandler))
 			{
@@ -280,6 +319,8 @@
 	require("WebPageVariable.inc.php");
 	
 	System::$Configuration = array();
+	System::$EnableTenantedHosting = false;
+	
 	System::$IncludeFiles = array();
 	System::$Modules = array();
 	System::$ErrorEventHandler = function($e)
