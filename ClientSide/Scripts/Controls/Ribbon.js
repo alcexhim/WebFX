@@ -4,7 +4,7 @@
 	this.ID = id;
 	this.ParentElement = parent;
 
-	SlickUI.AddEventListener(parent, SlickUI.Events.MouseWheel, function(e)
+	WebFramework.AddEventListener(parent, WebFramework.Events.MouseWheel, function(e)
 	{
 		if (e.Delta > 0)
 		{
@@ -88,11 +88,11 @@
 
 		if (tab == null)
 		{
-			// SlickUI.ClearClientProperty(this.ID, "ActiveTabID");
+			// WebFramework.ClearClientProperty(this.ID, "ActiveTabID");
 		}
 		else
 		{
-			SlickUI.SetClientProperty(this.ID, "ActiveTabID", tab.attributes["data-tab-id"].value);
+			WebFramework.SetClientProperty(this.ID, "ActiveTabID", tab.attributes["data-tab-id"].value);
 		}
 	};
 
@@ -164,7 +164,7 @@
 			}
 		}
 
-		SlickUI.SetClientProperty(this.ID, "Collapsed", value);
+		WebFramework.SetClientProperty(this.ID, "Collapsed", value);
 	};
 	this.SetApplicationMenuVisible = function (value)
 	{
@@ -205,7 +205,7 @@
 		return null;
 	};
 
-	SlickUI.AddEventListener(applicationButton, SlickUI.Events.MouseClick, function (e)
+	WebFramework.AddEventListener(applicationButton, WebFramework.Events.MouseClick, function (e)
 	{
 		if (applicationButton.className == "ApplicationButton")
 		{
@@ -426,11 +426,7 @@ window.addEventListener("mousedown", function (e)
 
 	if (!TerminateIfSenderIs(sender, ["RibbonDropDownCommand"]))
 	{
-		var RibbonDropDownItems = document.getElementsByClassName("RibbonDropDownCommand");
-		for (var i = 0; i < RibbonDropDownItems.length; i++)
-		{
-			RibbonDropDownItems[i].classList.remove("Selected");
-		}
+		Ribbon.CloseAllRibbonDropDownMenus();
 	}
 });
 Ribbon.FromID = function (id)
@@ -440,6 +436,14 @@ Ribbon.FromID = function (id)
 		if (Ribbons[i].ID == id) return Ribbons[i];
 	}
 	return null;
+};
+Ribbon.CloseAllRibbonDropDownMenus = function()
+{
+	var RibbonDropDownItems = document.getElementsByClassName("RibbonDropDownCommand");
+	for (var i = 0; i < RibbonDropDownItems.length; i++)
+	{
+		RibbonDropDownItems[i].classList.remove("Selected");
+	}
 };
 Ribbon.CurrentContextHelpURL = "";
 Ribbon.CurrentContextHelpTargetName = "_blank";
@@ -497,6 +501,7 @@ function RibbonDropDownCommand(id)
 		{
 			case true:
 			{
+				Ribbon.CloseAllRibbonDropDownMenus();
 				var rbc_array = document.getElementsByClassName(this.ID);
 				for (var i = 0; i < rbc_array.length; i++)
 				{

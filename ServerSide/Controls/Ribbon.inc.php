@@ -119,6 +119,7 @@
 					$titleText = $titleTextBefore . "<u>" . $accessKey . "</u>" . $titleTextAfter;
 				}
 
+				echo("<script type=\"text/javascript\">var " . $command->ID . " = new RibbonDropDownCommand('Ribbon_" . $this->ID . "_Commands_" . $command->ID . "');</script>");
 				echo("<a ");
 
 				if ($accessKey != null)
@@ -142,10 +143,13 @@
 
 				$onclickstr .= "if (ribbon.IsCollapsed() && ribbon.IsOpened())";
 				$onclickstr .= "{ ribbon.SetOpened(false); };";
+				$onclickstr .= $command->ID . ".ToggleSelected();";
+				/*
 				if ($command->TargetScript != null)
 				{
 					$onclickstr .= $command->TargetScript;
 				}
+				*/
 				echo(" onclick=\"" . $onclickstr . "\"");
 				echo(">");
 
@@ -161,6 +165,8 @@
 				echo("<span class=\"SpacerText\">");
 				echo($titleText);
 				echo("</span>");
+
+				echo("<img class=\"DropDownImage\" src=\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAECAYAAABGM/VAAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH3gMNCw0c/NC4EQAAAB1pVFh0Q29tbWVudAAAAAAAQ3JlYXRlZCB3aXRoIEdJTVBkLmUHAAAAR0lEQVQI12P0Saj6z4AGmBZMbEARWDCxgYHhzrMvDG8+/vrvk1D1/83HX//vPPvCwHjn2RcGBgYGBgFutv8fvv5iZGBgYAAAlbYbf1Hz7NoAAAAASUVORK5CYII=\" />");
 
 				echo("</a>");
 				
@@ -188,7 +194,8 @@
 					$titleText = $titleTextBefore . "<u>" . $accessKey . "</u>" . $titleTextAfter;
 				}
 
-				echo("<a class=\"RibbonButtonCommand \" ");
+				echo("<script type=\"text/javascript\">var " . $command->ID . " = new RibbonButtonCommand('Ribbon_" . $this->ID . "_Commands_" . $command->ID . "');</script>");
+				echo("<a ");
 
 				if ($accessKey != null)
 				{
