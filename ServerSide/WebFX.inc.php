@@ -130,6 +130,8 @@
 		
 		public static function Launch()
 		{
+			$webfx_files = glob($
+		
 			if (!is_array(System::$Modules) || count(System::$Modules) == 0)
 			{
 				$retval = call_user_func(System::$ErrorEventHandler, new ErrorEventArgs("There are no modules configured for this WebFX application."));
@@ -377,6 +379,7 @@
 	}
 	
 	require_once("DataFX/DataFX.inc.php");
+	require_once("PDO.inc.php");
 	
 	session_start();
 ?>
