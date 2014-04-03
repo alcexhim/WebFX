@@ -130,8 +130,9 @@
 		
 		public static function Launch()
 		{
-			$webfx_files = glob($
-		
+			global $RootPath;
+			$webfx_files = glob($RootPath . "/Include/Pages/*.wfx");
+			
 			if (!is_array(System::$Modules) || count(System::$Modules) == 0)
 			{
 				$retval = call_user_func(System::$ErrorEventHandler, new ErrorEventArgs("There are no modules configured for this WebFX application."));
