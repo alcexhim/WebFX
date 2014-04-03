@@ -5,10 +5,10 @@
 		public function __construct()
 		{
 			$engine = 'mysql';
-			$host = 'localhost';
-			$database = '';
-			$user = 'root';
-			$pass = '';
+			$host = System::GetConfigurationValue("Database.ServerName");
+			$database = System::GetConfigurationValue("Database.DatabaseName");
+			$user = System::GetConfigurationValue("Database.UserName");
+			$pass = System::GetConfigurationValue("Database.Password");
 			
 			$dns = $engine . ':dbname=' . $database . ";host=" . $host;
 			
