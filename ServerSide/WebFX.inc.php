@@ -1,11 +1,16 @@
 <?php
 	namespace WebFX;
 	
+	/*
 	function wfx_exception_error_handler($errno, $errstr, $errfile, $errline)
 	{
-		throw new ErrorException($errstr, 0, $errno, $errfile, $errline);
+		echo("filename: \"" . $errfile . "\":" . $errline . "\n");
+		echo($errstr);
+		die();
+		// throw new \ErrorException($errstr, 0, $errno, $errfile, $errline);
 	}
 	set_error_handler("WebFX\\wfx_exception_error_handler");
+	*/
 	
 	use WebFX\Pages\ErrorPage;
 
