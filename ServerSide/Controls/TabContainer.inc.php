@@ -30,6 +30,7 @@
 	
 	class TabContainer extends WebControl
 	{
+		public $CurrentTab;
 		public $TabPages;
 		
 		protected function RenderContent()
