@@ -33,6 +33,22 @@
 		public $CurrentTab;
 		public $TabPages;
 		
+		public function GetTabByID($id)
+		{
+			foreach ($this->TabPages as $tabPage)
+			{
+				if ($tabPage->ID == $id) return $tabPage;
+			}
+			return null;
+		}
+		
+		protected function Initialize()
+		{
+			$oldtab = $this->CurrentTab;
+			$this->CurrentTab = $this->GetTabByID($this->GetClientProperty("SelectedTabID"));
+			if ($this->CurrentTab == null) $this->CurrentTab = $oldtab;
+		}
+		
 		protected function RenderContent()
 		{
 ?>
@@ -43,7 +59,7 @@
 				{
 				?>
 					<a id="TabContainer_<?php echo($this->ID); ?>_Tabs_<?php echo($tabPage->ID); ?>_Tab" class="Tab<?php
-					if ($tabPage == $this->CurrentTab)
+					if ($tabPage->ID == $this->CurrentTab->ID)
 					{
 						echo (" Selected");
 					} ?>" onclick="<?php echo($this->ID); ?>.SetSelectedTab('<?php echo($tabPage->ID); ?>');"><?php echo($tabPage->Title); ?></a>
@@ -75,7 +91,14 @@
 				?>
 				</div>
 			</div>
-			<script type="text/javascript">var <?php echo($this->ID); ?> = new TabContainer("<?php echo($this->ID); ?>");</script>
+			<script type="text/javascript">
+				var <?php echo($this->ID); ?> = new TabContainer("<?php echo($this->ID); ?>");<?php
+				if ($this->CurrentTab != null)
+				{
+					echo($this->ID . ".SetSelectedTab('" . $this->CurrentTab->ID . "');");
+				}
+				?>
+			</script>
 			<?php
 		}
 	}

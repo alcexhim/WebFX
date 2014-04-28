@@ -20,5 +20,7 @@ function TabContainer(id)
 		
 		tab.className = "Tab Selected";
 		tabPage.className = "TabPage Selected";
+		
+		WebFramework.SetClientProperty(this.ID, "SelectedTabID", tabName);
 	};
 }
