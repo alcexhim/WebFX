@@ -33,6 +33,8 @@
 		public $CurrentTab;
 		public $TabPages;
 		
+		public $OnClientTabChanged;
+		
 		public function GetTabByID($id)
 		{
 			foreach ($this->TabPages as $tabPage)
@@ -52,7 +54,7 @@
 		protected function RenderContent()
 		{
 ?>
-			<div class="TabContainer" id="TabContainer_<?php echo($this->ID); ?>">
+			<div class="TabContainer" id="TabContainer_<?php echo($this->ID); ?>" data-onclienttabchanged="<?php echo($this->OnClientTabChanged); ?>">
 				<div class="Tabs" id="TabContainer_<?php echo($this->ID); ?>_Tabs">
 				<?php
 				foreach ($this->TabPages as $tabPage)

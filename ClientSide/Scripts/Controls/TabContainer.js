@@ -1,8 +1,10 @@
 function TabContainer(id)
 {
 	this.ID = id;
+	this.SelectedTabID = null;
 	this.SetSelectedTab = function(tabName)
 	{
+		var tabContainer = document.getElementById("TabContainer_" + this.ID);
 		var tab = document.getElementById("TabContainer_" + this.ID + "_Tabs_" + tabName + "_Tab");
 		var tabPage = document.getElementById("TabContainer_" + this.ID + "_TabPages_" + tabName + "_TabPage");
 		
@@ -22,5 +24,15 @@ function TabContainer(id)
 		tabPage.className = "TabPage Selected";
 		
 		WebFramework.SetClientProperty(this.ID, "SelectedTabID", tabName);
+		
+		this.SelectedTabID = tabName;
+		if (tabContainer != null)
+		{
+			var attOnClientTabChanged = tabContainer.attributes["data-onclienttabchanged"];
+			if (attOnClientTabChanged != null)
+			{
+				eval(attOnClientTabChanged.value);
+			}
+		}
 	};
 }
