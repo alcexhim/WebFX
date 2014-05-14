@@ -1,4 +1,14 @@
-div.InstanceEditor div.InstanceList > a
+div.InstanceEditor
 {
-	display: block;
+	div.InstanceList > a
+	{
+		display: block;
+	}
+	&.ReadOnly
+	{
+		input[type=text]
+		{
+			display: none;
+		}
+	}
 }
