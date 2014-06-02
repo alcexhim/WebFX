@@ -390,6 +390,13 @@
 		include_once($filename);
 	}
 	
+	// Local Module Pages loader
+	$a = glob($RootPath . "/Include/Modules/*/Pages/*.inc.php");
+	foreach ($a as $filename)
+	{
+		include_once($filename);
+	}
+	
 	require_once("DataFX/DataFX.inc.php");
 	require_once("PDO.inc.php");
 	
