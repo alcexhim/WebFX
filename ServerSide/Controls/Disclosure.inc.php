@@ -1,6 +1,7 @@
 <?php
 	namespace WebFX\Controls;
-	use System;
+	
+	use WebFX\System;
 	use WebFX\WebControl;
 	
 	class Disclosure extends WebControl
@@ -17,14 +18,15 @@
 		
 		protected function BeforeContent()
 		{
-			echo("<div class=\"Disclosure\">");
-			echo("<div class=\"Title\"><a href=\"#\" onclick=\"" . $this->ID . ".ToggleExpanded();\"><span class=\"DisclosureButton\">&nbsp;</span> <span class=\"Title\">" . $this->Title . "</span></div>");
+			echo("<div class=\"Disclosure\" id=\"Disclosure_" . $this->ID . "\">");
+			echo("<div class=\"Title\"><a href=\"#\" onclick=\"" . $this->ID . ".ToggleExpanded();\"><span class=\"DisclosureButton\">&nbsp;</span> <span class=\"Title\">" . $this->Title . "</span></a></div>");
 			echo("<div class=\"Content\">");
 		}
 		protected function AfterContent()
 		{
 			echo("</div>");
 			echo("</div>");
+			echo("<script type=\"text/javascript\">var " . $this->ID . " = new Disclosure(\"" . $this->ID . "\");</script>");
 		}
 	}
 ?>

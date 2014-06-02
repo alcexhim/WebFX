@@ -191,6 +191,7 @@
 			$this->OutputHeaderScript(new WebScript(System::$Configuration["WebFramework.StaticPath"] . "/dropins/WebFramework/Scripts/WindowDimensions.js"));
 			
 			$this->OutputHeaderScript(new WebScript(System::$Configuration["WebFramework.StaticPath"] . "/dropins/WebFramework/Scripts/Controls/CodeEditor.js"));
+			$this->OutputHeaderScript(new WebScript(System::$Configuration["WebFramework.StaticPath"] . "/dropins/WebFramework/Scripts/Controls/Disclosure.js"));
 			$this->OutputHeaderScript(new WebScript(System::$Configuration["WebFramework.StaticPath"] . "/dropins/WebFramework/Scripts/Controls/DropDown.js"));
 			$this->OutputHeaderScript(new WebScript(System::$Configuration["WebFramework.StaticPath"] . "/dropins/WebFramework/Scripts/Controls/FlyoutTabContainer.js"));
 			$this->OutputHeaderScript(new WebScript(System::$Configuration["WebFramework.StaticPath"] . "/dropins/WebFramework/Scripts/Controls/Menu.js"));
