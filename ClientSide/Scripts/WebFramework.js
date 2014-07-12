@@ -60,6 +60,48 @@ var Page =
 
 var WebFramework =
 {
+	"EnterFullScreen": function(element)
+	{
+		if (element.requestFullscreen)
+		{
+			// The HTML5 way
+			element.requestFullscreen();
+		}
+		else if (element.webkitRequestFullscreen)
+		{
+			// The WebKit (safari/chrome) way
+			element.webkitRequestFullscreen();
+		}
+		else if (element.mozRequestFullScreen)
+		{
+			// The Firefox way
+			element.mozRequestFullScreen();
+		}
+		else if (element.msRequestFullscreen)
+		{
+			// The Internet Explorer way
+			element.msRequestFullscreen();
+		}
+	},
+	"ExitFullScreen": function()
+	{
+		if (document.exitFullscreen)
+		{
+			document.exitFullscreen();
+		}
+		else if (document.webkitExitFullscreen)
+		{
+			document.webkitExitFullscreen();
+		}
+		else if (document.mozCancelFullScreen)
+		{
+			document.mozCancelFullScreen();
+		}
+		else if (document.msExitFullscreen)
+		{
+			document.msExitFullscreen();
+		}
+	},
 	"Events":
 	{
 		"MouseClick":
