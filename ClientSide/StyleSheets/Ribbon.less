@@ -670,8 +670,6 @@ div.Ribbon div.RibbonDropDownItems div.RibbonCommand a > span.SpacerText
 	text-align: left;
 	margin-left: 30px;
 	margin-right: 4px;
-	max-width: 120px;
-	width: auto;
 	top: 4px;
 }
 div.Ribbon div.InlineContainer div.RibbonCommand a > span.SpacerText,
@@ -694,13 +692,13 @@ div.Ribbon div.RibbonCommand div.RibbonDropDownItems
 
 	position: absolute;
 	left: 0px;
-	bottom: -80px;
+	top: 78px;
 	z-index: 2;
 
 	max-width: none;
 	opacity: 0;
 	visibility: hidden;
-	width: 148px;
+	min-width: 148px;
 
 	box-shadow: 3px 3px 2px rgba(0, 0, 0, 0.3);
 	transition: opacity linear 0.3s, visibility linear 0.3s;
