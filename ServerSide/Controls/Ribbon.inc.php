@@ -172,7 +172,7 @@
 				
 				echo("<div class=\"RibbonDropDownItems Ribbon_" . $this->ID . "_Commands_" . $command->ID . "_DropDownItems\">");
 				echo("<div class=\"ImageMarginBackground\">&nbsp;</div>");
-				foreach ($command->Commands as $item)
+				foreach ($command->Items as $item)
 				{
 					$this->RenderRibbonItem($item);
 				}
@@ -476,14 +476,14 @@
 	}
 	class RibbonDropDownCommand extends RibbonButtonCommand
 	{
-		public $Commands;
+		public $Items;
 		
 		public function __construct($id, $title, $targetURL = null, $targetScript = null, $imageURL = null, $toolTipTitle = null, $toolTipText = null, $commands = null)
 		{
 			parent::__construct($id, $title, $targetURL, $targetScript, $imageURL, $toolTipTitle, $toolTipText);
 			
 			if ($commands == null) $commands = array();
-			$this->Commands = $commands;
+			$this->Items = $commands;
 		}
 	}
 	
