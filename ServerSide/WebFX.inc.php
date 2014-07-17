@@ -42,6 +42,7 @@
 		public static $IncludeFiles;
 		public static $EnableTenantedHosting;
 		public static $TenantName;
+		public static $UnspecifiedTenantErrorHandler;
 		
 		public static function GetConfigurationValue($key, $defaultValue = null)
 		{
@@ -156,7 +157,7 @@
 				$DefaultTenant = System::GetConfigurationValue("Application.DefaultTenant");
 				if ($DefaultTenant == "")
 				{
-					$retval = call_user_func(System::$ErrorEventHandler, new ErrorEventArgs("No tenant name was specified for this tenanted hosting application."));
+					$retval = call_user_func(System::$UnspecifiedTenantErrorHandler);
 					return false;
 				}
 				else
@@ -337,6 +338,10 @@
 	
 	System::$IncludeFiles = array();
 	System::$Modules = array();
+	System::$UnspecifiedTenantErrorHandler = function()
+	{
+		return call_user_func(System::$ErrorEventHandler, new ErrorEventArgs("No tenant name was specified for this tenanted hosting application."));
+	};
 	System::$ErrorEventHandler = function($e)
 	{
 		echo($e->Message);
