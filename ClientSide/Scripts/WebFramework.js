@@ -60,6 +60,57 @@ var Page =
 
 var WebFramework =
 {
+	"EventHandler": function()
+	{
+		this._functions = new Array();
+		this.Add = function (func)
+		{
+			this._functions.push(func);
+		};
+		this.Execute = function()
+		{
+			for (var i = 0; i < this._functions.length; i++)
+			{
+				var retval = this._functions[i]();
+				if (!retval) return false;
+			}
+			return true;
+		};
+	},
+	"MouseButtons":
+	{
+		"Left": 0,
+		"Middle": 1,
+		"Right": 2
+	},
+	"KeyboardKeys":
+	{
+		"Escape": 27,
+		"F1": 112
+	},
+	"TerminateIfSenderIs": function(sender, compareTo)
+	{
+		while (sender != null)
+		{
+			if (sender.classList)
+			{
+				for (var i = 0; i < compareTo.length; i++)
+				{
+					if (sender.classList.contains(compareTo[i]))
+					{
+						// do not close the popup when we click inside itself
+						// e.preventDefault();
+						// e.stopPropagation();
+						// alert(compareTo[i] + " = " + sender.className + " ? true ");
+						return true;
+					}
+				}
+			}
+			sender = sender.parentNode;
+			if (sender == null) break;
+		}
+		return false;
+	},
 	"EnterFullScreen": function(element)
 	{
 		if (element.requestFullscreen)
