@@ -17,6 +17,11 @@
 		public $HorizontalAlignment;
 		public $VerticalAlignment;
 		
+		public $ClassList;
+		public $TagName;
+		public $Attributes;
+		public $StyleRules;
+		
 		private static function GenerateRandomString($valid_chars, $length)
 		{
 			// start with an empty random string
@@ -51,6 +56,11 @@
 			$this->Visible = true;
 			$this->HorizontalAlignment = HorizontalAlignment::Inherit;
 			$this->VerticalAlignment = VerticalAlignment::Inherit;
+			
+			$this->TagName = null;
+			$this->ClassList = array();
+			$this->Attributes = array();
+			$this->StyleRules = array();
 		}
 		
 		public function GetClientProperty($name, $defaultValue = null)
@@ -81,6 +91,80 @@
             
         }
 		
+		protected function RenderBeginTag()
+		{
+			if ($this->TagName != "")
+			{
+				echo("<" . $this->TagName);
+				
+				$styleAttributeContent = "";
+				$classAttributeContent = "";
+				if (count($this->Attributes) > 0)
+				{
+					$count = count($this->Attributes);
+					$i = 0;
+					foreach ($this->Attributes as $attr)
+					{
+						if (strtolower($attr->Name) == "style")
+						{
+							$styleAttributeContent .= $attr->Value . "; ";
+						}
+						else if (strtolower($attr->Name) == "class")
+						{
+							$classAttributeContent .= $attr->Value . " ";
+						}
+						else
+						{
+							echo($attr->Name);
+							echo("=\"");
+							echo($attr->Value);
+							echo("\"");
+							if ($i < $count - 1) echo(" ");
+						}
+						$i++;
+					}
+				}
+				if (count($this->StyleRules) > 0 || $styleAttributeContent != "")
+				{
+					echo(" style=\"");
+					echo($styleAttributeContent);
+					$count = count($this->StyleRules);
+					$i = 0;
+					foreach ($this->StyleRules as $rule)
+					{
+						echo($rule->Name);
+						echo(": ");
+						echo($rule->Value);
+						echo(";");
+						if ($i < $count - 1) echo(" ");
+						$i++;
+					}
+					echo("\"");
+				}
+				if (count($this->ClassList) > 0)
+				{
+					$count = count($this->ClassList);
+					for ($i = 0; $i < $count; $i++)
+					{
+						$classAttributeContent .= $this->ClassList[$i];
+						if ($i < $count - 1) $classAttributeContent .= " ";
+					}
+				}
+				if ($classAttributeContent != "")
+				{
+					echo(" class=\"" . $classAttributeContent . "\"");
+				}
+				echo(">");
+			}
+		}
+		protected function RenderEndTag()
+		{
+			if ($this->TagName != "")
+			{
+				echo("</" . $this->TagName . ">");
+			}
+		}
+		
 		public function BeginContent()
 		{
             if (!$this->isInitialized)
@@ -88,11 +172,13 @@
                 $this->Initialize();
                 $this->isInitialized = true;
             }
+			$this->RenderBeginTag();
             $this->BeforeContent();
 		}
 		public function EndContent()
 		{
             $this->AfterContent();
+			$this->RenderEndTag();
 		}
         
         public function Render()
