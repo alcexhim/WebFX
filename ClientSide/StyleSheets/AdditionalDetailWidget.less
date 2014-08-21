@@ -5,6 +5,7 @@ div.AdditionalDetailWidget
 	{
 		display: block;
 		position: absolute;
+		z-index: 5;
 
 		padding: 8px;
 
@@ -21,6 +22,14 @@ div.AdditionalDetailWidget
 			padding-bottom: 8px;
 			margin-bottom: 8px;
 			padding-right: 16px;
+		}
+		&> div.MenuItems, &> div.PreviewContent
+		{
+			display: table-cell;
+		}
+		&> div.MenuItems.Empty
+		{
+			display: none;
 		}
 		&> div.PreviewContent > div.Header
 		{
@@ -47,14 +56,6 @@ div.AdditionalDetailWidget
 		display: none;
 	}
 	
-	&> div.MenuItems, &> div.PreviewContent
-	{
-		display: table-cell;
-	}
-	&> div.MenuItems.Empty
-	{
-		display: none;
-	}
 	&> a.AdditionalDetailButton
 	{
 		display: inline-block;
