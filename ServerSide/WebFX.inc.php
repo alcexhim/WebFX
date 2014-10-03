@@ -145,12 +145,6 @@
 			global $RootPath;
 			$webfx_files = glob($RootPath . "/Include/Pages/*.wfx");
 			
-			if (!is_array(System::$Modules) || count(System::$Modules) == 0)
-			{
-				$retval = call_user_func(System::$ErrorEventHandler, new ErrorEventArgs("There are no modules configured for this WebFX application."));
-				return false;
-			}
-			
 			$path = System::GetVirtualPath();
 			if (System::$EnableTenantedHosting && System::$TenantName == "")
 			{
@@ -171,6 +165,12 @@
 			{
 				$retval = call_user_func(System::$BeforeLaunchEventHandler, $path);
 				if (!$retval) return false;
+			}
+			
+			if (!is_array(System::$Modules) || count(System::$Modules) == 0)
+			{
+				$retval = call_user_func(System::$ErrorEventHandler, new ErrorEventArgs("There are no modules configured for this WebFX application."));
+				return false;
 			}
 			
 			$success = false;
