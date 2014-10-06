@@ -4,6 +4,8 @@
     class WebControl
     {
 		public $ID;
+		public $ClientID;
+		
 		public $Top;
 		public $Left;
 		public $Width;
@@ -124,13 +126,36 @@
 						$i++;
 					}
 				}
-				if (count($this->StyleRules) > 0 || $styleAttributeContent != "")
+				
+				$styleRules = $this->StyleRules;
+				if (!$this->Visible)
+				{
+					$styleRules[] = new WebStyleSheetRule("display", "none");
+				}
+				if ($this->Width != null)
+				{
+					$styleRules[] = new WebStyleSheetRule("width", $this->Width);
+				}
+				if ($this->Height != null)
+				{
+					$styleRules[] = new WebStyleSheetRule("height", $this->Height);
+				}
+				if ($this->MaximumWidth != null)
+				{
+					$styleRules[] = new WebStyleSheetRule("max-width", $this->MaximumWidth);
+				}
+				if ($this->MaximumHeight != null)
+				{
+					$styleRules[] = new WebStyleSheetRule("max-height", $this->MaximumHeight);
+				}
+				
+				if (count($styleRules) > 0 || $styleAttributeContent != "")
 				{
 					echo(" style=\"");
 					echo($styleAttributeContent);
-					$count = count($this->StyleRules);
+					$count = count($styleRules);
 					$i = 0;
-					foreach ($this->StyleRules as $rule)
+					foreach ($styleRules as $rule)
 					{
 						echo($rule->Name);
 						echo(": ");
@@ -153,6 +178,15 @@
 				if ($classAttributeContent != "")
 				{
 					echo(" class=\"" . $classAttributeContent . "\"");
+				}
+				
+				if ($this->ClientID != null)
+				{
+					echo(" id=\"" . $this->ClientID . "\"");
+				}
+				else if ($this->ID != null)
+				{
+					echo(" id=\"" . $this->ID . "\"");
 				}
 				echo(">");
 			}

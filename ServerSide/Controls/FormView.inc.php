@@ -7,16 +7,24 @@
 		
 		protected function RenderContent()
 		{
-			echo("<table class=\"FormView\">");
+			echo("<div class=\"FormView\">");
 			foreach ($this->Items as $item)
 			{
-				echo("<tr");
-				if ($item->Required) echo(" class=\"Required\"");
-				echo(">");
-				echo("<td>");
+				echo("<div class=\"Field ");
+				switch (get_class($item))
+				{
+					case 'WebFX\Controls\FormViewItemText':
+					{
+						echo("Text");
+					}
+					case 'WebFX\Controls\FormViewItemMemo':
+					{
+						echo("Memo");
+					}
+				}
+				if ($item->Required) echo(" Required");
+				echo("\">");
 				echo("<label for=\"" . $item->ID . "\">" . $item->Title . "</label>");
-				echo("</td>");
-				echo("<td>");
 				switch (get_class($item))
 				{
 					case 'WebFX\Controls\FormViewItemText':
@@ -47,10 +55,9 @@
 						break;
 					}
 				}
-				echo("</td>");
-				echo("</tr>");
+				echo("</div>");
 			}
-			echo("</table>");
+			echo("</div>");
 		}
 	}
 	

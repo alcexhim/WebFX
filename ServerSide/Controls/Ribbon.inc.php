@@ -29,6 +29,25 @@
 			$this->HelpButton = new RibbonHelpButtonSettings();
 			$this->Commands = array();
 			$this->Tabs = array();
+			
+			$this->TagName = "div";
+		}
+		
+		public function GetCommandByID($id)
+		{
+			foreach ($this->Commands as $command)
+			{
+				if ($command->ID == $id) return $command;
+			}
+			return null;
+		}
+		public function GetTabByID($id)
+		{
+			foreach ($this->Tabs as $tab)
+			{
+				if ($tab->ID === $id) return $tab;
+			}
+			return null;
 		}
 		
 		protected function Initialize()
@@ -61,22 +80,6 @@
 			echo($tab->Title);
 
 			echo("</a>");
-		}
-		private function GetCommandByID($id)
-		{
-			foreach ($this->Commands as $command)
-			{
-				if ($command->ID == $id) return $command;
-			}
-			return null;
-		}
-		private function GetTabByID($id)
-		{
-			foreach ($this->Tabs as $tab)
-			{
-				if ($tab->ID === $id) return $tab;
-			}
-			return null;
 		}
 		private function RenderRibbonItem($item)
 		{
@@ -264,7 +267,6 @@
 		
 		protected function RenderContent()
 		{
-			echo("<div class=\"RibbonContainer\">");
 			if ($this->Title != null || $this->ImageURL != null)
 			{
 				echo("<div class=\"RibbonTitleBar\">");
@@ -392,8 +394,18 @@
 			echo("</div>");
 			echo("<div id=\"Ribbon_" . $this->ID . "_Spacer\" class=\"RibbonSpacer");
 			if ($this->Collapsed) echo(" Collapsed");
-			echo("\"></div>");
-
+			echo("\">");
+		}
+		protected function RenderBeginTag()
+		{
+			parent::RenderBeginTag();
+			echo("<div class=\"RibbonContainer\">");
+		}
+		protected function RenderEndTag()
+		{
+			parent::RenderEndTag();
+			echo("</div>");
+			
 			echo("<div class=\"RibbonTooltip\" id=\"Tooltip\"><div class=\"Title\" id=\"Tooltip_Title\"></div><div class=\"Content\" id=\"Tooltip_Content\"></div><div class=\"ContextHelp\" id=\"Tooltip_ContextHelp\"><span class=\"Separator\">&nbsp;</span><div class=\"Content\">Press F1 for more help.</div></div></div>");
 		}
 	}
@@ -420,6 +432,15 @@
 			$this->ToolTipTitle = $tooltipTitle;
 			$this->ToolTipText = $tooltipText;
 			$this->Visible = $visible;
+		}
+		
+		public function GetTabGroupByID($id)
+		{
+			foreach ($this->Groups as $group)
+			{
+				if ($group->ID == $id) return $group;
+			}
+			return null;
 		}
 	}
 	class RibbonTabGroup

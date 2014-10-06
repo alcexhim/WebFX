@@ -8,13 +8,22 @@ div.FormView
 		display: table-row;
 		width: -moz-available;
 		
-		label, input
+		label
+		{
+			width: 96px;
+		}
+		label, input, textarea
 		{
 			display: table-cell;
 		}
-		input
+		input, textarea
 		{
 			width: -moz-available;
+		}
+		
+		&.Memo label
+		{
+			vertical-align: top;
 		}
 	}
 }
