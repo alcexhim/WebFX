@@ -1,8 +1,28 @@
 <?php
 	namespace WebFX\Controls;
 	
+	use WebFX\System;
+	
 	class Wunderbar extends \WebFX\WebControl
 	{
+		public $Items;
+		public $SelectedItem;
+		
+		public function __construct($id)
+		{
+			$this->ID = $id;
+			$this->Items = array();
+		}
+		
+		public function GetItemByID($id)
+		{
+			foreach ($this->Items as $item)
+			{
+				if ($item->ID == $id) return $item;
+			}
+			return null;
+		}
+		
 		protected function RenderContent()
 		{
 			echo("<div class=\"Wunderbar\">");
@@ -24,8 +44,44 @@
 			echo("<div class=\"WunderbarButtons\">");
 			foreach ($this->Items as $pane)
 			{
-				echo("<a href=\"#\" onclick=\"" . $this->ID . ".SetSelectedPane('" . $pane->ID . "');\">");
-				if ($pane->ImageURL != null) echo("<img class=\"Icon\" src=\"" . $pane->ImageURL . "\" />");
+				echo("<a");
+				if ($pane == $this->SelectedItem)
+				{
+					echo(" class=\"Selected\"");
+				}
+				echo(" href=\"");
+				if ($pane->ButtonTargetURL != null)
+				{
+					echo(System::ExpandRelativePath($pane->ButtonTargetURL));
+				}
+				else
+				{
+					echo("#");
+				}
+				echo("\"");
+				if ($pane->ButtonTargetFrame != null)
+				{
+					echo(" target=\"" . $pane->ButtonTargetFrame . "\"");
+				}
+				if (!$pane->InhibitDefaultBehavior)
+				{
+					echo(" onclick=\"" . $this->ID . ".SetSelectedPane('" . $pane->ID . "');");
+					if ($pane->ButtonOnClientClick != null)
+					{
+						echo(" onclick=\"" . $pane->ButtonOnClientClick . "\"");
+					}
+					echo("\"");
+				}
+				else
+				{
+					if ($pane->ButtonOnClientClick != null)
+					{
+						echo(" onclick=\"" . $pane->ButtonOnClientClick . "\"");
+					}
+				}
+				echo(">");
+				
+				if ($pane->ImageURL != null) echo("<img class=\"Icon\" src=\"" . System::ExpandRelativePath($pane->ImageURL) . "\" />");
 				echo("<span class=\"Text\">" . $pane->Title . "</span>");
 				echo("</a>");
 			}
@@ -40,12 +96,23 @@
 		public $Content;
 		public $ImageURL;
 		
-		public function __construct($id, $title, $contentOrContentFunction, $imageURL = null)
+		public $ButtonTargetURL;
+		public $ButtonTargetFrame;
+		public $ButtonOnClientClick;
+		
+		public $InhibitDefaultBehavior;
+		
+		public function __construct($id, $title, $contentOrContentFunction, $imageURL = null, $buttonTargetURL = null, $buttonOnClientClick = null, $inhibitDefaultBehavior = false)
 		{
 			$this->ID = $id;
 			$this->Title = $title;
 			$this->Content = $contentOrContentFunction;
 			$this->ImageURL = $imageURL;
+			
+			$this->ButtonTargetURL = $buttonTargetURL;
+			$this->ButtonOnClientClick = $buttonOnClientClick;
+			
+			$this->InhibitDefaultBehavior = $inhibitDefaultBehavior;
 		}
 	}
 ?>

@@ -20,7 +20,7 @@
 		
 		public $UserName;
 		
-		public function __construct($id, $title)
+		public function __construct($id, $title = null)
 		{
 			parent::__construct($id);
 			$this->Title = $title;
@@ -409,8 +409,10 @@
 		
 		public $Visible;
 		
-		public function __construct($id, $title, $groups, $imageURL = null, $tooltipTitle = null, $tooltipText = null, $visible = true)
+		public function __construct($id, $title = null, $groups = null, $imageURL = null, $tooltipTitle = null, $tooltipText = null, $visible = true)
 		{
+			if ($groups == null) $groups = array();
+			
 			$this->ID = $id;
 			$this->Title = $title;
 			$this->Groups = $groups;
@@ -427,8 +429,10 @@
 		public $Items;
 		public $Visible;
 		
-		public function __construct($id, $title, $items)
+		public function __construct($id, $title, $items = null)
 		{
+			if ($items == null) $items = array();
+			
 			$this->ID = $id;
 			$this->Title = $title;
 			$this->Items = $items;
