@@ -11,7 +11,7 @@ function TabContainer(id)
 		var tabs = tab.parentNode.childNodes;
 		for (var i = 0; i < tabs.length; i++)
 		{
-			if (tabs[i].className == "Tab Selected") tabs[i].className = "Tab";
+			if (tabs[i].className == "Tab Visible Selected") tabs[i].className = "Tab Visible";
 		}
 		
 		var tabPages = tabPage.parentNode.childNodes;
@@ -20,7 +20,7 @@ function TabContainer(id)
 			if (tabPages[i].className == "TabPage Selected") tabPages[i].className = "TabPage";
 		}
 		
-		tab.className = "Tab Selected";
+		tab.className = "Tab Visible Selected";
 		tabPage.className = "TabPage Selected";
 		
 		WebFramework.SetClientProperty(this.ID, "SelectedTabID", tabName);

@@ -12,12 +12,14 @@
 		public $Title;
 		public $Content;
 		
+		public $Visible;
+		
 		public $ImageURL;
 		public $TargetURL;
 		public $TargetScript;
 		public $ContentFunction;
 		
-		public function __construct($id, $title, $imageURL = null, $targetURL = null, $targetScript = null, $contentFunction = null)
+		public function __construct($id, $title, $imageURL = null, $targetURL = null, $targetScript = null, $contentFunction = null, $visible = true)
 		{
 			$this->ID = $id;
 			$this->Title = $title;
@@ -25,6 +27,7 @@
 			$this->TargetURL = $targetURL;
 			$this->TargetScript = $targetScript;
 			$this->ContentFunction = $contentFunction;
+			$this->Visible = $visible;
 		}
 	}
 	
@@ -55,20 +58,20 @@
 		{
 ?>
 			<div class="TabContainer" id="TabContainer_<?php echo($this->ID); ?>" data-onclienttabchanged="<?php echo($this->OnClientTabChanged); ?>">
-				<div class="Tabs" id="TabContainer_<?php echo($this->ID); ?>_Tabs">
-				<?php
+				<div class="Tabs" id="TabContainer_<?php echo($this->ID); ?>_Tabs"><?php
 				foreach ($this->TabPages as $tabPage)
 				{
-				?>
-					<a id="TabContainer_<?php echo($this->ID); ?>_Tabs_<?php echo($tabPage->ID); ?>_Tab" class="Tab<?php
+				?><a id="TabContainer_<?php echo($this->ID); ?>_Tabs_<?php echo($tabPage->ID); ?>_Tab" class="Tab<?php
+					if ($tabPage->Visible)
+					{
+						echo (" Visible");
+					}
 					if ($tabPage->ID == $this->CurrentTab->ID)
 					{
 						echo (" Selected");
-					} ?>" onclick="<?php echo($this->ID); ?>.SetSelectedTab('<?php echo($tabPage->ID); ?>');"><?php echo($tabPage->Title); ?></a>
-				<?php
+					} ?>" onclick="<?php echo($this->ID); ?>.SetSelectedTab('<?php echo($tabPage->ID); ?>');"><?php echo($tabPage->Title); ?></a><?php
 				}
-				?>
-				</div>
+				?></div>
 				<div class="TabPages" id="TabContainer_<?php echo($this->ID); ?>_TabPages">
 				<?php
 				foreach ($this->TabPages as $tabPage)
