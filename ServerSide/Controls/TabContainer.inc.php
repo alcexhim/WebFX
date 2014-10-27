@@ -58,6 +58,7 @@
 		{
 ?>
 			<div class="TabContainer" data-onclienttabchanged="<?php echo($this->OnClientTabChanged); ?>"><div class="Tabs"><?php
+				$j = 0;
 				foreach ($this->TabPages as $tabPage)
 				{
 				?><a data-id="<?php echo($this->ID); ?>" class="Tab<?php
@@ -69,13 +70,12 @@
 					{
 						echo (" Selected");
 					} ?>"><?php echo($tabPage->Title); ?></a><?php
+					$j++;
 				}
-				?></div><div class="TabPages">
-				<?php
+				?></div><div class="TabPages"><?php
 				foreach ($this->TabPages as $tabPage)
 				{
-				?>
-					<div class="TabPage<?php
+				?><div class="TabPage<?php
 					if ($tabPage == $this->CurrentTab)
 					{
 						echo (" Selected");
@@ -88,11 +88,9 @@
 					{
 						echo($tabPage->Content);
 					}
-					?></div>
-				<?php
+					?></div><?php
 				}
-				?>
-				</div>
+				?></div>
 			</div>
 			<?php
 		}

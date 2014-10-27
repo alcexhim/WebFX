@@ -16,13 +16,13 @@ function TabContainer(parentElement)
 				tabs.childNodes[i].className = "Tab Visible Selected";
 			}
 		}
-		for (var i = 0; i < tabPages.length; i++)
+		for (var i = 0; i < tabPages.childNodes.length; i++)
 		{
-			if (tabPages[i].className == "TabPage Selected") tabPages[i].className = "TabPage";
+			if (tabPages.childNodes[i].className == "TabPage Selected") tabPages.childNodes[i].className = "TabPage";
 		}
-		if (selectedIndex > -1 && selectedIndex < tabPages.length)
+		if (selectedIndex > -1 && selectedIndex < tabPages.childNodes.length)
 		{
-			tabPages[selectedIndex].className = "TabPage Selected";
+			tabPages.childNodes[selectedIndex].className = "TabPage Selected";
 		}
 		
 		WebFramework.SetClientProperty(this.ID, "SelectedTabIndex", selectedIndex);
@@ -41,13 +41,13 @@ function TabContainer(parentElement)
 	var tabs = tabContainer.childNodes[0];
 	for (var i = 0; i < tabs.childNodes.length; i++)
 	{
-		(function(i)
+		(function(i, tc)
 		{
 			tabs.childNodes[i].addEventListener("click", function(e)
 			{
-				tabContainer.SetSelectedTab(tabs.childNodes[i]);
+				tc.SetSelectedTab(tabs.childNodes[i]);
 			});
-		})(i);
+		})(i, this);
 	}
 }
 window.addEventListener("load", function(e)
