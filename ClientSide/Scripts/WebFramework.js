@@ -83,6 +83,53 @@ var WebFramework =
 		"Middle": 1,
 		"Right": 2
 	},
+	"Navigation":
+	{
+		/// <summary>
+		/// Retrieves partial content from a URL and loads it into the specified element's innerHTML property.
+		/// </summary>
+		/// <param name="url">The URL to fetch.</param>
+		/// <param name="targetFrame">The DOM element in which to load the data.</param>
+		/// <param name="throbber">The DOM element used as the waiting indicator (optional).</param>
+		/// <param name="throbberClassDefault">The CSS class for the waiting indicator (optional).</param>
+		/// <param name="throbberClassHidden">The CSS class for the hidden waiting indicator (optional).</param>
+		/// <param name="throbberClassVisible">The CSS class for the visible waiting indicator (optional).</param>
+		"LoadPartialContent": function(url, targetFrame, async, throbber, throbberClassDefault, throbberClassHidden, throbberClassVisible)
+		{
+			if (typeof(async) === "undefined") async = false;
+			if (!throbberClassDefault) throbberClassDefault = "";
+			if (!throbberClassHidden) throbberClassHidden = "Hidden";
+			if (!throbberClassVisible) throbberClassHidden = "Visible";
+			
+			// fetch the data from the URL, should be a same-origin URL
+			var xhr = new XMLHttpRequest();
+			xhr.onreadystatechange = function()
+			{
+				if (this.readyState == 4)
+				{
+					targetFrame.innerHTML = xhr.responseText;
+					if (throbber)
+					{
+						var cssclass = "";
+						if (throbberClassDefault) cssclass += throbberClassDefault + " ";
+						if (throbberClassVisible) cssclass += throbberClassHidden;
+						throbber.className = cssclass;
+					}
+				}
+			};
+			xhr.open('GET', url, async);
+			xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+			xhr.send(null);
+			
+			if (throbber)
+			{
+				var cssclass = "";
+				if (throbberClassDefault) cssclass += throbberClassDefault + " ";
+				if (throbberClassVisible) cssclass += throbberClassVisible;
+				throbber.className = cssclass;
+			}
+		}
+	},
 	"KeyboardKeys":
 	{
 		"Escape": 27,
@@ -113,6 +160,7 @@ var WebFramework =
 	},
 	"EnterFullScreen": function(element)
 	{
+		if (!element) element = document.body;
 		if (element.requestFullscreen)
 		{
 			// The HTML5 way
@@ -318,3 +366,34 @@ var WebPage =
 		return true;
 	}
 };
+
+/*
+   Provide the XMLHttpRequest constructor for Internet Explorer 5.x-6.x:
+   Other browsers (including Internet Explorer 7.x-9.x) do not redefine
+   XMLHttpRequest if it already exists.
+ 
+   This example is based on findings at:
+   http://blogs.msdn.com/xmlteam/archive/2006/10/23/using-the-right-version-of-msxml-in-internet-explorer.aspx
+*/
+if (typeof XMLHttpRequest === "undefined")
+{
+	XMLHttpRequest = function ()
+	{
+		try
+		{
+			return new ActiveXObject("Msxml2.XMLHTTP.6.0");
+		}
+		catch (e) {}
+		try
+		{
+			return new ActiveXObject("Msxml2.XMLHTTP.3.0");
+		}
+		catch (e) {}
+		try
+		{
+			return new ActiveXObject("Microsoft.XMLHTTP");
+		}
+		catch (e) {}
+		console.log("This browser does not support XMLHttpRequest.");
+	};
+}
