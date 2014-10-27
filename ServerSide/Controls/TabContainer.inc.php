@@ -57,11 +57,10 @@
 		protected function RenderContent()
 		{
 ?>
-			<div class="TabContainer" id="TabContainer_<?php echo($this->ID); ?>" data-onclienttabchanged="<?php echo($this->OnClientTabChanged); ?>">
-				<div class="Tabs" id="TabContainer_<?php echo($this->ID); ?>_Tabs"><?php
+			<div class="TabContainer" data-onclienttabchanged="<?php echo($this->OnClientTabChanged); ?>"><div class="Tabs"><?php
 				foreach ($this->TabPages as $tabPage)
 				{
-				?><a id="TabContainer_<?php echo($this->ID); ?>_Tabs_<?php echo($tabPage->ID); ?>_Tab" class="Tab<?php
+				?><a data-id="<?php echo($this->ID); ?>" class="Tab<?php
 					if ($tabPage->Visible)
 					{
 						echo (" Visible");
@@ -69,15 +68,14 @@
 					if ($tabPage->ID == $this->CurrentTab->ID)
 					{
 						echo (" Selected");
-					} ?>" onclick="<?php echo($this->ID); ?>.SetSelectedTab('<?php echo($tabPage->ID); ?>');"><?php echo($tabPage->Title); ?></a><?php
+					} ?>"><?php echo($tabPage->Title); ?></a><?php
 				}
-				?></div>
-				<div class="TabPages" id="TabContainer_<?php echo($this->ID); ?>_TabPages">
+				?></div><div class="TabPages">
 				<?php
 				foreach ($this->TabPages as $tabPage)
 				{
 				?>
-					<div id="TabContainer_<?php echo($this->ID); ?>_TabPages_<?php echo($tabPage->ID); ?>_TabPage" class="TabPage<?php
+					<div class="TabPage<?php
 					if ($tabPage == $this->CurrentTab)
 					{
 						echo (" Selected");
@@ -96,14 +94,6 @@
 				?>
 				</div>
 			</div>
-			<script type="text/javascript">
-				var <?php echo($this->ID); ?> = new TabContainer("<?php echo($this->ID); ?>");<?php
-				if ($this->CurrentTab != null)
-				{
-					echo($this->ID . ".SetSelectedTab('" . $this->CurrentTab->ID . "');");
-				}
-				?>
-			</script>
 			<?php
 		}
 	}

@@ -1,0 +1,55 @@
+body
+{
+	&.SidebarCollapsed > div.Page
+	{
+		&> div.Header, &> div.Content
+		{
+			left: 72px;
+		}
+		&> div.Sidebar
+		{
+			width: 72px;
+		}
+	}
+	&.SidebarHidden > div.Page
+	{
+		&> div.Header, &> div.Content
+		{
+			left: 0px;
+		}
+		&> div.Sidebar
+		{
+			width: 0px;
+		}
+	}
+	&> div.Page > div.Sidebar
+	{
+		position: fixed;
+		left: 0px;
+		top: 56px;
+		bottom: 0px;
+		
+		width: 256px;
+		opacity: 1;
+		transition: opacity linear 0.3s;
+	
+		background-color: #FFFFFF;
+		border: solid 1px #D9D9D9;
+	}
+}
+@media (max-width: 600px)
+{
+	body > div.Page
+	{
+		&> div.Header, &> div.Content
+		{
+			left: 0px;
+		}
+		&> div.Sidebar
+		{
+			transition: width linear 0.3s, opacity linear 0.3s;
+			width: 0px;
+			opacity: 0;
+		}
+	}
+}

@@ -1,0 +1,58 @@
+input[type=submit], input[type=reset], input[type=button], a.Button
+{
+	border-radius: 4px;
+	-moz-user-select: none;
+	background-image: none;
+	border: solid 1px #EAEAEA;
+	cursor: pointer;
+	display: inline-block;
+	font-weight: 400;
+	margin-bottom: 0;
+	text-align: center;
+	vertical-align: middle;
+	white-space: nowrap;
+	
+	padding: 5px 10px;
+	background-color: #FFFFFF;
+	color: #333333;
+	text-decoration: none;
+	
+	&:hover
+	{
+		background-color: #F5F5F5;
+	}
+	
+	&.Default
+	{
+		background-color: #5D9CEC;
+		border-color: transparent;
+		color: #FFFFFF;
+		&:hover
+		{
+			background-color: #4B91EA;
+			border-color: #3483E7;
+		}
+	}
+	&.Success
+	{
+		background-color: #27C24C;
+		border-color: transparent;
+		color: #FFFFFF;
+		&:hover
+		{
+			background-color: #24B145;
+			border-color: #1F9C3D;
+		}
+	}
+	&.Failure
+	{
+		background-color: #F05050;
+		border-color: transparent;
+		color: #FFFFFF;
+		&:hover
+		{
+			background-color: #EE3D3D;
+			border-color: #EC2626;
+		}
+	}
+}

@@ -16,6 +16,8 @@
 		public $OpenGraph;
 		public $UseCompatibleRenderingMode;
 		
+		public $IsPartial;
+		
 		public function __construct()
 		{
 			$this->BreadcrumbItems = array();
@@ -27,6 +29,8 @@
 			$this->Styles = array();
 			$this->Variables = array();
 			$this->UseCompatibleRenderingMode = false;
+			
+			$this->IsPartial = isset($_GET["partial"]);
 			
 			$this->BeforeConstruct();
 			if (is_array($this->Variables))
@@ -78,6 +82,21 @@
             
         }
 		
+		/// <summary>
+		/// This function is called before the content for a full page is generated. To generate a partial page, pass "partial" in the query string.
+		/// </summary>
+		protected function BeforeFullContent()
+		{
+			
+		}
+		/// <summary>
+		/// This function is called after the content for a full page is generated. To generate a partial page, pass "partial" in the query string.
+		/// </summary>
+		protected function AfterFullContent()
+		{
+			
+		}
+		
 		// WebPage Variables
 		public function GetVariable($name)
 		{
@@ -128,160 +147,164 @@
                 $this->isInitialized = true;
             }
             
-            if (!$this->UseCompatibleRenderingMode)
-            {
-                echo("<!DOCTYPE html>\r\n");
-            }
-            echo("<html>\r\n");
-            echo("\t<head>\r\n");
-            $this->BeforeHeader();
-            echo("\t\t<title>" . $this->Title . "</title>\r\n");
-            echo("\t\t<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\" />\r\n");
-            echo("\t\t<meta name=\"viewport\" content=\"width=device-width,minimum-scale=1.0\" />\r\n");
-			if (is_array($this->Metadata))
+			if (!$this->IsPartial)
 			{
-				foreach ($this->Metadata as $metadata)
+				if (!$this->UseCompatibleRenderingMode)
 				{
-					echo("\t\t<meta ");
-					if ($metadata->IsHTTPEquivalent)
+					echo("<!DOCTYPE html>\r\n");
+				}
+				echo("<html>\r\n");
+				echo("\t<head>\r\n");
+				$this->BeforeHeader();
+				echo("\t\t<title>" . $this->Title . "</title>\r\n");
+				echo("\t\t<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\" />\r\n");
+				echo("\t\t<meta name=\"viewport\" content=\"width=device-width,minimum-scale=1.0\" />\r\n");
+				if (is_array($this->Metadata))
+				{
+					foreach ($this->Metadata as $metadata)
 					{
-						echo("http-equiv=\"");
-					}
-					else
-					{
-						echo("name=\"");
-					}
-					echo($metadata->Name);
-					echo("\" content=\"");
-					echo($metadata->Content);
-					echo("\" />\r\n");
-				}
-			}
-			
-			if (is_array($this->ResourceLinks))
-			{
-				foreach ($this->ResourceLinks as $link)
-				{
-					$this->OutputHeaderResourceLink($link);
-				}
-			}
-			
-			$this->OutputHeaderStyleSheet(new WebStyleSheet(System::$Configuration["WebFramework.StaticPath"] . "/dropins/CodeMirror/StyleSheets/CodeMirror.css"));
-			$this->OutputHeaderStyleSheet(new WebStyleSheet(System::$Configuration["WebFramework.StaticPath"] . "/dropins/WebFramework/StyleSheets/Main.css"));
-			if (is_array($this->StyleSheets))
-			{
-				foreach ($this->StyleSheets as $stylesheet)
-				{
-					$this->OutputHeaderStyleSheet($stylesheet);
-				}
-			}
-			
-			$this->OutputHeaderScript(new WebScript(System::$Configuration["WebFramework.StaticPath"] . "/dropins/JH.Utilities/Scripts/JH.Utilities.js"));
-			$this->OutputHeaderScript(new WebScript(System::$Configuration["WebFramework.StaticPath"] . "/dropins/XMLHttpRequest/Scripts/XMLHttpRequest.js"));
-			$this->OutputHeaderScript(new WebScript(System::$Configuration["WebFramework.StaticPath"] . "/dropins/CodeMirror/Scripts/CodeMirror.js"));
-			$this->OutputHeaderScript(new WebScript(System::$Configuration["WebFramework.StaticPath"] . "/dropins/CodeMirror/Scripts/Modes/xml/xml.js"));
-			$this->OutputHeaderScript(new WebScript(System::$Configuration["WebFramework.StaticPath"] . "/dropins/CodeMirror/Scripts/Modes/javascript/javascript.js"));
-			$this->OutputHeaderScript(new WebScript(System::$Configuration["WebFramework.StaticPath"] . "/dropins/CodeMirror/Scripts/Modes/css/css.js"));
-			$this->OutputHeaderScript(new WebScript(System::$Configuration["WebFramework.StaticPath"] . "/dropins/CodeMirror/Scripts/Modes/htmlmixed/htmlmixed.js"));
-			
-			$this->OutputHeaderScript(new WebScript(System::$Configuration["WebFramework.StaticPath"] . "/dropins/WebFramework/Scripts/json2.min.js"));
-			$this->OutputHeaderScript(new WebScript(System::$Configuration["WebFramework.StaticPath"] . "/dropins/WebFramework/Scripts/WebFramework.js"));
-			$this->OutputHeaderScript(new WebScript(System::$Configuration["WebFramework.StaticPath"] . "/dropins/WebFramework/Scripts/MousePosition.js"));
-			$this->OutputHeaderScript(new WebScript(System::$Configuration["WebFramework.StaticPath"] . "/dropins/WebFramework/Scripts/PrependArgument.js"));
-			$this->OutputHeaderScript(new WebScript(System::$Configuration["WebFramework.StaticPath"] . "/dropins/WebFramework/Scripts/WindowDimensions.js"));
-			
-			$this->OutputHeaderScript(new WebScript(System::$Configuration["WebFramework.StaticPath"] . "/dropins/WebFramework/Scripts/Controls/AdditionalDetailWidget.js"));
-			$this->OutputHeaderScript(new WebScript(System::$Configuration["WebFramework.StaticPath"] . "/dropins/WebFramework/Scripts/Controls/CodeEditor.js"));
-			$this->OutputHeaderScript(new WebScript(System::$Configuration["WebFramework.StaticPath"] . "/dropins/WebFramework/Scripts/Controls/Disclosure.js"));
-			$this->OutputHeaderScript(new WebScript(System::$Configuration["WebFramework.StaticPath"] . "/dropins/WebFramework/Scripts/Controls/DropDown.js"));
-			$this->OutputHeaderScript(new WebScript(System::$Configuration["WebFramework.StaticPath"] . "/dropins/WebFramework/Scripts/Controls/FlyoutTabContainer.js"));
-			$this->OutputHeaderScript(new WebScript(System::$Configuration["WebFramework.StaticPath"] . "/dropins/WebFramework/Scripts/Controls/Menu.js"));
-			$this->OutputHeaderScript(new WebScript(System::$Configuration["WebFramework.StaticPath"] . "/dropins/WebFramework/Scripts/Controls/Popup.js"));
-			$this->OutputHeaderScript(new WebScript(System::$Configuration["WebFramework.StaticPath"] . "/dropins/WebFramework/Scripts/Controls/ProgressBar.js"));
-			$this->OutputHeaderScript(new WebScript(System::$Configuration["WebFramework.StaticPath"] . "/dropins/WebFramework/Scripts/Controls/Ribbon.js"));
-			$this->OutputHeaderScript(new WebScript(System::$Configuration["WebFramework.StaticPath"] . "/dropins/WebFramework/Scripts/Controls/SplitContainer.js"));
-			$this->OutputHeaderScript(new WebScript(System::$Configuration["WebFramework.StaticPath"] . "/dropins/WebFramework/Scripts/Controls/TabContainer.js"));
-			$this->OutputHeaderScript(new WebScript(System::$Configuration["WebFramework.StaticPath"] . "/dropins/WebFramework/Scripts/Controls/TextBox.js"));
-			$this->OutputHeaderScript(new WebScript(System::$Configuration["WebFramework.StaticPath"] . "/dropins/WebFramework/Scripts/Controls/ToolTip.js"));
-			$this->OutputHeaderScript(new WebScript(System::$Configuration["WebFramework.StaticPath"] . "/dropins/WebFramework/Scripts/Controls/Window.js"));
-			
-			if (is_array($this->Scripts))
-			{
-				foreach ($this->Scripts as $script)
-				{
-					$this->OutputHeaderScript($script);
-				}
-			}
-			
-			// BEGIN: OpenGraph support
-			if ($this->OpenGraph->Enabled)
-			{
-				$og_title = $this->OpenGraph->Title;
-				$og_type = "other";
-				$og_url = $this->OpenGraph->URL;
-				$og_site_name = $this->OpenGraph->Title;
-				$og_image = $this->OpenGraph->ImageURL;
-				$og_description = $this->OpenGraph->Description;
-				
-				if ($og_title != null) $og_title = $this->Title;
-				
-				echo("\r\n\t\t<!-- Open Graph Specification -->\r\n");
-				echo("\t\t<meta property=\"og:title\" content=\"" . $og_title . "\" />\r\n");
-				echo("\t\t<meta property=\"og:type\" content=\"" . $og_type . "\" />\r\n");
-				echo("\t\t<meta property=\"og:url\" content=\"" . $og_url . "\" />\r\n");
-				echo("\t\t<meta property=\"og:site_name\" content=\"" . $og_site_name . "\" />\r\n");
-				echo("\t\t<meta property=\"og:image\" content=\"" . $og_image . "\" />\r\n");
-				echo("\t\t<meta property=\"og:description\" content=\"" . $og_description . "\" />\r\n\r\n");
-			}
-			// END: OpenGraph support
-			
-            $this->AfterHeader();
-            echo("\t</head>\r\n");
-            echo("\t<body");
-			if ($this->CssClass != null)
-			{
-				echo(" class=\"" . $this->CssClass . "\"");
-			}
-			if (is_array($this->Styles) && count($this->Styles) > 0)
-			{
-				echo(" style=\"");
-				foreach ($this->Styles as $key => $value)
-				{
-					echo($key . ": " . $value . ";");
-				}
-				echo("\"");
-			}
-			echo(">\r\n");
-			
-			echo("<div class=\"WindowModalBackground\" id=\"smwbKageModal__33661E2DD4B44AC39AD7EA460DF79355\">&nbsp;</div>");
-			
-			$this->BeforeVariablesInitialize();
-			if (is_array($this->Variables))
-			{
-				if (count($this->Variables) > 0)
-				{
-					echo("<form id=\"WebPageForm\" method=\"POST\">");
-					foreach ($this->Variables as $variable)
-					{
-						echo("<input type=\"hidden\" id=\"WebPageVariable_" . $variable->Name . "_Value\" name=\"WebPageVariable_" . $variable->Name . "_Value\" ");
-						if (isset($_POST["WebPageVariable_" . $variable->Name . "_Value"]))
+						echo("\t\t<meta ");
+						if ($metadata->IsHTTPEquivalent)
 						{
-							$variable->Value = $_POST["WebPageVariable_" . $variable->Name . "_Value"];
+							echo("http-equiv=\"");
 						}
-						echo("value=\"" . $variable->Value . "\" />");
-						
-						echo("<input type=\"hidden\" id=\"WebPageVariable_" . $variable->Name . "_IsSet\" name=\"WebPageVariable_" . $variable->Name . "_IsSet\" ");
-						if (isset($_POST["WebPageVariable_" . $variable->Name . "_IsSet"]))
+						else
 						{
-							$variable->IsSet = $_POST["WebPageVariable_" . $variable->Name . "_IsSet"];
+							echo("name=\"");
 						}
-						echo("value=\"" . (($variable->IsSet == "true") ? "true" : "false") . "\" />");
+						echo($metadata->Name);
+						echo("\" content=\"");
+						echo($metadata->Content);
+						echo("\" />\r\n");
 					}
 				}
+				
+				if (is_array($this->ResourceLinks))
+				{
+					foreach ($this->ResourceLinks as $link)
+					{
+						$this->OutputHeaderResourceLink($link);
+					}
+				}
+				
+				$this->OutputHeaderStyleSheet(new WebStyleSheet(System::$Configuration["WebFramework.StaticPath"] . "/dropins/CodeMirror/StyleSheets/CodeMirror.css"));
+				$this->OutputHeaderStyleSheet(new WebStyleSheet(System::$Configuration["WebFramework.StaticPath"] . "/dropins/WebFramework/StyleSheets/Main.css"));
+				if (is_array($this->StyleSheets))
+				{
+					foreach ($this->StyleSheets as $stylesheet)
+					{
+						$this->OutputHeaderStyleSheet($stylesheet);
+					}
+				}
+				
+				$this->OutputHeaderScript(new WebScript(System::$Configuration["WebFramework.StaticPath"] . "/dropins/JH.Utilities/Scripts/JH.Utilities.js"));
+				$this->OutputHeaderScript(new WebScript(System::$Configuration["WebFramework.StaticPath"] . "/dropins/XMLHttpRequest/Scripts/XMLHttpRequest.js"));
+				$this->OutputHeaderScript(new WebScript(System::$Configuration["WebFramework.StaticPath"] . "/dropins/CodeMirror/Scripts/CodeMirror.js"));
+				$this->OutputHeaderScript(new WebScript(System::$Configuration["WebFramework.StaticPath"] . "/dropins/CodeMirror/Scripts/Modes/xml/xml.js"));
+				$this->OutputHeaderScript(new WebScript(System::$Configuration["WebFramework.StaticPath"] . "/dropins/CodeMirror/Scripts/Modes/javascript/javascript.js"));
+				$this->OutputHeaderScript(new WebScript(System::$Configuration["WebFramework.StaticPath"] . "/dropins/CodeMirror/Scripts/Modes/css/css.js"));
+				$this->OutputHeaderScript(new WebScript(System::$Configuration["WebFramework.StaticPath"] . "/dropins/CodeMirror/Scripts/Modes/htmlmixed/htmlmixed.js"));
+				
+				$this->OutputHeaderScript(new WebScript(System::$Configuration["WebFramework.StaticPath"] . "/dropins/WebFramework/Scripts/json2.min.js"));
+				$this->OutputHeaderScript(new WebScript(System::$Configuration["WebFramework.StaticPath"] . "/dropins/WebFramework/Scripts/WebFramework.js"));
+				$this->OutputHeaderScript(new WebScript(System::$Configuration["WebFramework.StaticPath"] . "/dropins/WebFramework/Scripts/MousePosition.js"));
+				$this->OutputHeaderScript(new WebScript(System::$Configuration["WebFramework.StaticPath"] . "/dropins/WebFramework/Scripts/PrependArgument.js"));
+				$this->OutputHeaderScript(new WebScript(System::$Configuration["WebFramework.StaticPath"] . "/dropins/WebFramework/Scripts/WindowDimensions.js"));
+				
+				$this->OutputHeaderScript(new WebScript(System::$Configuration["WebFramework.StaticPath"] . "/dropins/WebFramework/Scripts/Controls/AdditionalDetailWidget.js"));
+				$this->OutputHeaderScript(new WebScript(System::$Configuration["WebFramework.StaticPath"] . "/dropins/WebFramework/Scripts/Controls/CodeEditor.js"));
+				$this->OutputHeaderScript(new WebScript(System::$Configuration["WebFramework.StaticPath"] . "/dropins/WebFramework/Scripts/Controls/Disclosure.js"));
+				$this->OutputHeaderScript(new WebScript(System::$Configuration["WebFramework.StaticPath"] . "/dropins/WebFramework/Scripts/Controls/DropDown.js"));
+				$this->OutputHeaderScript(new WebScript(System::$Configuration["WebFramework.StaticPath"] . "/dropins/WebFramework/Scripts/Controls/FlyoutTabContainer.js"));
+				$this->OutputHeaderScript(new WebScript(System::$Configuration["WebFramework.StaticPath"] . "/dropins/WebFramework/Scripts/Controls/Menu.js"));
+				$this->OutputHeaderScript(new WebScript(System::$Configuration["WebFramework.StaticPath"] . "/dropins/WebFramework/Scripts/Controls/Popup.js"));
+				$this->OutputHeaderScript(new WebScript(System::$Configuration["WebFramework.StaticPath"] . "/dropins/WebFramework/Scripts/Controls/ProgressBar.js"));
+				$this->OutputHeaderScript(new WebScript(System::$Configuration["WebFramework.StaticPath"] . "/dropins/WebFramework/Scripts/Controls/Ribbon.js"));
+				$this->OutputHeaderScript(new WebScript(System::$Configuration["WebFramework.StaticPath"] . "/dropins/WebFramework/Scripts/Controls/SplitContainer.js"));
+				$this->OutputHeaderScript(new WebScript(System::$Configuration["WebFramework.StaticPath"] . "/dropins/WebFramework/Scripts/Controls/TabContainer.js"));
+				$this->OutputHeaderScript(new WebScript(System::$Configuration["WebFramework.StaticPath"] . "/dropins/WebFramework/Scripts/Controls/TextBox.js"));
+				$this->OutputHeaderScript(new WebScript(System::$Configuration["WebFramework.StaticPath"] . "/dropins/WebFramework/Scripts/Controls/ToolTip.js"));
+				$this->OutputHeaderScript(new WebScript(System::$Configuration["WebFramework.StaticPath"] . "/dropins/WebFramework/Scripts/Controls/Window.js"));
+				
+				if (is_array($this->Scripts))
+				{
+					foreach ($this->Scripts as $script)
+					{
+						$this->OutputHeaderScript($script);
+					}
+				}
+				
+				// BEGIN: OpenGraph support
+				if ($this->OpenGraph->Enabled)
+				{
+					$og_title = $this->OpenGraph->Title;
+					$og_type = "other";
+					$og_url = $this->OpenGraph->URL;
+					$og_site_name = $this->OpenGraph->Title;
+					$og_image = $this->OpenGraph->ImageURL;
+					$og_description = $this->OpenGraph->Description;
+					
+					if ($og_title != null) $og_title = $this->Title;
+					
+					echo("\r\n\t\t<!-- Open Graph Specification -->\r\n");
+					echo("\t\t<meta property=\"og:title\" content=\"" . $og_title . "\" />\r\n");
+					echo("\t\t<meta property=\"og:type\" content=\"" . $og_type . "\" />\r\n");
+					echo("\t\t<meta property=\"og:url\" content=\"" . $og_url . "\" />\r\n");
+					echo("\t\t<meta property=\"og:site_name\" content=\"" . $og_site_name . "\" />\r\n");
+					echo("\t\t<meta property=\"og:image\" content=\"" . $og_image . "\" />\r\n");
+					echo("\t\t<meta property=\"og:description\" content=\"" . $og_description . "\" />\r\n\r\n");
+				}
+				// END: OpenGraph support
+				
+				$this->AfterHeader();
+				echo("\t</head>\r\n");
+				echo("\t<body");
+				if ($this->CssClass != null)
+				{
+					echo(" class=\"" . $this->CssClass . "\"");
+				}
+				if (is_array($this->Styles) && count($this->Styles) > 0)
+				{
+					echo(" style=\"");
+					foreach ($this->Styles as $key => $value)
+					{
+						echo($key . ": " . $value . ";");
+					}
+					echo("\"");
+				}
+				echo(">\r\n");
+				
+				echo("<div class=\"WindowModalBackground\" id=\"smwbKageModal__33661E2DD4B44AC39AD7EA460DF79355\">&nbsp;</div>");
+				
+				$this->BeforeVariablesInitialize();
+				if (is_array($this->Variables))
+				{
+					if (count($this->Variables) > 0)
+					{
+						echo("<form id=\"WebPageForm\" method=\"POST\">");
+						foreach ($this->Variables as $variable)
+						{
+							echo("<input type=\"hidden\" id=\"WebPageVariable_" . $variable->Name . "_Value\" name=\"WebPageVariable_" . $variable->Name . "_Value\" ");
+							if (isset($_POST["WebPageVariable_" . $variable->Name . "_Value"]))
+							{
+								$variable->Value = $_POST["WebPageVariable_" . $variable->Name . "_Value"];
+							}
+							echo("value=\"" . $variable->Value . "\" />");
+							
+							echo("<input type=\"hidden\" id=\"WebPageVariable_" . $variable->Name . "_IsSet\" name=\"WebPageVariable_" . $variable->Name . "_IsSet\" ");
+							if (isset($_POST["WebPageVariable_" . $variable->Name . "_IsSet"]))
+							{
+								$variable->IsSet = $_POST["WebPageVariable_" . $variable->Name . "_IsSet"];
+							}
+							echo("value=\"" . (($variable->IsSet == "true") ? "true" : "false") . "\" />");
+						}
+					}
+				}
+				$this->AfterVariablesInitialize();
+				
+				$this->BeforeFullContent();
 			}
-			$this->AfterVariablesInitialize();
-			
-            $this->BeforeContent();
+			$this->BeforeContent();
         }
 		
 		protected function BeforeVariablesInitialize()
@@ -330,28 +353,32 @@
         }
         public function EndContent()
         {
-            $this->AfterContent();
-			
-			if (is_array($this->Variables))
+			$this->AfterContent();
+			if (!$this->IsPartial)
 			{
-				if (count($this->Variables) > 0)
+				$this->AfterFullContent();
+				
+				if (is_array($this->Variables))
 				{
-					echo("</form>");
+					if (count($this->Variables) > 0)
+					{
+						echo("</form>");
+					}
 				}
-			}
-			
-			if ($this->ContextMenu != null)
-			{
-				if (get_class($this->ContextMenu) == "WebMenuControl")
+				
+				if ($this->ContextMenu != null)
 				{
-					$this->ContextMenu->ID = "ContextMenu";
-					$this->ContextMenu->Render();
-					echo("<script type=\"text/javascript\">document.addEventListener('mousedown', function(e) { ContextMenu.Show(); });</script>");
+					if (get_class($this->ContextMenu) == "WebMenuControl")
+					{
+						$this->ContextMenu->ID = "ContextMenu";
+						$this->ContextMenu->Render();
+						echo("<script type=\"text/javascript\">document.addEventListener('mousedown', function(e) { ContextMenu.Show(); });</script>");
+					}
 				}
+				
+				echo("\t</body>\r\n");
+				echo("</html>");
 			}
-			
-            echo("\t</body>\r\n");
-            echo("</html>");
         }
     }
 ?>

@@ -1,0 +1,52 @@
+input, div.TextBox
+{
+	border: solid 1px #DBD9D9;
+	border-radius: 4px;
+	font-size: 12px;
+	line-height: 1.5;
+	padding: 5px 10px;
+}
+div.TextBox
+{
+	border-collapse: separate;
+	display: table;
+	padding: 0px;
+	box-sizing: border-box;
+	
+	&> input
+	{
+		box-sizing: border-box;
+		border: 0px;
+		display: table-cell;
+		&> ::-moz-placeholder
+		{
+			color: #B7BAC9;
+		}
+	}
+	&> div.Margin
+	{
+		box-sizing: border-box;
+		background-color: #F8F9FB;
+		color: #3A3F51;
+		font-size: 14px;
+		font-weight: 400;
+		line-height: 1;
+		padding: 6px 20px;
+		text-align: center;
+		
+		display: table-cell;
+		
+		&:first-child
+		{
+			border-bottom-right-radius: 0px;
+			border-top-right-radius: 0px;
+			border-right: none 0px;
+		}
+		&:last-child
+		{
+			border-bottom-left-radius: 0px;
+			border-top-left-radius: 0px;
+			border-left: none 0px;
+		}
+	}
+}

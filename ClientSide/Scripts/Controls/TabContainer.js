@@ -1,31 +1,32 @@
-function TabContainer(id)
+function TabContainer(parentElement)
 {
-	this.ID = id;
-	this.SelectedTabID = null;
-	this.SetSelectedTab = function(tabName)
+	this.ParentElement = parentElement;
+	this.SetSelectedTab = function(tab)
 	{
-		var tabContainer = document.getElementById("TabContainer_" + this.ID);
-		var tab = document.getElementById("TabContainer_" + this.ID + "_Tabs_" + tabName + "_Tab");
-		var tabPage = document.getElementById("TabContainer_" + this.ID + "_TabPages_" + tabName + "_TabPage");
-		
-		var tabs = tab.parentNode.childNodes;
-		for (var i = 0; i < tabs.length; i++)
+		var tabContainer = this.ParentElement;
+		var tabs = tabContainer.childNodes[0];
+		var tabPages = tabContainer.childNodes[1];
+		var selectedIndex = -1;
+		for (var i = 0; i < tabs.childNodes.length; i++)
 		{
-			if (tabs[i].className == "Tab Visible Selected") tabs[i].className = "Tab Visible";
+			if (tabs.childNodes[i].className == "Tab Visible Selected") tabs.childNodes[i].className = "Tab Visible";
+			if (tabs.childNodes[i] === tab)
+			{
+				selectedIndex = i;
+				tabs.childNodes[i].className = "Tab Visible Selected";
+			}
 		}
-		
-		var tabPages = tabPage.parentNode.childNodes;
 		for (var i = 0; i < tabPages.length; i++)
 		{
 			if (tabPages[i].className == "TabPage Selected") tabPages[i].className = "TabPage";
 		}
+		if (selectedIndex > -1 && selectedIndex < tabPages.length)
+		{
+			tabPages[selectedIndex].className = "TabPage Selected";
+		}
 		
-		tab.className = "Tab Visible Selected";
-		tabPage.className = "TabPage Selected";
+		WebFramework.SetClientProperty(this.ID, "SelectedTabIndex", selectedIndex);
 		
-		WebFramework.SetClientProperty(this.ID, "SelectedTabID", tabName);
-		
-		this.SelectedTabID = tabName;
 		if (tabContainer != null)
 		{
 			var attOnClientTabChanged = tabContainer.attributes["data-onclienttabchanged"];
@@ -35,4 +36,25 @@ function TabContainer(id)
 			}
 		}
 	};
+	
+	var tabContainer = this.ParentElement;
+	var tabs = tabContainer.childNodes[0];
+	for (var i = 0; i < tabs.childNodes.length; i++)
+	{
+		(function(i)
+		{
+			tabs.childNodes[i].addEventListener("click", function(e)
+			{
+				tabContainer.SetSelectedTab(tabs.childNodes[i]);
+			});
+		})(i);
+	}
 }
+window.addEventListener("load", function(e)
+{
+	var tbss = document.getElementsByClassName("TabContainer");
+	for (var i = 0; i < tbss.length; i++)
+	{
+		tbss[i].ObjectReference = new TabContainer(tbss[i]);
+	}
+});
