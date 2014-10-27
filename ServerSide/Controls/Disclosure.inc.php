@@ -18,7 +18,9 @@
 		
 		protected function BeforeContent()
 		{
-			echo("<div class=\"Disclosure\" id=\"Disclosure_" . $this->ID . "\">");
+			echo("<div class=\"Disclosure");
+			if ($this->Expanded) echo(" Expanded");
+			echo("\" id=\"Disclosure_" . $this->ID . "\">");
 			echo("<div class=\"Title\"><a href=\"#\" onclick=\"" . $this->ID . ".ToggleExpanded();\"><span class=\"DisclosureButton\">&nbsp;</span> <span class=\"Title\">" . $this->Title . "</span></a></div>");
 			echo("<div class=\"Content\">");
 		}
