@@ -1,4 +1,8 @@
+/* WARNING - Must be included above ALL files */
+@import "Branding.less";
+
 @import "Button.less";
+@import "Footer.less";
 @import "Jumbotron.less";
 @import "ListView.less";
 @import "Panel.less";
@@ -8,10 +12,52 @@
 @import "TextBox.less";
 @import "TileView.less";
 
+@import "../../../../fonts/FontAwesome/FontAwesome.less";
+
 body
 {
-	background-color: #F5F7FA;
+	background-color: @PageBackground;
+	color: @PageForeground;
 	font-size: 14px;
 	line-height: 1.52857;
 	font-family: "Source Sans Pro", "Open Sans", "Segoe UI";
+}
+div.PrimaryContent
+{
+	font-size: 42px;
+}
+div.Expand
+{
+	display: table;
+	width: 100%;
+	width: -moz-available;
+	
+	&> *
+	{
+		display: table-cell;
+	}
+}
+div.Page > nav.Top
+{
+	&> a.MenuButton
+	{
+		font-size: 16pt;
+		padding: 12px;
+		position: absolute;
+		color: #FFFFFF;
+		cursor: pointer;
+		
+		&:hover
+		{
+			color: darken(@HeaderBackground, 20%);
+		}
+	}
+	&> img.Logo
+	{
+		left: 48px;
+		position: absolute;
+		top: 10px;
+		
+		height: 34px;
+	}
 }

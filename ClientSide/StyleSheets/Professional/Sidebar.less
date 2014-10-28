@@ -2,7 +2,7 @@ body
 {
 	&.SidebarCollapsed > div.Page
 	{
-		&> div.Header, &> div.Content
+		&> header, &> div.Content, &> footer
 		{
 			left: 72px;
 		}
@@ -13,7 +13,7 @@ body
 	}
 	&.SidebarHidden > div.Page
 	{
-		&> div.Header, &> div.Content
+		&> header, &> div.Content, &> footer
 		{
 			left: 0px;
 		}
@@ -28,6 +28,7 @@ body
 		left: 0px;
 		top: 56px;
 		bottom: 0px;
+		z-index: 1;
 		
 		width: 256px;
 		opacity: 1;
@@ -40,7 +41,7 @@ body
 		{
 			color: #919DA8;
 			cursor: default;
-			font-size: 12px;
+			font-size: 12pt;
 			padding: 12px 15px;
 		}
 		&> a
@@ -55,14 +56,14 @@ body
 			
 			&:hover
 			{
-				color: #23B7E5;
+				color: @HeaderBackground;
 				text-decoration: none;
 			}
 			&.Selected
 			{
-				border-left-color: #23B7E5;
+				border-left-color: @HeaderBackground;
 				background-color: #FCFCFC;
-				color: #23B7E5;
+				color: @HeaderBackground;
 			}
 		}
 	}
@@ -71,7 +72,7 @@ body
 {
 	body > div.Page
 	{
-		&> div.Header, &> div.Content
+		&> header, &> div.Content, &> footer
 		{
 			left: 0px;
 		}

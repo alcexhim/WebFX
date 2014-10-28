@@ -3,7 +3,7 @@ input[type=submit], input[type=reset], input[type=button], a.Button
 	border-radius: 4px;
 	-moz-user-select: none;
 	background-image: none;
-	border: solid 1px #EAEAEA;
+	border: solid 1px @ControlBorder;
 	cursor: pointer;
 	display: inline-block;
 	font-weight: 400;
@@ -13,46 +13,51 @@ input[type=submit], input[type=reset], input[type=button], a.Button
 	white-space: nowrap;
 	
 	padding: 5px 10px;
-	background-color: #FFFFFF;
-	color: #333333;
+	background-color: @ControlBackground;
+	color: @ControlForeground;
 	text-decoration: none;
 	
 	&:hover
 	{
-		background-color: #F5F5F5;
+		background-color: @ControlBackgroundHover;
+		border-color: @ControlBorderHover;
+		color-color: @ControlForegroundHover;
 	}
 	
 	&.Default
 	{
-		background-color: #5D9CEC;
-		border-color: transparent;
-		color: #FFFFFF;
+		background-color: @ControlDefaultBackground;
+		border-color: @ControlDefaultBorder;
+		color: @ControlDefaultForeground;
 		&:hover
 		{
-			background-color: #4B91EA;
-			border-color: #3483E7;
+			background-color: @ControlDefaultBackgroundHover;
+			border-color: @ControlDefaultBorderHover;
+			color: @ControlDefaultForegroundHover;
 		}
 	}
 	&.Success
 	{
-		background-color: #27C24C;
-		border-color: transparent;
-		color: #FFFFFF;
+		background-color: @ControlSuccessBackground;
+		border-color: @ControlSuccessBorder;
+		color: @ControlSuccessForeground;
 		&:hover
 		{
-			background-color: #24B145;
-			border-color: #1F9C3D;
+			background-color: @ControlSuccessBackgroundHover;
+			border-color: @ControlSuccessBorderHover;
+			color: @ControlSuccessForegroundHover;
 		}
 	}
 	&.Failure
 	{
-		background-color: #F05050;
-		border-color: transparent;
-		color: #FFFFFF;
+		background-color: @ControlFailureBackground;
+		border-color: @ControlFailureBorder;
+		color: @ControlFailureForeground;
 		&:hover
 		{
-			background-color: #EE3D3D;
-			border-color: #EC2626;
+			background-color: @ControlFailureBackgroundHover;
+			border-color: @ControlFailureBorderHover;
+			color: @ControlFailureForegroundHover;
 		}
 	}
 }

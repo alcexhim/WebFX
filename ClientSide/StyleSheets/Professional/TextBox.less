@@ -1,10 +1,16 @@
-input, div.TextBox
+input[type=text], input[type=password], textarea, div.TextBox
 {
 	border: solid 1px #DBD9D9;
 	border-radius: 4px;
 	font-size: 12px;
 	line-height: 1.5;
 	padding: 5px 10px;
+	
+	&:focus
+	{
+		border-color: @ThemeColor;
+		box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075) inset, 0 0 8px lighten(@ThemeColor, 40%);
+	}
 }
 div.TextBox
 {
@@ -13,7 +19,7 @@ div.TextBox
 	padding: 0px;
 	box-sizing: border-box;
 	
-	&> input
+	&> input[type=text], input[type=password], textarea
 	{
 		box-sizing: border-box;
 		border: 0px;
