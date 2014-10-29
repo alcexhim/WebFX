@@ -5,6 +5,7 @@
 @import "Footer.less";
 @import "Jumbotron.less";
 @import "ListView.less";
+@import "Navigation.less";
 @import "Panel.less";
 @import "Page.less";
 @import "Sidebar.less";
@@ -17,7 +18,7 @@
 body, input, textarea
 {
 	font-size: 14px;
-	font-family: "Droid Sans", "Source Sans Pro", "Open Sans", "Segoe UI";
+	font-family: "Source Sans Pro", "Droid Sans", "Open Sans", "Segoe UI";
 }
 
 body
@@ -39,29 +40,5 @@ div.Expand
 	&> *
 	{
 		display: table-cell;
-	}
-}
-div.Page > nav.Top
-{
-	&> a.MenuButton
-	{
-		font-size: 16pt;
-		padding: 12px;
-		position: absolute;
-		color: #FFFFFF;
-		cursor: pointer;
-		
-		&:hover
-		{
-			color: darken(@HeaderBackground, 20%);
-		}
-	}
-	&> img.Logo
-	{
-		left: 48px;
-		position: absolute;
-		top: 10px;
-		
-		height: 34px;
 	}
 }
