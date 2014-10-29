@@ -1,6 +1,21 @@
 div.Page
 {
 	margin: 0px;
+	&.HideHeader
+	{
+		&> nav.Top
+		{
+			display: none;
+		}
+		&> div.Sidebar, header
+		{
+			top: 0px;
+		}
+		&> div.Content
+		{
+			top: 89px;
+		}
+	}
 	&> nav.Top
 	{
 		position: fixed;
