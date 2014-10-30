@@ -8,13 +8,38 @@ table.ListView
 		padding: 14px 8px;
 		display: block;
 	}
-	tr td input.Filter
+	
+	&> thead > tr > th > a:hover
 	{
-		font-weight: bold;
-		
-		&::-moz-placeholder
+		background-color: #FAFBFC;
+	}
+	&> tbody > tr
+	{
+		&:hover
 		{
-			color: #B7BAC9;
+			background-color: #FAFBFC;
 		}
+	}
+	
+	tr
+	{
+		&> td > input.Filter
+		{
+			font-weight: bold;
+			
+			&::-moz-placeholder
+			{
+				color: #B7BAC9;
+			}
+		}
+	}
+	
+	&:not(.Borderless)
+	{
+		border: solid 1px #EEEEEE;
+	}
+	&.GridLines > tbody > tr:not(:last-child)
+	{
+		border-bottom: solid 1px #EEEEEE;
 	}
 }
