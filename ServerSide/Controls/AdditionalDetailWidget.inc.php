@@ -93,9 +93,9 @@
 		protected function BeforeContent()
 		{
 			echo("<a class=\"AdditionalDetailText\" href=\"");
-			if ($this->PostBackURL != "")
+			if ($this->TargetURL != "")
 			{
-				echo($this->PostBackURL);
+				echo($this->TargetURL);
 			}
 			else
 			{
