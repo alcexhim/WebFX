@@ -15,6 +15,13 @@
 		
 		public $Tasks;
 		
+		public $CheckAvailabilityFunction;
+		
+		public function IsAvailable()
+		{
+			return call_user_func($this->CheckAvailabilityFunction);
+		}
+		
 		public function __construct($id, $title = null, $taskType = null, $description = null, $targetURL = null, $targetScript = null, $targetFrame = null, $tasks = null)
 		{
 			if ($title == null) $title = $id;
@@ -28,6 +35,11 @@
 			$this->TargetScript = $targetScript;
 			$this->TargetFrame = $targetFrame;
 			$this->Tasks = $tasks;
+			
+			$this->CheckAvailabilityFunction = function()
+			{
+				return true;
+			};
 		}
 	}
 ?>
