@@ -217,6 +217,7 @@
 				$this->OutputHeaderScript(new WebScript(System::$Configuration["WebFramework.StaticPath"] . "/dropins/WebFramework/Scripts/Controls/DropDown.js"));
 				$this->OutputHeaderScript(new WebScript(System::$Configuration["WebFramework.StaticPath"] . "/dropins/WebFramework/Scripts/Controls/FlyoutTabContainer.js"));
 				$this->OutputHeaderScript(new WebScript(System::$Configuration["WebFramework.StaticPath"] . "/dropins/WebFramework/Scripts/Controls/Menu.js"));
+				$this->OutputHeaderScript(new WebScript(System::$Configuration["WebFramework.StaticPath"] . "/dropins/WebFramework/Scripts/Controls/Notification.js"));
 				$this->OutputHeaderScript(new WebScript(System::$Configuration["WebFramework.StaticPath"] . "/dropins/WebFramework/Scripts/Controls/Popup.js"));
 				$this->OutputHeaderScript(new WebScript(System::$Configuration["WebFramework.StaticPath"] . "/dropins/WebFramework/Scripts/Controls/ProgressBar.js"));
 				$this->OutputHeaderScript(new WebScript(System::$Configuration["WebFramework.StaticPath"] . "/dropins/WebFramework/Scripts/Controls/Ribbon.js"));
