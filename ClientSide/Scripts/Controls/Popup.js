@@ -28,7 +28,7 @@ window.addEventListener("mousedown", function(e)
 	var sender;
 	if (!e)
 	{
-		var e = window.event;
+		e = window.event;
 	}
 	if (e.target)
 	{
