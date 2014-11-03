@@ -66,7 +66,7 @@
 					{
 						echo (" Visible");
 					}
-					if ($tabPage->ID == $this->CurrentTab->ID)
+					if ($this->CurrentTab != null && ($tabPage->ID == $this->CurrentTab->ID))
 					{
 						echo (" Selected");
 					} ?>"><?php echo($tabPage->Title); ?></a><?php
@@ -76,7 +76,7 @@
 				foreach ($this->TabPages as $tabPage)
 				{
 				?><div class="TabPage<?php
-					if ($tabPage == $this->CurrentTab)
+					if ($this->CurrentTab != null && ($tabPage->ID == $this->CurrentTab->ID))
 					{
 						echo (" Selected");
 					} ?>"><?php
