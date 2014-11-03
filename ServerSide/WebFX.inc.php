@@ -322,17 +322,19 @@
 	\Enum::Create("WebFX\\HorizontalAlignment", "Inherit", "Left", "Center", "Right");
 	\Enum::Create("WebFX\\VerticalAlignment", "Inherit", "Top", "Middle", "Bottom");
 	
-    require("WebApplication.inc.php");
-    require("WebOpenGraphSettings.inc.php");
-    require("WebResourceLink.inc.php");
-    require("WebScript.inc.php");
-    require("WebStyleSheet.inc.php");
-    
-    require("WebControl.inc.php");
-    
-    require("WebPage.inc.php");
-    require("WebPageCommand.inc.php");
-    require("WebPageMetadata.inc.php");
+	require("WebApplication.inc.php");
+	require("WebApplicationTask.inc.php");
+	
+	require("WebOpenGraphSettings.inc.php");
+	require("WebResourceLink.inc.php");
+	require("WebScript.inc.php");
+	require("WebStyleSheet.inc.php");
+	
+	require("WebControl.inc.php");
+	
+	require("WebPage.inc.php");
+	require("WebPageCommand.inc.php");
+	require("WebPageMetadata.inc.php");
 	require("WebPageVariable.inc.php");
 	
 	System::$Configuration = array();
