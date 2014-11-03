@@ -248,3 +248,26 @@ document.addEventListener("mousedown", function(e)
 {
 	DropDown.CloseAll();
 });
+
+// add a global hook to find DropDownButtons to trigger
+window.addEventListener("load", function(e)
+{
+	var dropdowns = document.getElementsByClassName("DropDownButton");
+	for (var i = 0; i < dropdowns.length; i++)
+	{
+		(function(index)
+		{
+			dropdowns[index].addEventListener("mousedown", function(ee)
+			{
+				if (dropdowns[index].className == "DropDownButton")
+				{
+					dropdowns[index].className = "DropDownButton Opened";
+				}
+				else if (dropdowns[index].className == "DropDownButton Opened")
+				{
+					dropdowns[index].className = "DropDownButton";
+				}
+			});
+		})(i);
+	}
+});
