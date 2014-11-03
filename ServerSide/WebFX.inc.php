@@ -284,7 +284,7 @@
 			{
 				foreach ($this->Pages as $vpath)
 				{
-					if ($vpath->PathName == $path[0])
+					if (((count($path) > 0) && ($vpath->PathName == $path[0])) || ($vpath->PathName == ""))
 					{
 						array_shift($path);
 						if (!$vpath->Execute($path))
