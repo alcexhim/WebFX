@@ -44,6 +44,8 @@
 		public static $TenantName;
 		public static $UnspecifiedTenantErrorHandler;
 		
+		public static $Tasks;
+		
 		public static function GetConfigurationValue($key, $defaultValue = null)
 		{
 			if (System::HasConfigurationValue($key))
