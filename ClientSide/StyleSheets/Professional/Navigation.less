@@ -32,23 +32,81 @@ div.Page > nav.Top
 		height: 34px;
 	}
 	
+	div.DropDownButton
+	{
+		cursor: pointer;
+		color: #FFFFFF;
+		text-decoration: none;
+		padding: 18px;
+		
+		&:hover
+		{
+			color: darken(@HeaderBackground, 20%);
+		}
+		&.Opened
+		{
+			background-color: darken(@HeaderBackground, 20%);
+			color: #FFFFFF;
+		}
+		
+		&> div.DropDownMenu
+		{
+			opacity: 0;
+			visibility: hidden;
+			transition: opacity linear 0.3s, visibility linear 0.3s;
+			
+			background-color: #FFFFFF;
+			border: 1px solid #E1E1E1;
+			position: absolute;
+			right: 0;
+			top: 56px;
+			width: -moz-max-content;
+			z-index: 1;
+			
+			/*
+			background-clip: padding-box;
+			background-color: #fff;
+			border: 1px solid #e1e1e1;
+			*/
+			box-shadow: 0 6px 12px rgba(0, 0, 0, 0.176);
+			/*
+			display: none;
+			float: left;
+			font-size: 14px;
+			left: 0;
+			list-style: outside none none;
+			margin: 2px 0 0;
+			min-width: 160px;
+			padding: 5px 0;
+			position: absolute;
+			text-align: left;
+			top: 100%;
+			z-index: 1000;
+			*/
+			
+			&> a
+			{
+				display: block;
+				text-decoration: none;
+				color: #555555;
+				padding: 8px;
+				&:hover
+				{
+					background-color: #FAFBFC;
+				}
+			}
+		}
+		&.Opened > div.DropDownMenu
+		{
+			opacity: 1;
+			visibility: visible;
+		}
+	}
+	
 	&> div.UserInfo
 	{
 		position: absolute;
 		right: 16px;
-		top: 16px;
-		
-		&> a.UserButton
-		{
-			color: #FFFFFF;
-			text-decoration: none;
-			
-			padding: 18px;
-			
-			&:hover
-			{
-				color: darken(@HeaderBackground, 20%);
-			}
-		}
+		top: 0px;
 	}
 }
