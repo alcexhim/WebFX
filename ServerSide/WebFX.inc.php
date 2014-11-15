@@ -330,6 +330,7 @@
 	require("WebScript.inc.php");
 	require("WebStyleSheet.inc.php");
 	
+	require("WebControlAttribute.inc.php");
 	require("WebControl.inc.php");
 	
 	require("WebPage.inc.php");
