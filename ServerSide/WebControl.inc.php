@@ -103,6 +103,7 @@
 				$classAttributeContent = "";
 				if (count($this->Attributes) > 0)
 				{
+					echo(" ");
 					$count = count($this->Attributes);
 					$i = 0;
 					foreach ($this->Attributes as $attr)
