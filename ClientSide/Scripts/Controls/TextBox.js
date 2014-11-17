@@ -1,85 +1,204 @@
-function TextBox(id, name, url)
+function TextBox(parentElement)
 {
-	this.ID = id;
-	this.Name = name;
-	this.EnableMultipleSelection = true;
-	this.SuggestionURL = url;
+	this.ParentElement = parentElement;
+	this.TextBoxElement = parentElement.childNodes[0].childNodes[1];
+	this.DropDownElement = parentElement.childNodes[1];
+	
+	if (parentElement.attributes["name"] != null)
+	{
+		this.Name = parentElement.attributes["name"].value;
+	}
+	else
+	{
+		this.Name = "";
+	}
+	if (parentElement.attributes["data-multiselect"] != null)
+	{
+		this.EnableMultipleSelection = (parentElement.attributes["data-multiselect"].value == "true");
+	}
+	else
+	{
+		this.EnableMultipleSelection = false;
+	}
+	if (parentElement.attributes["data-suggestion-url"] != null)
+	{
+		this.SuggestionURL = parentElement.attributes["data-suggestion-url"].value;
+	}
+	else
+	{
+		this.SuggestionURL = null;
+	}
+	
 	this.Focus = function()
 	{
-		this.GetElement("textbox").focus();
+		this.TextBoxElement.focus();
 	};
 	this.ClearText = function()
 	{
-		this.GetElement("textbox").value = "";
+		this.TextBoxElement.value = "";
 	};
 	this.GetText = function()
 	{
-		return this.GetElement("textbox").value;
+		return this.TextBoxElement.value;
 	};
 	this.SetText = function(value)
 	{
-		this.GetElement("textbox").value = value;
+		this.TextBoxElement.value = value;
 	};
 	
-	this.GetElement = function(section)
+	this.TextBoxElement.onfocus = function(sender, e)
 	{
-		var id = "Textbox_" + this.ID;
-		if (section) id += "_" + section;
-		return document.getElementById(id);
-	};
-	this.GetValue = function()
-	{
-		return this.GetElement("textbox").value;
-	};
-	
-	this.FormatStart = function()
-	{
-		return "<table class=\"ListView\">";
-	};
-	this.FormatItemID = function(item)
-	{
-		return item;
-	}
-	this.FormatItemText = function(item)
-	{
-		return item;
-	}
-	this.FormatItem = function(item, alternate)
-	{
-		var html = "<tr";
-		if (alternate)
+		if (sender.TextBoxElement.attributes["data-auto-open"] != null)
 		{
-			html += " class=\"Alternate\"";
+			if (sender.TextBoxElement.attributes["data-auto-open"].value == "true")
+			{
+				sender.Refresh();
+				sender.DropDown.Open();
+			}
 		}
-		html += "><td onclick=\"" + this.ID + ".AddItem('" + this.FormatItemID(item) + "');\">" + this.FormatItemText(item) + "</td></tr>";
-		return html;
-	};
-	this.FormatEnd = function()
-	{
-		return "</table>";
-	};
-	
-	this.Suggest = function(filter)
-	{
-		return null;
-	};
-	
-	this.GetElement("textbox").onfocus = function(sender, e)
-	{
-		sender.Refresh();
-		sender.DropDown.Open();
 	}.PrependArgument(this);
-	this.GetElement("textbox").onkeyup = function(sender, e)
+	
+	this.RefreshTimeout = null;
+	
+	this.TextBoxElement.onkeyup = function(sender, e)
 	{
-		if (e.keyCode == 27 /* ESC */)
+		if (e.keyCode == 27) // ESC
 		{
 			sender.DropDown.Close();
 		}
 		else
 		{
-			sender.Refresh();
+			if (sender.RefreshTimeout != null)
+			{
+				window.clearTimeout(sender.RefreshTimeout);
+			}
+			sender.RefreshTimeout = window.setTimeout(function()
+			{
+				sender.Refresh();
+			}, 100);
 		}
 	}.PrependArgument(this);
+	
+	this.Refresh = function()
+	{
+		var ret = null;
+		if (this.Suggest)
+		{
+			ret = this.Suggest(this.GetText());
+		}
+		
+		if (ret != null)
+		{
+			var html = "";
+			html += this.FormatStart();
+			for (var i = 0; i < ret.length; i++)
+			{
+				html += this.FormatItem(ret[i], (i % 2) != 0);
+			}
+			html += this.FormatEnd();
+			
+			this.DropDown.SetInnerHTML(html);
+			this.DropDown.Open();
+		}
+		else if (this.SuggestionURL)
+		{
+			var xhr = new XMLHttpRequest();
+			xhr.parentTextbox = this;
+			xhr.onreadystatechange = function()
+			{
+				if (xhr.readyState === 4)
+				{
+					if (xhr.status != 200)
+					{
+						console.log("TextBox: XMLHttpRequest returned response code " + xhr.status + ": " + xhr.statusText);
+						return;
+					}
+					
+					var html = "";
+					html += xhr.parentTextbox.FormatStart();
+					var obj = JSON.parse(xhr.responseText);
+					if (obj.result == "success")
+					{
+						for (var i = 0; i < obj.items.length; i++)
+						{
+							html += xhr.parentTextbox.FormatItem(obj.items[i]);
+						}
+					}
+					html += xhr.parentTextbox.FormatEnd();
+					
+					xhr.parentTextbox.DropDown.SetInnerHTML(html);
+					xhr.parentTextbox.DropDown.Open();
+				}
+			};
+			xhr.open('GET', this.SuggestionURL.replace(/\%1/g, this.GetText()), true);
+			xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+			xhr.send(null);  // No data need to send along with the request.
+		}
+		else
+		{
+			console.error("TextBox: no data retrieval functionality (SuggestionURL/Suggest) has been implemented");
+		}
+	};
+	this.FormatStart = function()
+	{
+		return "<div class=\"Menu\" style=\"width: 100%;\">";
+	};
+	this.FormatItemID = function(item)
+	{
+		return item.ID;
+	};
+	this.FormatItemText = function(item)
+	{
+		return "<span class=\"Title\">" + item.Title + "</span>"
+			+ "<span class=\"Subtitle\">" + item.Subtitle + "</span>"
+			+ "<span class=\"Description\">" + item.Description + "</span>";
+	};
+	this.FormatItemTargetURL = function(item)
+	{
+		return item.TargetURL;
+	};
+	this.FormatItem = function(item, alternate)
+	{
+		var html = "<a";
+		if (alternate)
+		{
+			html += " class=\"Alternate\"";
+		}
+		html += " href=\"" + this.FormatItemTargetURL(item) + "\" onclick=\"" + this.ID + ".AddItem('" + this.FormatItemID(item) + "');\">" + this.FormatItemText(item) + "</a>";
+		return html;
+	};
+	this.FormatEnd = function()
+	{
+		return "</div>";
+	};
+	
+	var uxparent = this;
+	this.DropDown = 
+	{
+		"SetInnerHTML": function(html)
+		{
+			var popup = uxparent.DropDownElement;
+			popup.innerHTML = html;
+		},
+		"Open": function()
+		{
+			var popup = uxparent.DropDownElement;
+			popup.style.position = "absolute";
+			popup.style.width = uxparent.ParentElement.offsetWidth + "px";
+			popup.style.display = "block";
+		},
+		"Close": function()
+		{
+			var popup = uxparent.DropDownElement;
+			popup.style.display = "none";
+		}
+	};
+	/*
+	
+	this.Suggest = function(filter)
+	{
+		return null;
+	};
 	
 	this.SelectedItems = new Array();
 	
@@ -120,80 +239,14 @@ function TextBox(id, name, url)
 		items.removeChild(items.childNodes[index]);
 	};
 	
-	var uxparent = this;
-	this.DropDown = 
-	{
-		"SetInnerHTML": function(html)
-		{
-			var popup = uxparent.GetElement("popup");
-			popup.innerHTML = html;
-		},
-		"Open": function()
-		{
-			var popup = uxparent.GetElement("popup");
-			popup.style.position = "absolute";
-			popup.style.width = uxparent.GetElement().offsetWidth + "px";
-			popup.style.display = "block";
-		},
-		"Close": function()
-		{
-			var popup = uxparent.GetElement("popup");
-			popup.style.display = "none";
-		}
-	};
-	
-	this.Refresh = function()
-	{
-		var ret = null;
-		if (this.Suggest)
-		{
-			ret = this.Suggest(this.GetValue());
-		}
-		
-		if (ret != null)
-		{
-			var html = "";
-			html += this.FormatStart();
-			for (var i = 0; i < ret.length; i++)
-			{
-				html += this.FormatItem(ret[i], (i % 2) != 0);
-			}
-			html += this.FormatEnd();
-			
-			this.DropDown.SetInnerHTML(html);
-			this.DropDown.Open();
-		}
-		else if (this.SuggestionURL)
-		{
-			var xhr = new XMLHttpRequest();
-			xhr.parentTextbox = this;
-			xhr.onreadystatechange = function()
-			{
-				if (xhr.readyState === 4)
-				{
-					var html = "";
-					html += xhr.parentTextbox.FormatStart();
-					var obj = JSON.parse(xhr.responseText);
-					if (obj.result == "success")
-					{
-						for (var i = 0; i < obj.content.length; i++)
-						{
-							html += xhr.parentTextbox.FormatItem(obj.content[i]);
-						}
-					}
-					html += xhr.parentTextbox.FormatEnd();
-					
-					xhr.parentTextbox.DropDown.SetInnerHTML(html);
-					xhr.parentTextbox.DropDown.Open();
-				}
-			};
-			xhr.open('GET', this.SuggestionURL.replace(/\%1/g, this.GetValue()), true);
-			xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
-			xhr.send(null);  // No data need to send along with the request.
-		}
-		else
-		{
-			console.error("TextBox: no data retrieval functionality (SuggestionURL/Suggest) has been implemented");
-		}
-	};
+	*/
 }
+window.addEventListener("load", function(e)
+{
+	var textBoxes = document.getElementsByClassName("TextBox");
+	for (var i = 0; i < textBoxes.length; i++)
+	{
+		textBoxes[i].NativeObject = new TextBox(textBoxes[i]);
+		eval("window." + textBoxes[i].id + " = document.getElementById('" + textBoxes[i].id + "').NativeObject;");
+	}
+});
