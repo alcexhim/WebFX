@@ -1,6 +1,8 @@
 <?php
 	namespace WebFX\Controls;
+	
 	use WebFX\WebControl;
+	use WebFX\WebControlAttribute;
 	
 	use WebFX\Controls\ListView;
 	use WebFX\Controls\ListViewColumn;
@@ -12,7 +14,6 @@
 	class TextBox extends WebControl
 	{
 		public $Name;
-		public $CssClass;
 		public $PlaceholderText;
 		
 		public $Columns;
@@ -35,30 +36,43 @@
 			$this->Name = $name;
 			$this->ShowColumnHeaders = true;
 			$this->Items = array();
+			
+			$this->TagName = "div";
+			$this->ClassList[] = "TextBox";
+		}
+		
+		protected function RenderBeginTag()
+		{
+			if ($this->RequireSelectionFromChoices)
+			{
+				$this->ClassList[] = "RequireSelection";
+			}
+			$this->Attributes[] = new WebControlAttribute("data-suggestion-url", System::ExpandRelativePath($this->SuggestionURL));
+			parent::RenderBeginTag();
 		}
 		
 		protected function RenderContent()
 		{
-?>
-<div class="Textbox<?php if ($this->RequireSelectionFromChoices) echo(" TextboxMustSelect"); if ($this->CssClass != null) echo (" " . $this->CssClass); ?>" id="Textbox_<?php echo($this->ID); ?>" onclick="<?php echo($this->ID); ?>.Focus();">
-	<div class="TextboxContent">
-		<span class="TextboxSelectedItems" id="Textbox_<?php echo($this->ID); ?>_items">
-		<?php
-		$i = 0;
-		foreach ($this->Items as $item)
-		{
-			if (!$item->Selected) continue;
-		?>
-			<span id="Textbox_txtReceiver_items_<?php echo($i); ?>" class="TextboxSelectedItem">
-				<span class="TextboxSelectedItemText"><?php echo($item->Title); ?></span>
-				<a class="TextboxSelectedItemCloseButton" onclick="txtReceiver.RemoveItem(<?php echo($i); ?>);" href="#">x</a>
-			</span>
-		<?php
-		$i++;
-		}
-		?>
-		</span>
-		<input type="text" autocomplete="off" id="Textbox_<?php echo($this->ID); ?>_textbox" name="<?php echo($this->Name); ?>" placeholder="<?php echo($this->PlaceholderText); ?>"<?php
+			echo("<div class=\"TextboxContent\">");
+			echo("<span class=\"TextboxSelectedItems\">");
+			
+			$i = 0;
+			foreach ($this->Items as $item)
+			{
+				if (!$item->Selected) continue;
+				
+				echo("<span class=\"SelectedItem\">");
+				echo("<span class=\"Text\">");
+				echo($item->Title);
+				echo("</span>");
+				echo("<a class=\"CloseButton\" href=\"#\">&nbsp;</a>");
+				echo("</span>");
+				
+				$i++;
+			}
+			
+			echo("</span>");
+			echo("<input type=\"text\" autocomplete=\"off\" name=\"" . $this->Name . "\" placeholder=\"" . $this->PlaceholderText . "\"");
 			if ($this->Width != null)
 			{
 				echo(" style=\"width: " . $this->Width . ";\"");
@@ -67,24 +81,17 @@
 			{
 				echo (" style=\"" . $this->InnerStyle . "\"");
 			}
-		?> />
-	</div>
-	<div class="TextboxSuggestionList Popup" id="Textbox_<?php echo($this->ID); ?>_popup">
-	<?php
-		$lv = new ListView("Textbox_" . $this->ID . "_ListView");
-		$lv->ShowColumnHeaders = $this->ShowColumnHeaders;
-		$lv->Columns = $this->Columns;
-		$lv->Items = $this->Items;
-		$lv->Render();
-	?>
-	</div>
-</div>
-<script type="text/javascript">
-	var <?php echo($this->ID); ?> = new TextBox("<?php echo($this->ID); ?>", "<?php echo($this->Name); ?>");
-	<?php echo($this->ID); ?>.EnableMultipleSelection = <?php echo($this->EnableMultipleSelection ? "true" : "false"); ?>;
-	<?php echo($this->ID); ?>.SuggestionURL = "<?php echo(System::ExpandRelativePath($this->SuggestionURL)); ?>";
-</script>
-<?php
+			
+			echo(" />");
+			echo("</div>");
+			
+			echo("<div class=\"SuggestionList Popup\">");
+			$lv = new ListView("Textbox_" . $this->ID . "_ListView");
+			$lv->ShowColumnHeaders = $this->ShowColumnHeaders;
+			$lv->Columns = $this->Columns;
+			$lv->Items = $this->Items;
+			$lv->Render();
+			echo("</div>");
 		}
 	}
 ?>
