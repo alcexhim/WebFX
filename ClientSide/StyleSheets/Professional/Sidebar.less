@@ -9,6 +9,17 @@ body
 		&> div.Sidebar
 		{
 			width: 72px;
+			&> div.Title
+			{
+				display: none;
+			}
+			&> a
+			{
+				&> span.Info, span.Text
+				{
+					display: none;
+				}
+			}
 		}
 	}
 	&.SidebarHidden > div.Page
