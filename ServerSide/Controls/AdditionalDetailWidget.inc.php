@@ -45,7 +45,7 @@
 				}
 				else
 				{
-					echo($mi->PostBackUrl);
+					echo(System::ExpandRelativePath($mi->PostBackUrl));
 				}
 				echo("\"");
 				if ($mi->OnClientClick != "")
@@ -95,7 +95,7 @@
 			echo("<a class=\"AdditionalDetailText\" href=\"");
 			if ($this->TargetURL != "")
 			{
-				echo($this->TargetURL);
+				echo(System::ExpandRelativePath($this->TargetURL));
 			}
 			else
 			{
@@ -126,7 +126,7 @@
 			echo("<div class=\"Content\">");
 			foreach ($this->MenuItems as $mi)
 			{
-				RenderMenuItem($mi);
+				$this->RenderMenuItem($mi);
 			}
 			echo("</div>");
 			echo("</div>");
