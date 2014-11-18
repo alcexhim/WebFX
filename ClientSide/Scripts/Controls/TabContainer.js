@@ -46,6 +46,10 @@ function TabContainer(parentElement)
 			tabs.childNodes[i].addEventListener("click", function(e)
 			{
 				tc.SetSelectedTab(tabs.childNodes[i]);
+				
+				e.preventDefault();
+				e.stopPropagation();
+				return false;
 			});
 		})(i, this);
 	}
