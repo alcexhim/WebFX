@@ -3,6 +3,7 @@
 	
 	use WebFX\System;
 	use WebFX\WebControl;
+	use WebFX\WebControlAttribute;
 	
 	class Disclosure extends WebControl
 	{
@@ -14,21 +15,29 @@
 			parent::__construct($id);
 			$this->Title = $title;
 			$this->Expanded = $expanded;
+			
+			$this->TagName = "div";
+			$this->ClassList[] = "Disclosure";
+		}
+		
+		protected function RenderBeginTag()
+		{
+			if ($this->Expanded)
+			{
+				$this->ClassList[] = "Expanded";
+				$this->Attributes[] = new WebControlAttribute("data-expanded", "true");
+			}
+			parent::RenderBeginTag();
 		}
 		
 		protected function BeforeContent()
 		{
-			echo("<div class=\"Disclosure");
-			if ($this->Expanded) echo(" Expanded");
-			echo("\" id=\"Disclosure_" . $this->ID . "\">");
-			echo("<div class=\"Title\"><a href=\"#\" onclick=\"" . $this->ID . ".ToggleExpanded();\"><span class=\"DisclosureButton\">&nbsp;</span> <span class=\"Title\">" . $this->Title . "</span></a></div>");
+			echo("<div class=\"Title\"><a href=\"#\"><span class=\"DisclosureButton\">&nbsp;</span> <span class=\"Title\">" . $this->Title . "</span></a></div>");
 			echo("<div class=\"Content\">");
 		}
 		protected function AfterContent()
 		{
 			echo("</div>");
-			echo("</div>");
-			echo("<script type=\"text/javascript\">var " . $this->ID . " = new Disclosure(\"" . $this->ID . "\");</script>");
 		}
 	}
 ?>

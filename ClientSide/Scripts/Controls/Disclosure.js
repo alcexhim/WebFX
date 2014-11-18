@@ -1,7 +1,13 @@
-function Disclosure(id)
+function Disclosure(parentElement)
 {
-	this.ID = id;
-	this.mvarExpanded = false;
+	this.ParentElement = parentElement;
+	
+	parentElement.childNodes[0].childNodes[0].addEventListener("click", function(e)
+	{
+		parentElement.NativeObject.ToggleExpanded();
+	});
+	
+	this.mvarExpanded = (parentElement.attributes["data-expanded"] != null ? parentElement.attributes["data-expanded"].value == "true" : false);
 	this.GetExpanded = function()
 	{
 		return this.mvarExpanded;
@@ -18,14 +24,24 @@ function Disclosure(id)
 	
 	this.Refresh = function()
 	{
-		var disclosure = document.getElementById("Disclosure_" + this.ID);
+		var disclosure = this.ParentElement;
 		if (this.GetExpanded())
 		{
 			disclosure.className = "Disclosure Expanded";
+			disclosure.attributes["data-expanded"].value = "true";
 		}
 		else
 		{
 			disclosure.className = "Disclosure";
+			disclosure.attributes["data-expanded"].value = "false";
 		}
 	};
 }
+window.addEventListener("load", function(e)
+{
+	var items = document.getElementsByClassName("Disclosure");
+	for (var i = 0; i < items.length; i++)
+	{
+		items[i].NativeObject = new Disclosure(items[i]);
+	}
+});
