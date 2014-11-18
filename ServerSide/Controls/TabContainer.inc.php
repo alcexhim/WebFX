@@ -33,7 +33,7 @@
 	
 	class TabContainer extends WebControl
 	{
-		public $CurrentTab;
+		public $SelectedTab;
 		public $TabPages;
 		
 		public $OnClientTabChanged;
@@ -49,9 +49,9 @@
 		
 		protected function Initialize()
 		{
-			$oldtab = $this->CurrentTab;
-			$this->CurrentTab = $this->GetTabByID($this->GetClientProperty("SelectedTabID"));
-			if ($this->CurrentTab == null) $this->CurrentTab = $oldtab;
+			$oldtab = $this->SelectedTab;
+			$this->SelectedTab = $this->GetTabByID($this->GetClientProperty("SelectedTabID"));
+			if ($this->SelectedTab == null) $this->SelectedTab = $oldtab;
 		}
 		
 		protected function RenderContent()
@@ -61,22 +61,22 @@
 				$j = 0;
 				foreach ($this->TabPages as $tabPage)
 				{
-				?><a data-id="<?php echo($this->ID); ?>" class="Tab<?php
+				?><a data-id="<?php echo($tabPage->ID); ?>" class="Tab<?php
 					if ($tabPage->Visible)
 					{
 						echo (" Visible");
 					}
-					if ($this->CurrentTab != null && ($tabPage->ID == $this->CurrentTab->ID))
+					if ($this->SelectedTab != null && ($tabPage->ID == $this->SelectedTab->ID))
 					{
 						echo (" Selected");
-					} ?>"><?php echo($tabPage->Title); ?></a><?php
+					} ?>" href="<?php if ($tabPage->TargetURL != null) { echo(System::ExpandRelativePath($tabPage->TargetURL)); } else { echo("#"); } ?>"><?php echo($tabPage->Title); ?></a><?php
 					$j++;
 				}
 				?></div><div class="TabPages"><?php
 				foreach ($this->TabPages as $tabPage)
 				{
 				?><div class="TabPage<?php
-					if ($this->CurrentTab != null && ($tabPage->ID == $this->CurrentTab->ID))
+					if ($this->SelectedTab != null && ($tabPage->ID == $this->SelectedTab->ID))
 					{
 						echo (" Selected");
 					} ?>"><?php
