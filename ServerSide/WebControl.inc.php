@@ -50,7 +50,7 @@
 			return $random_string;
 		}
 		
-		public function __construct($id)
+		public function __construct($id = null)
 		{
 			if ($id == null) $id = "WFX" . WebControl::GenerateRandomString("ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890", 10);
 			
@@ -92,6 +92,63 @@
         {
             
         }
+		
+		public static function BeginTag($tagName, $namedParameters)
+		{
+			echo("<" . $tagName);
+			
+			if (is_array($namedParameters))
+			{
+				$classNames = $namedParameters["ClassNames"];
+				$attributes = $namedParameters["Attributes"];
+				$styleRules = $namedParameters["StyleRules"];
+			}
+			
+			if (!is_array($classNames)) $classNames = array();
+			if (!is_array($attributes)) $attributes = array();
+			if (!is_array($styleRules)) $styleRules = array();
+			
+			$count = count($classNames);
+			if ($count > 0)
+			{
+				echo(" class=\"");
+				for ($i = 0; $i < $count; $i++)
+				{
+					echo($classNames[$i]);
+					if ($i < $count - 1) echo(" ");
+				}
+				echo("\"");
+			}
+			
+			$count = count($styleRules);
+			if ($count > 0)
+			{
+				echo(" style=\"");
+				for ($i = 0; $i < $count; $i++)
+				{
+					$item = $styleRules[$i];
+					echo($item->Name . ": " . $item->Value);
+					if ($i < $count - 1) echo("; ");
+				}
+			}
+			
+			$count = count($attributes);
+			if ($count > 0)
+			{
+				echo(" ");
+				for ($i = 0; $i < $count; $i++)
+				{
+					$item = $attributes[$i];
+					echo($item->Name . "=\"" . $item->Value . "\"");
+					if ($i < $count - 1) echo(" ");
+				}
+			}
+			echo(">");
+		}
+		public static function EndTag($tagName)
+		{
+			echo("</" . $tagName . ">");
+		}
 		
 		protected function RenderBeginTag()
 		{
