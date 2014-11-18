@@ -81,6 +81,9 @@
 		public $Columns;
 		public $Items;
 		
+		public $ShowGridLines;
+		public $HighlightAlternateRows;
+		
 		public $Mode;
 		
 		public function GetColumnByName($name)
@@ -99,6 +102,9 @@
 			$this->Items = array();
 			$this->AllowFiltering = true;
 			$this->Mode = ListViewMode::Detail;
+			
+			$this->ShowGridLines = true;
+			$this->HighlightAlternateRows = false;
 		}
 		
 		protected function RenderContent()
@@ -119,6 +125,14 @@
 					{
 						$table = new HTMLControlTable();
 						$table->ClassList[] = "ListView";
+						if ($this->ShowGridLines)
+						{
+							$table->ClassList[] = "GridLines";
+						}
+						if ($this->HighlightAlternateRows)
+						{
+							$table->ClassList[] = "AlternateRowHighlight";
+						}
 						if ($this->AllowFiltering)
 						{
 							$table->ClassList[] = "AllowFiltering";
