@@ -130,6 +130,7 @@
 					echo($item->Name . ": " . $item->Value);
 					if ($i < $count - 1) echo("; ");
 				}
+				echo("\"");
 			}
 			
 			$count = count($attributes);
