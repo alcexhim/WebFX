@@ -18,14 +18,17 @@ div.TextBox
 	padding: 0px;
 	box-sizing: border-box;
 	
-	&> input[type=text], input[type=password], textarea
+	&> div.TextboxContent
 	{
-		box-sizing: border-box;
-		border: 0px;
-		display: table-cell;
-		&> ::-moz-placeholder
+		&> input[type=text], input[type=password], textarea
 		{
-			color: #B7BAC9;
+			box-sizing: border-box;
+			border: none 0px;
+			display: table-cell;
+			&> ::-moz-placeholder
+			{
+				color: #B7BAC9;
+			}
 		}
 	}
 	&> div.Margin
