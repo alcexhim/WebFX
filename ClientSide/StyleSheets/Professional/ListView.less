@@ -1,18 +1,23 @@
 table.ListView
 {
+	border-collapse: collapse;
+	
 	th a
 	{
 		color: #888888;
 		text-decoration: none;
-		font-weight: normal;
 		padding: 14px 8px;
 		display: block;
+		
+		font-weight: normal;
+		text-align: left;
+		
+		&:hover
+		{
+			background-color: #FAFBFC;
+		}
 	}
 	
-	&> thead > tr > th > a:hover
-	{
-		background-color: #FAFBFC;
-	}
 	&> tbody > tr
 	{
 		&:hover
@@ -25,6 +30,8 @@ table.ListView
 	{
 		&> td
 		{
+			padding: 8px;
+			
 			&> input.Filter
 			{
 				font-weight: bold;
@@ -47,9 +54,23 @@ table.ListView
 	{
 		border: solid 1px #EEEEEE;
 	}
-	&.GridLines > tbody > tr:not(:last-child)
+	&.GridLines
 	{
-		border-bottom: solid 1px #EEEEEE;
+		&> thead, &>tbody
+		{
+			&> tr
+			{
+				&:not(:last-child)
+				{
+					border-bottom: solid 1px #EEEEEE;
+				}
+				&> td, &> th
+				{
+					border-left: solid 1px #EEEEEE;
+					border-right: solid 1px #EEEEEE;
+				}
+			}
+		}
 	}
 	&.AlternateShading > tbody > tr:nth-child(2n+1)
 	{
