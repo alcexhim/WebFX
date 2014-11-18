@@ -94,7 +94,7 @@ var Window = function(id)
 		WindowModalBackground.style.zIndex = (100 + Window.DialogCount);
 		
 		var WindowDOMObject = document.getElementById("Window_" + this.ID);
-		WindowDOMObject.style.display = "block";
+		WindowDOMObject.className = "Window Visible";
 		
 		WindowDOMObject.style.zIndex = (100 + Window.DialogCount);
 		
@@ -105,7 +105,7 @@ var Window = function(id)
 	this.Hide = function()
 	{
 		var WindowDOMObject = document.getElementById("Window_" + this.ID);
-		WindowDOMObject.style.display = "none";
+		WindowDOMObject.className = "Window";
 		this.Closed.Execute(CallbackArgument.Empty);
 		
 		Window.DialogCount--;
