@@ -23,13 +23,22 @@ table.ListView
 	
 	tr
 	{
-		&> td > input.Filter
+		&> td
 		{
-			font-weight: bold;
-			
-			&::-moz-placeholder
+			&> input.Filter
 			{
-				color: #B7BAC9;
+				font-weight: bold;
+				
+				&::-moz-placeholder
+				{
+					color: #B7BAC9;
+				}
+			}
+			
+			&> div.Title
+			{
+				font-size: 18px;
+				font-weight: 700;
 			}
 		}
 	}
@@ -41,5 +50,9 @@ table.ListView
 	&.GridLines > tbody > tr:not(:last-child)
 	{
 		border-bottom: solid 1px #EEEEEE;
+	}
+	&.AlternateShading > tbody > tr:nth-child(2n+1)
+	{
+		background-color: #FAFBFC;
 	}
 }
