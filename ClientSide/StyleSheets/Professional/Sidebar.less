@@ -9,15 +9,18 @@ body
 		&> div.Sidebar
 		{
 			width: 72px;
-			&> div.Title
+			li.Separator
 			{
 				display: none;
 			}
-			&> a
+			li.Button
 			{
-				&> span.Info, span.Text
+				&> a
 				{
-					display: none;
+					&> span.Info, span.Text
+					{
+						display: none;
+					}
 				}
 			}
 		}
@@ -60,55 +63,71 @@ body
 				opacity: 1;
 				width: 100%;
 			}
-			&> div.Title
+			li.Separator, li.Button
+			{
+				list-style-type: none;
+				margin-left: -32px;
+			}
+			li.Separator
 			{
 				color: #919DA8;
 				cursor: default;
 				font-size: 12pt;
 				padding: 12px 15px;
 			}
-			&> a
+			li.Button
 			{
-				position: relative;
-				color: #515253;
-				display: block;
-				font-weight: 400;
-				letter-spacing: 0.025em;
-				padding: 12px 24px;
-				text-decoration: none;
-				border-left: solid 2px transparent;
-				
-				&> span.Text, span.Icon
+				&> a
 				{
-					display: table-cell;
-				}
-				&> span.Icon
-				{
-					width: 24px;
-				}
-				&> span.Info
-				{
-					border-radius: 4px;
-					display: inline-block;
-					padding: 8px;
-					position: absolute;
-					right: 16px;
-					top: 4px;
-					
-					background-color: @HeaderBackground;
-					color: #FFFFFF;
-				}
-				
-				&:hover
-				{
-					color: @HeaderBackground;
+					position: relative;
+					color: #515253;
+					display: block;
+					font-weight: 400;
+					letter-spacing: 0.025em;
+					padding: 12px 24px;
 					text-decoration: none;
+					border-left: solid 2px transparent;
+					
+					&> span.Text, span.Icon
+					{
+						display: table-cell;
+					}
+					&> span.Icon
+					{
+						width: 24px;
+					}
+					&> span.Info
+					{
+						border-radius: 4px;
+						display: inline-block;
+						padding: 8px;
+						position: absolute;
+						right: 16px;
+						top: 4px;
+						
+						background-color: @HeaderBackground;
+						color: #FFFFFF;
+					}
+					
+					&:hover
+					{
+						color: @HeaderBackground;
+						text-decoration: none;
+					}
+					&.Selected
+					{
+						border-left-color: @HeaderBackground;
+						background-color: #FCFCFC;
+						color: @HeaderBackground;
+					}
 				}
-				&.Selected
+				&> ul
 				{
-					border-left-color: @HeaderBackground;
-					background-color: #FCFCFC;
-					color: @HeaderBackground;
+					display: none;
+				}
+				&.Expanded ul
+				{
+					display: block;
 				}
 			}
 		}
