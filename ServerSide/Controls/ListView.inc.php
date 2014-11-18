@@ -3,9 +3,27 @@
 	
 	use WebFX\System;
 	use WebFX\WebControl;
+	use WebFX\WebControlAttribute;
+	use WebFX\WebStyleSheetRule;
+	
+	use WebFX\HTMLControls\HTMLControlAnchor;
+	use WebFX\HTMLControls\HTMLControlTable;
+	
+	use WebFX\HTMLControls\HTMLControlForm;
+	use WebFX\HTMLControls\HTMLControlFormMethod;
 	
 	\Enum::Create("WebFX\\Controls\\ListViewMode", "Icon", "Tile", "Detail");
 	
+	class ListViewColumnCheckBox extends ListViewColumn
+	{
+		public $Checked;
+		
+		public function __construct($name, $title = null, $imageURL = null, $width = null, $checked = false)
+		{
+			parent::__construct($name, $title, $imageURL, ($width == null ? "64px" : $width));
+			$this->Checked = $checked;
+		}
+	}
 	class ListViewColumn
 	{
 		public $Name;
@@ -65,6 +83,15 @@
 		
 		public $Mode;
 		
+		public function GetColumnByName($name)
+		{
+			foreach ($this->Columns as $column)
+			{
+				if ($column->Name == $name) return $column;
+			}
+			return null;
+		}
+		
 		public function __construct($id)
 		{
 			parent::__construct($id);
@@ -90,121 +117,162 @@
 				{
 					case ListViewMode::Detail:
 					{
-?>
-<table class="ListView" style="margin-left: auto; margin-right: auto;<?php if ($this->Width != null) echo(" width: " . $this->Width); ?>">
-	<thead>
-		<tr>
-		<?php
-			foreach ($this->Columns as $column)
-			{
-		?>
-			<th<?php if ($column->Width != null) { echo (" style=\"width: " . $column->Width . ";\""); } ?>><a href="#" onclick="lvListView.Sort('<?php echo($column->Name); ?>'); return false;"><?php echo($column->Title); ?></a></th>
-		<?php
-			}
-		?>
-		</tr>
-	<?php
-		if ($this->AllowFiltering)
-		{
-	?>
-	<tr class="Filter">
-	<?php
-		foreach ($this->Columns as $column)
-		{
-	?>
-		<td>
-			<form method="POST">
-				<input class="Filter" type="text" name="ListView_<?php echo($this->ID); ?>_Filter_<?php echo($column->Name); ?>" placeholder="Filter by <?php echo($column->Title); ?>" value="<?php echo($_POST["ListView_" . $this->ID . "_Filter_" . $column->Name]); ?>" />
-			</form>
-		</td>
-	<?php
-		}
-	?>
-	</tr>
-	<?php
-		}
-	?>
-	</thead>
-	<tbody>
-	<?php
-		$alternate = false;
-		foreach ($this->Items as $item)
-		{
-			$continueItem = false;
-			if ($this->AllowFiltering)
-			{
-				foreach ($item->Columns as $column)
-				{
-					$vps = $_POST["ListView_" . $this->ID . "_Filter_" . $column->Name];
-					if (isset($vps))
-					{
-						if ($vps != "" && (mb_stripos($column->Text, $vps) === false))
+						$table = new HTMLControlTable();
+						$table->ClassList[] = "ListView";
+						if ($this->AllowFiltering)
 						{
-							$continueItem = true;
-							break;
+							$table->ClassList[] = "AllowFiltering";
 						}
-					}
-				}
-				if ($continueItem) continue;
-			}
-	?>
-		<tr<?php
-		if ($alternate)
-		{
-			if ($item->Selected)
-			{
-				echo(" class=\"Alternate Selected\"");
-			}
-			else
-			{
-				echo(" class=\"Alternate\"");
-			}
-		}
-		else
-		{
-			if ($item->Selected)
-			{
-				echo(" class=\"Selected\"");
-			}
-			else
-			{
-			}
-		}
-		?>>
-		<?php
-		foreach ($item->Columns as $column)
-		{
-		?>
-			<td><?php
-				if ($item->NavigateURL != null)
-				{
-					?><a class="Wrapper" href="<?php echo(System::ExpandRelativePath($item->NavigateURL)); ?>"><?php
-				}
-				if ($column->OnRetrieveContent != null)
-				{
-					call_user_func($column->OnRetrieveContent, $column->UserData);
-				}
-				else
-				{
-					echo($column->Content);
-				}
-				
-				if ($item->NavigateURL != null)
-				{
-					?></a><?php
-				}
-			?></td>
-		<?php
-		}
-		?>
-		</tr>
-	<?php
-			$alternate = !$alternate;
-		}
-	?>
-	</tbody>
-</table>
-<?php
+						$table->StyleRules = array
+						(
+							new WebStyleSheetRule("margin-left", "auto"),
+							new WebStyleSheetRule("margin-right", "auto")
+						);
+						if ($this->Width != null)
+						{
+							$table->StyleRules[] = new WebStyleSheetRule("width", $this->Width);
+						}
+						
+						$table->BeginContent();
+						$table->BeginHeader();
+						$table->BeginRow();
+						foreach ($this->Columns as $column)
+						{
+							$attributes = array();
+							if ($column->Width != null)
+							{
+								$attributes[] = new WebStyleSheetRule("width", $column->Width);
+							}
+							
+							$table->BeginHeaderCell(array("StyleRules" => $attributes));
+							
+							if (get_class($column) == "WebFX\\Controls\\ListViewColumnCheckBox")
+							{
+								echo("<input type=\"checkbox\" />");
+							}
+							else if (get_class($column) == "WebFX\\Controls\\ListViewColumn")
+							{
+								$link = new HTMLControlAnchor();
+								$link->TargetScript = "lvListView.Sort('" . $column->Name . "'); return false;";
+								$link->InnerHTML = $column->Title;
+								$link->Render();
+							}
+							
+							$table->EndHeaderCell();
+						}
+						$table->EndRow();
+		
+						$table->BeginRow(array
+						(
+							"ClassNames" => array ("Filter")
+						));
+						
+						foreach ($this->Columns as $column)
+						{
+							$table->BeginHeaderCell();
+							if (get_class($column) == "WebFX\\Controls\\ListViewItemColumn")
+							{
+								$realColumn = $this->GetColumnByName($column->Name);
+								if (get_class($realColumn) == "WebFX\\Controls\\ListViewColumnCheckBox")
+								{
+								}
+								else
+								{
+									$form = new HTMLControlForm(null, HTMLControlFormMethod::Post);
+									$form->BeginContent();
+									
+									$input = new TextBox();
+									$input->Name = "ListView_" . $this->ID . "_Filter_" . $column->Name;
+									$input->PlaceholderText = "Filter by " . $column->Title;
+									$input->Text = $_POST["ListView_" . $this->ID . "_Filter_" . $column->Name];
+									$input->Render();
+									
+									$form->EndContent();
+								}
+							}
+							$table->EndHeaderCell();
+						}
+						
+						$table->EndRow();
+						
+						$table->EndHeader();
+						$table->BeginBody();
+						
+						foreach ($this->Items as $item)
+						{
+							$continueItem = false;
+							if ($this->AllowFiltering)
+							{
+								foreach ($item->Columns as $column)
+								{
+									if (get_class($column) == "WebFX\\Controls\\ListViewItemColumn")
+									{
+										$realColumn = $this->GetColumnByName($column->Name);
+										if (get_class($realColumn) == "WebFX\\Controls\\ListViewColumnCheckBox")
+										{
+										}
+										else
+										{
+											$vps = $_POST["ListView_" . $this->ID . "_Filter_" . $column->Name];
+											if (isset($vps))
+											{
+												if ($vps != "" && (mb_stripos($column->Text, $vps) === false))
+												{
+													$continueItem = true;
+													break;
+												}
+											}
+										}
+									}
+								}
+								if ($continueItem) continue;
+							}
+							
+							$classNames = array();
+							if ($item->Selected) $classNames[] = "Selected";
+							
+							$table->BeginRow(array("ClassNames" => $classNames));
+							
+							foreach ($item->Columns as $column)
+							{
+								if (get_class($column) == "WebFX\\Controls\\ListViewItemColumn")
+								{
+									$realColumn = $this->GetColumnByName($column->Name);
+									if (get_class($realColumn) == "WebFX\\Controls\\ListViewColumnCheckBox")
+									{
+										$table->BeginCell();
+										echo("<input type=\"checkbox\" />");
+										$table->EndCell();
+									}
+									else if (get_class($realColumn) == "WebFX\\Controls\\ListViewColumn")
+									{
+										$table->BeginCell();
+										if ($item->NavigateURL != null)
+										{
+											?><a class="Wrapper" href="<?php echo(System::ExpandRelativePath($item->NavigateURL)); ?>"><?php
+										}
+										if ($column->OnRetrieveContent != null)
+										{
+											call_user_func($column->OnRetrieveContent, $column->UserData);
+										}
+										else
+										{
+											echo($column->Content);
+										}
+										
+										if ($item->NavigateURL != null)
+										{
+											?></a><?php
+										}
+										$table->EndCell();
+									}
+								}
+							}
+							$table->EndRow();
+						}
+						
+						$table->EndBody();
+						$table->EndContent();
 						break;
 					}
 					case ListViewMode::Tile:
