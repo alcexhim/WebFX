@@ -338,6 +338,8 @@
 	require("WebPageMetadata.inc.php");
 	require("WebPageVariable.inc.php");
 	
+	require("HTMLControl.inc.php");
+	
 	System::$Configuration = array();
 	System::$EnableTenantedHosting = false;
 	
@@ -360,6 +362,12 @@
 	
 	// Global Controls loader
 	$a = glob($WebFXRootPath . "/Controls/*.inc.php");
+	foreach ($a as $filename)
+	{
+		require_once($filename);
+	}
+	// Global HTMLControls loader
+	$a = glob($WebFXRootPath . "/HTMLControls/*.inc.php");
 	foreach ($a as $filename)
 	{
 		require_once($filename);
