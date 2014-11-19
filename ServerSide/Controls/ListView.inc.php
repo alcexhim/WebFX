@@ -78,6 +78,8 @@
 	{
 		public $AllowFiltering;
 		
+		public $EnableAddRemoveRows;
+		
 		public $Columns;
 		public $Items;
 		
@@ -105,6 +107,7 @@
 			
 			$this->ShowGridLines = true;
 			$this->HighlightAlternateRows = false;
+			$this->EnableAddRemoveRows = false;
 		}
 		
 		protected function RenderContent()
@@ -150,6 +153,15 @@
 						$table->BeginContent();
 						$table->BeginHeader();
 						$table->BeginRow();
+						
+						
+						if ($this->EnableAddRemoveRows)
+						{
+							$table->BeginHeaderCell();
+							echo("<!-- edit buttons go here -->");
+							$table->EndHeaderCell();
+						}
+						
 						foreach ($this->Columns as $column)
 						{
 							$attributes = array();
@@ -181,6 +193,12 @@
 							"ClassNames" => array ("Filter")
 						));
 						
+						if ($this->EnableAddRemoveRows)
+						{
+							$table->BeginCell();
+							echo("<!-- unused cell for edit buttons -->");
+							$table->EndCell();
+						}
 						foreach ($this->Columns as $column)
 						{
 							$table->BeginHeaderCell();
@@ -246,7 +264,12 @@
 							if ($item->Selected) $classNames[] = "Selected";
 							
 							$table->BeginRow(array("ClassNames" => $classNames));
-							
+							if ($this->EnableAddRemoveRows)
+							{
+								$table->BeginCell();
+								echo("<!-- edit buttons go here -->");
+								$table->EndCell();
+							}
 							foreach ($item->Columns as $column)
 							{
 								if (get_class($column) == "WebFX\\Controls\\ListViewItemColumn")
