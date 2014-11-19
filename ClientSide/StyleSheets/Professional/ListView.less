@@ -2,19 +2,31 @@ table.ListView
 {
 	border-collapse: collapse;
 	
-	th a
+	&:not(.RowCheckBoxes) th.RowCheckBoxes, &:not(.RowCheckBoxes) td.RowCheckBoxes
 	{
-		color: #888888;
-		text-decoration: none;
-		padding: 14px 8px;
-		display: block;
-		
-		font-weight: normal;
-		text-align: left;
-		
-		&:hover
+		display: none;
+	}
+	
+	th
+	{
+		&.RowCheckBoxes
 		{
-			background-color: #FAFBFC;
+			width: 64px;
+		}
+		a
+		{
+			color: #888888;
+			text-decoration: none;
+			padding: 14px 8px;
+			display: block;
+			
+			font-weight: normal;
+			text-align: left;
+			
+			&:hover
+			{
+				background-color: #FAFBFC;
+			}
 		}
 	}
 	

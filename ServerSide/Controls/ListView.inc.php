@@ -140,6 +140,11 @@
 						{
 							$table->ClassList[] = "AllowFiltering";
 						}
+						if ($this->EnableRowCheckBoxes)
+						{
+							$table->ClassList[] = "RowCheckBoxes";
+						}
+						
 						$table->StyleRules = array
 						(
 							new WebStyleSheetRule("margin-left", "auto"),
@@ -161,6 +166,10 @@
 							echo("<!-- edit buttons go here -->");
 							$table->EndHeaderCell();
 						}
+						
+						$table->BeginHeaderCell(array("ClassNames" => array("RowCheckBoxes")));
+						echo("<input type=\"checkbox\" />");
+						$table->EndHeaderCell();
 						
 						foreach ($this->Columns as $column)
 						{
@@ -199,6 +208,11 @@
 							echo("<!-- unused cell for edit buttons -->");
 							$table->EndCell();
 						}
+						
+						$table->BeginHeaderCell(array("ClassNames" => array("RowCheckBoxes")));
+						echo("<!-- unused cell for row check boxes -->");
+						$table->EndHeaderCell();
+						
 						foreach ($this->Columns as $column)
 						{
 							$table->BeginHeaderCell();
@@ -264,6 +278,11 @@
 							if ($item->Selected) $classNames[] = "Selected";
 							
 							$table->BeginRow(array("ClassNames" => $classNames));
+								
+							$table->BeginHeaderCell(array("ClassNames" => array("RowCheckBoxes")));
+							echo("<input type=\"checkbox\" />");
+							$table->EndHeaderCell();
+							
 							if ($this->EnableAddRemoveRows)
 							{
 								$table->BeginCell();
