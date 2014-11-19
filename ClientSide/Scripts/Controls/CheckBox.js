@@ -2,14 +2,11 @@ function CheckBox(parentElement)
 {
 	this.ParentElement = parentElement;
 	
-	parentElement.addEventListener("change", function(e)
-	{
-		parentElement.NativeObject.SetChecked(parentElement.checked);
-	});
-	
 	this.mvarChecked = parentElement.hasAttribute("checked");
 	this.SetChecked = function(value)
 	{
+		if (this.GetChecked() == value) return;
+		
 		this.mvarChecked = value;
 		this.ParentElement.checked = this.mvarChecked;
 		if (this.mvarChecked)
@@ -20,6 +17,8 @@ function CheckBox(parentElement)
 		{
 			this.NewParentElement.className = "CheckBox";
 		}
+		
+		WebFramework.RaiseEvent(this.ParentElement, "change", null);
 	}
 	this.GetChecked = function()
 	{
@@ -46,6 +45,11 @@ function CheckBox(parentElement)
 	parentElement.parentNode.insertBefore(child, parentElement);
 	
 	this.NewParentElement = child;
+	
+	parentElement.addEventListener("change", function(e)
+	{
+		parentElement.NativeObject.SetChecked(parentElement.checked);
+	});
 	this.SetChecked(parentElement.checked);
 }
 function RadioButton(parentElement)
