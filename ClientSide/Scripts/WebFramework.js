@@ -60,6 +60,30 @@ var Page =
 
 var WebFramework =
 {
+	"RaiseEvent": function(element, eventName, args)
+	{
+		var event; // The custom event that will be created
+		if (document.createEvent)
+		{
+			event = document.createEvent("HTMLEvents");
+			event.initEvent(eventName, true, true);
+		}
+		else
+		{
+			event = document.createEventObject();
+			event.eventType = eventName;
+		}
+		event.eventName = eventName;
+
+		if (document.createEvent)
+		{
+			return element.dispatchEvent(event);
+		}
+		else
+		{
+			element.fireEvent("on" + eventName, event);
+		}
+	},
 	"EventHandler": function()
 	{
 		this._functions = new Array();
