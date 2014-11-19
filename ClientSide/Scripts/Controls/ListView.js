@@ -4,47 +4,77 @@ var ListViewMode =
 	"Tile": 2
 };
 
-function ListView(id)
+function ListView(parentElement)
 {
-	var table = document.getElementById("ListView_" + id);
-	if (table == null || table.tagName != "TABLE") return;
+	this.ParentElement = parentElement;
 	
-	for (var j = 0; j < table.rows.length; j++)
+	this.SetSelectedRows = function(indices)
 	{
-		table.rows[j].onclick = function()
+		for (var i = 0; i < parentElement.tBodies[0].rows.length; i++)
 		{
-			ListView_Row_SetSelected(this);
-		};
-	}
-}
-function ListView_Row_SetSelected(row)
-{
-	if (row.className == "Filter") return;
-	
-	var childNodes = row.parentNode.childNodes;
-	var alternate = (row.className == "Alternate" || row.className == "Selected Alternate");
-	
-	for (var i = 0; i < childNodes.length; i++)
+			parentElement.tBodies[0].rows[i].className = "";
+		}
+		for (var i = 0; i < indices.length; i++)
+		{
+			parentElement.tBodies[0].rows[indices[i]].className = "Selected";
+		}
+	};
+	this.SetSelectedRow = function(index)
 	{
-		if (childNodes[i].className == "Filter") continue;
+		for (var i = 0; i < parentElement.tBodies[0].rows.length; i++)
+		{
+			if (i == index)
+			{
+				parentElement.tBodies[0].rows[i].className = "Selected";
+			}
+			else
+			{
+				parentElement.tBodies[0].rows[i].className = "";
+			}
+		}
+	};
+	
+	if (parentElement.tagName == "TABLE")
+	{
+		if (parentElement.tHead != null && parentElement.tHead.rows[0] != null)
+		{
+			// begin : magic - do not even begin to attempt to understand this logic
+			for (var i = 0; i < parentElement.tHead.rows[0].cells.length; i++)
+			{
+				if (parentElement.tHead.rows[0].cells[i].childNodes[0].className == "CheckBox")
+				{
+					(function(i)
+					{
+						parentElement.tHead.rows[0].cells[i].childNodes[1].addEventListener("change", function(e)
+						{
+							for (var j = 0; j < parentElement.tBodies[0].rows.length; j++)
+							{
+								parentElement.tBodies[0].rows[j].cells[i].childNodes[0].NativeObject.SetChecked(parentElement.tHead.rows[0].cells[i].childNodes[0].NativeObject.GetChecked());
+							}
+						});
+					})(i);
+				}
+			}
+			// end : magic
+		}
 		
-		if (childNodes[i].className == "Selected Alternate")
+		for (var i = 0; i < parentElement.tBodies[0].rows.length; i++)
 		{
-			childNodes[i].className = "Alternate";
+			(function(i)
+			{
+				parentElement.tBodies[0].rows[i].onclick = function()
+				{
+					parentElement.NativeObject.SetSelectedRow(i);
+				};
+			})(i);
 		}
-		else if (childNodes[i].className == "Selected")
-		{
-			childNodes[i].className = "";
-		}
-		childNodes[i].selected = false;
 	}
-	if (alternate)
-	{
-		row.className = "Selected Alternate";
-	}
-	else
-	{
-		row.className = "Selected";
-	}
-	row.selected = true;
 }
+window.addEventListener("load", function(e)
+{
+	var items = document.getElementsByClassName("ListView");
+	for (var i = 0; i < items.length; i++)
+	{
+		items[i].NativeObject = new ListView(items[i]);
+	}
+});
