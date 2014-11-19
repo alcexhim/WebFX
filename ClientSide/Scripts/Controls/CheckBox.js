@@ -10,7 +10,7 @@ function CheckBox(parentElement)
 	this.mvarChecked = parentElement.hasAttribute("checked");
 	this.SetChecked = function(value)
 	{
-		this.mvarChecked = !this.mvarChecked;
+		this.mvarChecked = value;
 		this.ParentElement.checked = this.mvarChecked;
 		if (this.mvarChecked)
 		{
@@ -46,6 +46,7 @@ function CheckBox(parentElement)
 	parentElement.parentNode.insertBefore(child, parentElement);
 	
 	this.NewParentElement = child;
+	this.SetChecked(parentElement.checked);
 }
 function RadioButton(parentElement)
 {
