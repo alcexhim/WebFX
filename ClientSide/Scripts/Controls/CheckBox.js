@@ -5,8 +5,6 @@ function CheckBox(parentElement)
 	this.mvarChecked = parentElement.hasAttribute("checked");
 	this.SetChecked = function(value)
 	{
-		if (this.GetChecked() == value) return;
-		
 		this.mvarChecked = value;
 		this.ParentElement.checked = this.mvarChecked;
 		if (this.mvarChecked)
@@ -18,6 +16,7 @@ function CheckBox(parentElement)
 			this.NewParentElement.className = "CheckBox";
 		}
 		
+		if (this.GetChecked() == value) return;
 		WebFramework.RaiseEvent(this.ParentElement, "change", null);
 	}
 	this.GetChecked = function()
