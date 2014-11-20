@@ -86,6 +86,8 @@
 		public $ShowGridLines;
 		public $HighlightAlternateRows;
 		
+		public $EnableRowCheckBoxes;
+		
 		public $Mode;
 		
 		public function GetColumnByName($name)
