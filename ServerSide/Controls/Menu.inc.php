@@ -3,21 +3,31 @@
 	use WebFX\System;
 	use WebFX\WebControl;
 	
+	use WebFX\WebControlAttribute;
+	use WebFX\WebStyleSheetRule;
+	
 	class Menu extends WebControl
 	{
 		public $Items;
 		
+		public function __construct($id = null)
+		{
+			parent::__construct($id);
+			
+			$this->TagName = "div";
+			$this->ClassList[] = "Menu";
+			$this->ClassList[] = "Popup";
+			
+			if ($this->Top != null) $this->StyleRules[] = new WebStyleSheetRule("top", $this->Top);
+			if ($this->Left != null) $this->StyleRules[] = new WebStyleSheetRule("left", $this->Left);
+			if ($this->Width != null) $this->StyleRules[] = new WebStyleSheetRule("width", $this->Width);
+			if ($this->Height != null) $this->StyleRules[] = new WebStyleSheetRule("height", $this->Height);
+			if ($this->MaximumWidth != null) $this->StyleRules[] = new WebStyleSheetRule("max-width", $this->MaximumWidth);
+			if ($this->MaximumHeight != null) $this->StyleRules[] = new WebStyleSheetRule("max-height", $this->MaximumHeight);
+		}
+		
 		protected function RenderContent()
 		{
-			echo("<div class=\"Menu Popup\" id=\"Menu_" . $this->ID . "\" style=\"");
-			if ($this->Top != null) echo("top: " . $this->Top . ";");
-			if ($this->Left != null) echo("left: " . $this->Left . ";");
-			if ($this->Width != null) echo("width: " . $this->Width . ";");
-			if ($this->Height != null) echo("height: " . $this->Height . ";");
-			if ($this->MaximumWidth != null) echo("max-width: " . $this->MaximumWidth . ";");
-			if ($this->MaximumHeight != null) echo("max-height: " . $this->MaximumHeight . ";");
-			
-			echo("\">");
 			foreach ($this->Items as $menuItem)
 			{
 				if (get_class($menuItem) == "WebFX\\Controls\\MenuItemCommand")
@@ -52,8 +62,6 @@
 					echo("<!-- Unknown MenuItem class: " . get_class($menuItem) . " -->");
 				}
 			}
-			echo("</div>");
-			echo("<script type=\"text/javascript\">var " . $this->ID . " = new Menu('" . $this->ID . "');</script>");
 		}
 	}
 	
