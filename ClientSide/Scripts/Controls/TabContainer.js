@@ -1,9 +1,18 @@
 function TabContainer(parentElement)
 {
 	this.ParentElement = parentElement;
+	
+	this.mvarSelectedTabID = null;
+	this.GetSelectedTabID = function()
+	{
+		return this.mvarSelectedTabID;
+	};
+	
 	this.SetSelectedTab = function(tab)
 	{
 		var tabContainer = this.ParentElement;
+		if (tabContainer == null) return;
+		
 		var tabs = tabContainer.childNodes[0];
 		var tabPages = tabContainer.childNodes[1];
 		var selectedIndex = -1;
@@ -27,13 +36,15 @@ function TabContainer(parentElement)
 		
 		WebFramework.SetClientProperty(this.ID, "SelectedTabIndex", selectedIndex);
 		
-		if (tabContainer != null)
+		if (tabs.childNodes[selectedIndex] != null && tabs.childNodes[selectedIndex].attributes["data-id"] != null)
 		{
-			var attOnClientTabChanged = tabContainer.attributes["data-onclienttabchanged"];
-			if (attOnClientTabChanged != null)
-			{
-				eval(attOnClientTabChanged.value);
-			}
+			this.mvarSelectedTabID = tabs.childNodes[selectedIndex].attributes["data-id"].value;
+		}
+		
+		var attOnClientTabChanged = tabContainer.attributes["data-onclienttabchanged"];
+		if (attOnClientTabChanged != null)
+		{
+			eval(attOnClientTabChanged.value);
 		}
 	};
 	
@@ -53,6 +64,8 @@ function TabContainer(parentElement)
 			});
 		})(i, this);
 	}
+	
+	eval("window." + tabContainer.attributes["id"].value + " = this;");
 }
 window.addEventListener("load", function(e)
 {

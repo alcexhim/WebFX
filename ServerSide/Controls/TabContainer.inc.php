@@ -3,6 +3,7 @@
 	
 	use WebFX\System;
 	use WebFX\WebControl;
+	use WebFX\WebControlAttribute;
 	
 	\Enum::Create("WebFX\\Controls\\TabContainerTabPosition", "Top", "Bottom", "Left", "Right");
 	
@@ -38,6 +39,12 @@
 		
 		public $OnClientTabChanged;
 		
+		public function __construct($id)
+		{
+			parent::__construct($id);
+			$this->TagName = "div";
+		}
+		
 		public function GetTabByID($id)
 		{
 			foreach ($this->TabPages as $tabPage)
@@ -54,45 +61,67 @@
 			if ($this->SelectedTab == null) $this->SelectedTab = $oldtab;
 		}
 		
+		protected function RenderBeginTag()
+		{
+			if ($this->OnClientTabChanged != null)
+			{
+				$this->Attributes[] = new WebControlAttribute("data-onclienttabchanged", $this->OnClientTabChanged);
+			}
+			$this->ClassList[] = "TabContainer";
+			
+			parent::RenderBeginTag();
+		}
+		
 		protected function RenderContent()
 		{
-?>
-			<div class="TabContainer" data-onclienttabchanged="<?php echo($this->OnClientTabChanged); ?>"><div class="Tabs"><?php
-				$j = 0;
-				foreach ($this->TabPages as $tabPage)
+			echo("<div class=\"Tabs\">");
+			$j = 0;
+			foreach ($this->TabPages as $tabPage)
+			{
+				echo("<a data-id=\"" . $tabPage->ID . "\" class=\"Tab");
+				if ($tabPage->Visible)
 				{
-				?><a data-id="<?php echo($tabPage->ID); ?>" class="Tab<?php
-					if ($tabPage->Visible)
-					{
-						echo (" Visible");
-					}
-					if ($this->SelectedTab != null && ($tabPage->ID == $this->SelectedTab->ID))
-					{
-						echo (" Selected");
-					} ?>" href="<?php if ($tabPage->TargetURL != null) { echo(System::ExpandRelativePath($tabPage->TargetURL)); } else { echo("#"); } ?>"><?php echo($tabPage->Title); ?></a><?php
-					$j++;
+					echo (" Visible");
 				}
-				?></div><div class="TabPages"><?php
-				foreach ($this->TabPages as $tabPage)
+				if ($this->SelectedTab != null && ($tabPage->ID == $this->SelectedTab->ID))
 				{
-				?><div class="TabPage<?php
-					if ($this->SelectedTab != null && ($tabPage->ID == $this->SelectedTab->ID))
-					{
-						echo (" Selected");
-					} ?>"><?php
-					if (is_callable($tabPage->ContentFunction))
-					{
-						call_user_func($tabPage->ContentFunction);
-					}
-					else
-					{
-						echo($tabPage->Content);
-					}
-					?></div><?php
+					echo (" Selected");
 				}
-				?></div>
-			</div>
-			<?php
+				echo("\" href=\"");
+				if ($tabPage->TargetURL != null)
+				{
+					echo(System::ExpandRelativePath($tabPage->TargetURL));
+				}
+				else
+				{
+					echo("#");
+				}
+				echo("\">");
+				echo($tabPage->Title);
+				echo("</a>");
+				$j++;
+			}
+			echo("</div>");
+			echo("<div class=\"TabPages\">");
+			foreach ($this->TabPages as $tabPage)
+			{
+				echo("<div class=\"TabPage");
+				if ($this->SelectedTab != null && ($tabPage->ID == $this->SelectedTab->ID))
+				{
+					echo (" Selected");
+				}
+				echo("\">");
+				if (is_callable($tabPage->ContentFunction))
+				{
+					call_user_func($tabPage->ContentFunction);
+				}
+				else
+				{
+					echo($tabPage->Content);
+				}
+				echo("</div>");
+			}
+			echo("</div>");
 		}
 	}
 ?>
