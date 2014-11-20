@@ -24,6 +24,9 @@
 		public $Attributes;
 		public $StyleRules;
 		
+		public $ToolTipTitle;
+		public $ToolTipText;
+		
 		private static function GenerateRandomString($valid_chars, $length)
 		{
 			// start with an empty random string
@@ -247,6 +250,9 @@
 				{
 					echo(" id=\"" . $this->ID . "\"");
 				}
+				
+				if ($this->ToolTipTitle != null) echo(" data-tooltip-title=\"" . $this->ToolTipTitle . "\"");
+				if ($this->ToolTipText != null) echo(" data-tooltip-content=\"" . $this->ToolTipText . "\"");
 				echo(">");
 			}
 		}
