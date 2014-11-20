@@ -45,6 +45,25 @@ table.ListView
 		{
 			&> td
 			{
+				background-color: lighten(@ThemeColor, 45%);
+				&:first-child
+				{
+					border-left: solid 3px @ThemeColor;
+				}
+				&:last-child
+				{
+					border-right: solid 1px @ThemeColor;
+				}
+				border-top: solid 1px @ThemeColor;
+				border-bottom: solid 1px @ThemeColor;
+			}
+		}
+		*/
+		/*
+		&.Selected
+		{
+			&> td
+			{
 				background-color: #F1F2F3;
 			}
 			&:hover > td
