@@ -5,6 +5,9 @@ function Disclosure(parentElement)
 	parentElement.childNodes[0].childNodes[0].addEventListener("click", function(e)
 	{
 		parentElement.NativeObject.ToggleExpanded();
+		e.preventDefault();
+		e.stopPropagation();
+		return false;
 	});
 	
 	this.mvarExpanded = (parentElement.attributes["data-expanded"] != null ? parentElement.attributes["data-expanded"].value == "true" : false);

@@ -62,7 +62,7 @@
 			}
 		}
 		
-		protected function Initialize()
+		protected function OnInitialize()
 		{
 			$this->TagName = "div";
 			$this->ClassList[] = "AdditionalDetailWidget";

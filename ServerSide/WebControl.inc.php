@@ -5,6 +5,11 @@
     {
 		public $ID;
 		public $ClientID;
+		public $ClientIDMode;
+		
+		public $Controls;
+		
+		public $ParentObject;
 		
 		public $Top;
 		public $Left;
@@ -26,6 +31,20 @@
 		
 		public $ToolTipTitle;
 		public $ToolTipText;
+		
+		public function FindParentPage()
+		{
+			$parent = $this->ParentObject;
+			while ($parent != null)
+			{
+				if (get_class($parent) == "WebFX\\Parser\\Page" || get_class($parent) == "WebFX\\Parser\\MasterPage")
+				{
+					return $parent;
+				}
+				$parent = $parent->ParentObject;
+			}
+			return null;
+		}
 		
 		private static function GenerateRandomString($valid_chars, $length)
 		{
@@ -55,12 +74,11 @@
 		
 		public function __construct($id = null)
 		{
-			if ($id == null) $id = "WFX" . WebControl::GenerateRandomString("ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890", 10);
-			
-			$this->ID = $id;
 			$this->Visible = true;
 			$this->HorizontalAlignment = HorizontalAlignment::Inherit;
 			$this->VerticalAlignment = VerticalAlignment::Inherit;
+			
+			$this->Controls = array();
 			
 			$this->TagName = null;
 			$this->ClassList = array();
@@ -78,11 +96,20 @@
 			setcookie($this->ID . "__ClientProperty_" . $name, $value, $expires);
 		}
 		
-        private $isInitialized;
-        protected function Initialize()
+        public function Initialize()
         {
-            
+            $this->OnInitialize();
+			foreach ($this->Controls as $control)
+			{
+				$control->Initialize();
+			}
         }
+		
+		protected function OnInitialize()
+		{
+			
+		}
+		
         protected function BeforeContent()
         {
             
@@ -171,7 +198,14 @@
 					{
 						if (strtolower($attr->Name) == "style")
 						{
-							$styleAttributeContent .= $attr->Value . "; ";
+							if (!\StringMethods::EndsWith($attr->Value, ";"))
+							{
+								$styleAttributeContent .= $attr->Value . "; ";
+							}
+							else
+							{
+								$styleAttributeContent .= $attr->Value;
+							}
 						}
 						else if (strtolower($attr->Name) == "class")
 						{
@@ -242,6 +276,15 @@
 					echo(" class=\"" . $classAttributeContent . "\"");
 				}
 				
+				if ($id == null)
+				{
+					if ($this->ClientIDMode == WebControlClientIDMode::Automatic)
+					{
+						$id = "WFX" . WebControl::GenerateRandomString("ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890", 10);
+					}
+				}
+				$this->ID = $id;
+				
 				if ($this->ClientID != null)
 				{
 					echo(" id=\"" . $this->ClientID . "\"");
@@ -266,11 +309,6 @@
 		
 		public function BeginContent()
 		{
-            if (!$this->isInitialized)
-            {
-                $this->Initialize();
-                $this->isInitialized = true;
-            }
 			$this->RenderBeginTag();
             $this->BeforeContent();
 		}
@@ -283,7 +321,17 @@
         public function Render()
         {
             $this->BeginContent();
-            $this->RenderContent();
+			if (count($this->Controls) > 0)
+			{
+				foreach ($this->Controls as $control)
+				{
+					$control->Render();
+				}
+			}
+			else
+			{
+				$this->RenderContent();
+			}
             $this->EndContent();
         }
     }

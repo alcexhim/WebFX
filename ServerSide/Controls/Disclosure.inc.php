@@ -4,20 +4,24 @@
 	use WebFX\System;
 	use WebFX\WebControl;
 	use WebFX\WebControlAttribute;
+	use WebFX\WebScript;
 	
 	class Disclosure extends WebControl
 	{
 		public $Expanded;
 		public $Title;
 		
-		public function __construct($id, $title = "", $expanded = true)
+		public function __construct()
 		{
-			parent::__construct($id);
-			$this->Title = $title;
-			$this->Expanded = $expanded;
-			
+			parent::__construct();
 			$this->TagName = "div";
 			$this->ClassList[] = "Disclosure";
+		}
+		
+		protected function OnInitialize()
+		{
+			$parent = $this->FindParentPage();
+			if ($parent != null) $parent->Scripts[] = new WebScript("http://static.alcehosting.net/dropins/WebFramework/Scripts/Controls/Disclosure.js");
 		}
 		
 		protected function RenderBeginTag()
@@ -26,6 +30,10 @@
 			{
 				$this->ClassList[] = "Expanded";
 				$this->Attributes[] = new WebControlAttribute("data-expanded", "true");
+			}
+			else
+			{
+				$this->Attributes[] = new WebControlAttribute("data-expanded", "false");
 			}
 			parent::RenderBeginTag();
 		}

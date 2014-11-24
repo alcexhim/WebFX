@@ -6,12 +6,12 @@ function Popup(id)
 		Popup.HideAll();
 		
 		var obj = document.getElementById("Popup_" + this.ID);
-		obj.style.display = "inline-block";
+		obj.classList.add("Visible");
 	};
 	this.Hide = function()
 	{
 		var obj = document.getElementById("Popup_" + this.ID);
-		obj.style.display = "none";
+		obj.classList.remove("Visible");
 	};
 }
 Popup.HideAll = function()
@@ -19,7 +19,7 @@ Popup.HideAll = function()
 	var elems = document.getElementsByClassName("Popup");
 	for (var i = 0; i < elems.length; i++)
 	{
-		elems[i].style.display = "none";
+		elems[i].classList.remove("Visible");
 	}
 };
 

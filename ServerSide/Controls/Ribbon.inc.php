@@ -50,7 +50,7 @@
 			return null;
 		}
 		
-		protected function Initialize()
+		protected function OnInitialize()
 		{
 			$this->Collapsed = ($this->GetClientProperty("Collapsed", "false") == "true");
 			$SelectedTabID = ($this->GetClientProperty("ActiveTabID", null));

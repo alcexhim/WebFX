@@ -54,7 +54,7 @@
 			return null;
 		}
 		
-		protected function Initialize()
+		protected function OnInitialize()
 		{
 			$oldtab = $this->SelectedTab;
 			$this->SelectedTab = $this->GetTabByID($this->GetClientProperty("SelectedTabID"));

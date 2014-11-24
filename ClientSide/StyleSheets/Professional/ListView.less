@@ -2,7 +2,7 @@ table.ListView
 {
 	border-collapse: collapse;
 	
-	&:not(.RowCheckBoxes) th.RowCheckBoxes, &:not(.RowCheckBoxes) td.RowCheckBoxes
+	&:not(.RowCheckBoxes) th.RowCheckBoxes *, &:not(.RowCheckBoxes) td.RowCheckBoxes *
 	{
 		display: none;
 	}
@@ -30,6 +30,11 @@ table.ListView
 		}
 	}
 	
+	&:not(.RowCheckBoxes) th.RowCheckBoxes
+	{
+		width: 0px;
+	}
+	
 	&> tbody > tr
 	{
 		&:hover
@@ -40,12 +45,24 @@ table.ListView
 	
 	tr
 	{
-		/*
+		&> td, th
+		{
+			&:first-child
+			{
+				border-left: solid 3px transparent;
+			}
+			&:last-child
+			{
+				border-right: solid 1px transparent;
+			}
+		}
 		&.Selected
 		{
-			&> td
+			&> td, th
 			{
 				background-color: lighten(@ThemeColor, 45%);
+				border-top: solid 1px @ThemeColor;
+				border-bottom: solid 1px @ThemeColor;
 				&:first-child
 				{
 					border-left: solid 3px @ThemeColor;
@@ -54,11 +71,8 @@ table.ListView
 				{
 					border-right: solid 1px @ThemeColor;
 				}
-				border-top: solid 1px @ThemeColor;
-				border-bottom: solid 1px @ThemeColor;
 			}
 		}
-		*/
 		/*
 		&.Selected
 		{

@@ -47,31 +47,66 @@
 			$this->Value = $value;
 		}
 	}
-	class MarkupElement
+	abstract class MarkupElement
 	{
+		public abstract function GetOuterMarkup();
+		public abstract function GetInnerMarkup();
+		
 		public static function FromArray($array)
 		{
-			$element = new MarkupTagElement();
-			$element->Name = $array["Name"];
+			if (!isset($array["Type"])) return null;
 			
-			if (isset($array["Attributes"]))
+			switch ($array["Type"])
 			{
-				$attributes = $array["Attributes"];
-				foreach ($attributes as $name => $value)
+				case "MarkupTagElement":
 				{
-					$element->Attributes[] = new MarkupAttribute($name, $value);
+					$element = new MarkupTagElement();
+					$element->Name = $array["Name"];
+					
+					if (isset($array["Attributes"]))
+					{
+						$attributes = $array["Attributes"];
+						foreach ($attributes as $name => $value)
+						{
+							$element->Attributes[] = new MarkupAttribute($name, $value);
+						}
+					}
+					if (isset($array["Elements"]))
+					{
+						$elements = $array["Elements"];
+						foreach ($elements as $elem)
+						{
+							$element->Elements[] = MarkupElement::FromArray($elem);
+						}
+					}
+					if (isset($array["Value"]))
+					{
+						$element->Value = $array["Value"];
+					}
+					
+					return $element;
+				}
+				case "MarkupLiteralElement":
+				{
+					$element = new MarkupLiteralElement();
+					$element->Value = $array["Value"];
+					return $element;
 				}
 			}
-			if (isset($array["Elements"]))
-			{
-				$elements = $array["Elements"];
-				foreach ($elements as $elem)
-				{
-					$element->Elements[] = MarkupElement::FromArray($elem);
-				}
-			}
-			
-			return $element;
+			return null;
+		}
+	}
+	class MarkupLiteralElement extends MarkupElement
+	{
+		public $Value;
+		
+		public function GetOuterMarkup()
+		{
+			return $this->GetInnerMarkup();
+		}
+		public function GetInnerMarkup()
+		{
+			return $this->Value;
 		}
 	}
 	class MarkupTagElement extends MarkupElement
@@ -81,7 +116,35 @@
 		public $Attributes;
 		public $Elements;
 		
-		public $Value;
+		public function GetOuterMarkup()
+		{
+			$str = "<" . $this->Name;
+			if (count($this->Attributes) != 0)
+			{
+				foreach ($this->Attributes as $attr)
+				{
+					$str .= " " . $attr->Name . "=\"" . $attr->Value . "\"";
+				}
+			}
+			if (count($this->Elements) == 0)
+			{
+				$str .= " />";
+			}
+			else
+			{
+				$str .= ">" . $this->GetInnerMarkup() . "</" . $this->Name . ">";
+			}
+			return $str;
+		}
+		public function GetInnerMarkup()
+		{
+			$str = "";
+			foreach ($this->Elements as $elem)
+			{
+				$str .= $elem->GetOuterMarkup();
+			}
+			return $str;
+		}
 		
 		public function GetAttribute($name, $index = 0)
 		{
@@ -114,6 +177,8 @@
 			$last = null;
 			foreach ($this->Elements as $element)
 			{
+				if (get_class($element) == "UniversalEditor\\ObjectModels\\Markup\\MarkupLiteralElement") continue;
+				
 				if ($element->Name == $name)
 				{
 					$last = $element;
@@ -221,23 +286,16 @@
 			
 		private function tagOpen($parser, $name, $attrs)
 		{
-			$tag = array("Name" => $name, "Attributes" => $attrs);
+			$tag = array("Type" => "MarkupTagElement", "Name" => $name, "Attributes" => $attrs);
 			array_push($this->mvarOutput,$tag);
 		}
 	   
 		private function tagData($parser, $value)
 		{
-			if(trim($value))
-			{
-				if (isset($this->mvarOutput[count($this->mvarOutput) - 1]['Value']))
-				{
-					$this->mvarOutput[count($this->mvarOutput)-1]['Value'] .= $tagData;
-				}
-				else
-				{
-					$this->mvarOutput[count($this->mvarOutput)-1]['Value'] = $value;
-				}
-			}
+			$tag = array("Type" => "MarkupLiteralElement", "Value" => $value);
+			array_push($this->mvarOutput, $tag);
+			$this->mvarOutput[count($this->mvarOutput) - 2]['Elements'][] = $this->mvarOutput[count($this->mvarOutput) - 1];
+			array_pop($this->mvarOutput);
 		}
 	   
 		function tagClosed($parser, $name)

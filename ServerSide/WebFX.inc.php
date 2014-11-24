@@ -251,6 +251,7 @@
 		public $Pages;
 		public $BeforeExecute;
 		public $AfterExecute;
+		public $ExtraData;
 		
 		public function __construct($pathName, $userFunctionOrPages, $beforeExecute = null, $afterExecute = null)
 		{
@@ -277,7 +278,7 @@
 			
 			if (is_callable($this->BeforeExecute))
 			{
-				$retval = call_user_func($this->BeforeExecute, $path);
+				$retval = call_user_func($this->BeforeExecute, $this, $path);
 				if ($retval === false) return false;
 			}
 			if (is_array($this->Pages))
@@ -304,11 +305,11 @@
 			$retval = false;
 			if (is_callable($this->UserFunction))
 			{
-				$retval = call_user_func($this->UserFunction, $path);
+				$retval = call_user_func($this->UserFunction, $this, $path);
 			}
 			if (is_callable($this->AfterExecute))
 			{
-				$retval2 = call_user_func($this->AfterExecute, $path);
+				$retval2 = call_user_func($this->AfterExecute, $this, $path);
 				if ($retval2 === false) return false;
 			}
 			return $retval;
@@ -325,12 +326,15 @@
 	require("WebApplication.inc.php");
 	require("WebApplicationTask.inc.php");
 	
+	require("WebNamespaceReference.inc.php");
+	
 	require("WebOpenGraphSettings.inc.php");
 	require("WebResourceLink.inc.php");
 	require("WebScript.inc.php");
 	require("WebStyleSheet.inc.php");
 	
 	require("WebControlAttribute.inc.php");
+	require("WebControlClientIDMode.inc.php");
 	require("WebControl.inc.php");
 	
 	require("WebPage.inc.php");

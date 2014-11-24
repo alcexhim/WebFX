@@ -3,20 +3,239 @@
 	
 	use UniversalEditor\ObjectModels\Markup\MarkupObjectModel;
 	
+	use WebFX\System;
+	
+	use WebFX\WebNamespaceReference;
 	use WebFX\WebScript;
+	use WebFX\WebStyleSheet;
+	
+	use WebFX\WebControlAttribute;
+	use WebFX\WebControlClientIDMode;
+	
+	use WebFX\HTMLControl;
+	use WebFX\HTMLControls\HTMLControlLiteral;
 	
 	require("XMLParser.inc.php");
 	
-	class Page extends \WebFX\WebPage
+	class ControlLoader
 	{
-		public $CodeFileName;
+		public static $Namespaces;
+		
+		public static function LoadControl($elem, $parent)
+		{
+			if (get_class($elem) == "UniversalEditor\\ObjectModels\\Markup\\MarkupTagElement")
+			{
+				$i = stripos($elem->Name, ":");
+				if ($i !== false)
+				{
+					$prefix = substr($elem->Name, 0, $i);
+					$name = substr($elem->Name, $i + 1);
+					
+					if (isset(ControlLoader::$Namespaces[$prefix]) && ControlLoader::$Namespaces[$prefix] != "")
+					{
+						$realname = ControlLoader::$Namespaces[$prefix] . "\\" . $name;
+					}
+					else
+					{
+						$realname = $name;
+					}
+					
+					$obj = new $realname();
+					
+					if (is_array($elem->Elements))
+					{
+						foreach ($elem->Elements as $elem1)
+						{
+							ControlLoader::LoadControl($elem1, $obj);
+						}
+					}
+					
+					foreach ($elem->Attributes as $attr)
+					{
+						$obj->{$attr->Name} = $attr->Value;
+					}
+					$obj->ParentObject = $parent;
+					$parent->Controls[] = $obj;
+				}
+				else
+				{
+					$ctl = new HTMLControl();
+					$ctl->TagName = $elem->Name;
+					if (is_array($elem->Attributes))
+					{
+						foreach ($elem->Attributes as $attr)
+						{
+							$ctl->Attributes[] = new WebControlAttribute($attr->Name, $attr->Value);
+						}
+					}
+					if (is_array($elem->Elements) && count($elem->Elements) > 0)
+					{
+						foreach ($elem->Elements as $elem1)
+						{
+							ControlLoader::LoadControl($elem1, $ctl);
+						}
+					}
+					$ctl->ParentObject = $parent;
+					$parent->Controls[] = $ctl;
+				}
+			}
+			else if (get_class($elem) == "UniversalEditor\\ObjectModels\\Markup\\MarkupLiteralElement")
+			{
+				$parent->Controls[] = new HTMLControlLiteral($elem->Value);
+			}
+		}
+	}
+	class Page
+	{
 		public $Controls;
 		
 		public $FileName;
 		
 		public $MasterPage;
 		
-		public static function FromMarkup($element)
+		public $References;
+		public $Scripts;
+		public $StyleSheets;
+		
+		public function __construct()
+		{
+			$this->Controls = array();
+			$this->Scripts = array();
+			$this->StyleSheets = array();
+		}
+		
+		public function Render()
+		{
+			// header('Content-Type: application/xhtml+xml;charset=UTF-8');
+			
+			$controls = $this->Controls;
+			if ($this->MasterPage != null)
+			{
+				$controls = array();
+				
+				foreach ($this->MasterPage->Controls as $control)
+				{
+					if (get_class($control) == "WebFX\\Controls\\SectionPlaceholder")
+					{
+						foreach ($this->Controls as $control1)
+						{
+							if (get_class($control1) == "WebFX\\Controls\\Section")
+							{
+								if ($control1->PlaceholderID == $control->ID)
+								{
+									$controls[] = $control1;
+								}
+							}
+						}
+					}
+					else
+					{
+						$controls[] = $control;
+					}
+				}
+			}
+			
+			foreach ($controls as $ctl)
+			{
+				$ctl->Initialize();
+			}
+			
+			$scripts = $this->Scripts;
+			if ($this->MasterPage != null)
+			{
+				$scripts = $this->MasterPage->Scripts;
+				foreach ($this->Scripts as $script)
+				{
+					$scripts[] = $script;
+				}
+			}
+			
+			$stylesheets = $this->StyleSheets;
+			if ($this->MasterPage != null)
+			{
+				$stylesheets = $this->MasterPage->StyleSheets;
+				foreach ($this->StyleSheets as $stylesheet)
+				{
+					$stylesheets[] = $stylesheet;
+				}
+			}
+			
+			$references = $this->References;
+			if ($this->MasterPage != null)
+			{
+				$references = $this->MasterPage->References;
+				foreach ($this->References as $reference)
+				{
+					$references[] = $reference;
+				}
+			}
+			
+			/* echo("<?xml version=\"1.0\" encoding=\"utf-8\"?>"); */
+			echo("<!DOCTYPE html>");
+			echo("<html xmlns=\"http://www.w3.org/1999/xhtml\"");
+			
+			$referenceAlreadyUsed = array();
+			foreach ($references as $reference)
+			{
+				$referenceAlreadyUsed[$reference->TagPrefix] = false;
+			}
+			
+			foreach ($references as $reference)
+			{
+				if ($referenceAlreadyUsed[$reference->TagPrefix]) continue;
+				echo(" xmlns:" . $reference->TagPrefix . "=\"" . $reference->NamespaceURL . "\"");
+				$referenceAlreadyUsed[$reference->TagPrefix] = true;
+			}
+			echo(">");
+			echo("<head>");
+			foreach ($scripts as $script)
+			{
+				$tagScript = new HTMLControl();
+				$tagScript->ClientIDMode = WebControlClientIDMode::None;
+				$tagScript->TagName = "script";
+				
+				if ($script->ContentType != "")
+				{
+					$tagScript->Attributes[] = new WebControlAttribute("type", $script->ContentType);
+				}
+				if ($script->FileName != "")
+				{
+					$tagScript->Attributes[] = new WebControlAttribute("src", System::ExpandRelativePath($script->FileName));
+				}
+				if ($script->Content != "")
+				{
+					$tagScript->InnerHTML = $script->Content;
+				}
+				$tagScript->Render();
+			}
+			foreach ($stylesheets as $stylesheet)
+			{
+				$tagStyleSheet = new HTMLControl();
+				$tagStyleSheet->ClientIDMode = WebControlClientIDMode::None;
+				$tagStyleSheet->TagName = "link";
+				$tagStyleSheet->Attributes[] = new WebControlAttribute("rel", "stylesheet");
+				$tagStyleSheet->Attributes[] = new WebControlAttribute("type", "text/css");
+				if ($stylesheet->FileName != "")
+				{
+					$tagStyleSheet->Attributes[] = new WebControlAttribute("href", System::ExpandRelativePath($stylesheet->FileName));
+				}
+				if ($stylesheet->Content != "")
+				{
+					$tagStyleSheet->InnerHTML = $stylesheet->Content;
+				}
+				$tagStyleSheet->Render();
+			}
+			echo("</head>");
+			echo("<body>");
+			foreach ($controls as $ctl)
+			{
+				$ctl->Render();
+			}
+			echo("</body>");
+			echo("</html>");
+		}
+		
+		public static function FromMarkup($element, $parser)
 		{
 			$page = new Page();
 			
@@ -25,32 +244,81 @@
 			{
 				$page->FileName = $attFileName->Value;
 			}
-			
 			$attrMasterPageFileName = $element->GetAttribute("MasterPageFileName");
 			if ($attrMasterPageFileName != null)
 			{
-				$filename = getcwd() . "/" . $attrMasterPageFileName->Value;
-				$page->MasterPage = MasterPage::FromFile($filename);
+				$page->MasterPage = $parser->GetMasterPageByFileName($attrMasterPageFileName->Value);
 			}
-			return $page;
-		}
-	}
-	class MasterPage extends Page
-	{
-		public static function FromFile($filename)
-		{
-			$page = new MasterPage();
-			$markup = MarkupObjectModel::FromFile($filename);
 			
-			$tagMasterPage = $markup->GetElement("wfx:MasterPage");
-			$tagScripts = $tagMasterPage->GetElement("Scripts");
-			foreach ($tagScripts->Elements as $elem)
+			$tagScripts = $element->GetElement("Scripts");
+			if ($tagScripts != null)
 			{
-				$attContentType = $elem->GetAttribute("ContentType");
-				$contentType = "text/javascript";
-				if ($attContentType != null) $contentType = $attContentType->Value;
-				
-				$page->Scripts = new WebScript($elem->GetAttribute("FileName")->Value, $contentType);
+				foreach ($tagScripts->Elements as $elem)
+				{
+					if (get_class($elem) != "UniversalEditor\\ObjectModels\\Markup\\MarkupTagElement") continue;
+					
+					$attContentType = $elem->GetAttribute("ContentType");
+					$contentType = "text/javascript";
+					if ($attContentType != null) $contentType = $attContentType->Value;
+					
+					$page->Scripts[] = new WebScript($elem->GetAttribute("FileName")->Value, $contentType);
+				}
+			}
+			$tagStyleSheets = $element->GetElement("StyleSheets");
+			if ($tagStyleSheets != null)
+			{
+				foreach ($tagStyleSheets->Elements as $elem)
+				{
+					if (get_class($elem) != "UniversalEditor\\ObjectModels\\Markup\\MarkupTagElement") continue;
+					
+					$attFileName = $elem->GetAttribute("FileName");
+					if ($attFileName == null) continue;
+					
+					$page->StyleSheets[] = new WebStyleSheet($attFileName->Value);
+				}
+			}
+			
+			$tagReferences = $element->GetElement("References");
+			if ($tagReferences != null)
+			{
+				foreach ($tagReferences->Elements as $elem)
+				{
+					if (get_class($elem) != "UniversalEditor\\ObjectModels\\Markup\\MarkupTagElement") continue;
+					
+					$attTagPrefix = $elem->GetAttribute("TagPrefix");
+					if ($attTagPrefix == null) continue;
+					
+					$attNamespacePath = $elem->GetAttribute("NamespacePath");
+					if ($attNamespacePath == null) continue;
+					
+					$attNamespaceURL = $elem->GetAttribute("NamespaceURL");
+					if ($attNamespaceURL == null) continue;
+					
+					$page->References[] = new WebNamespaceReference($attTagPrefix->Value, $attNamespacePath->Value, $attNamespaceURL->Value);
+				}
+			}
+			
+			$references = $page->References;
+			if ($page->MasterPage != null)
+			{
+				$references = $page->MasterPage->References;
+				foreach ($page->References as $reference)
+				{
+					$references[] = $reference;
+				}
+			}
+			foreach ($references as $reference)
+			{
+				ControlLoader::$Namespaces[$reference->TagPrefix] = $reference->NamespacePath;
+			}
+			
+			$tagContent = $element->GetElement("Content");
+			if ($tagContent != null)
+			{
+				foreach ($tagContent->Elements as $elem)
+				{
+					ControlLoader::LoadControl($elem, $page);
+				}
 			}
 			return $page;
 		}
@@ -58,7 +326,25 @@
 	
 	class WebFXParser
 	{
+		public $MasterPages;
 		public $Pages;
+		
+		public function GetMasterPageByFileName($filename)
+		{
+			foreach ($this->MasterPages as $page)
+			{
+				if ($page->FileName == $filename) return $page;
+			}
+			return null;
+		}
+		public function GetPageByFileName($filename)
+		{
+			foreach ($this->Pages as $page)
+			{
+				if ($page->FileName == $filename) return $page;
+			}
+			return null;
+		}
 		
 		public function __construct()
 		{
@@ -67,6 +353,7 @@
 		
 		public function Clear()
 		{
+			$this->MasterPages = array();
 			$this->Pages = array();
 		}
 		
@@ -74,15 +361,33 @@
 		{
 			$markup = MarkupObjectModel::FromFile($filename);
 			
-			foreach ($markup->Elements as $element)
+			$tagWebsite = $markup->GetElement("Website");
+			if ($tagWebsite == null) return;
+			
+			$tagMasterPages = $tagWebsite->GetElement("MasterPages");
+			
+			if ($tagMasterPages != null)
 			{
-				if ($element->Name == "wfx:Page")
+				foreach ($tagMasterPages->Elements as $element)
 				{
-					$this->Pages[] = Page::FromMarkup($element);
+					if (get_class($element) != "UniversalEditor\\ObjectModels\\Markup\\MarkupTagElement") continue;
+					if ($element->Name == "MasterPage")
+					{
+						$this->MasterPages[] = Page::FromMarkup($element, $this);
+					}
 				}
-				else if ($element->Name == "wfx:MasterPage")
+			}
+			
+			$tagPages = $tagWebsite->GetElement("Pages");
+			if ($tagPages != null)
+			{
+				foreach ($tagPages->Elements as $element)
 				{
-					$this->Pages[] = MasterPage::FromMarkup($element);
+					if (get_class($element) != "UniversalEditor\\ObjectModels\\Markup\\MarkupTagElement") continue;
+					if ($element->Name == "Page")
+					{
+						$this->Pages[] = Page::FromMarkup($element, $this);
+					}
 				}
 			}
 		}
