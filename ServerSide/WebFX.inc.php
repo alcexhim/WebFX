@@ -340,6 +340,8 @@
 	
 	require("HTMLControl.inc.php");
 	
+	require("Parser/WebFXParser.inc.php");
+	
 	System::$Configuration = array();
 	System::$EnableTenantedHosting = false;
 	
