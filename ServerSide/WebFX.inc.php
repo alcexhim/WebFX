@@ -43,6 +43,7 @@
 		public static $EnableTenantedHosting;
 		public static $TenantName;
 		public static $UnspecifiedTenantErrorHandler;
+		public static $Variables;
 		
 		public static $Tasks;
 		
@@ -103,6 +104,11 @@
 				$port = ($_SERVER["SERVER_PORT"] == "80") ? "" : (":".$_SERVER["SERVER_PORT"]);
 				$serverPath = $protocol . "://" . $_SERVER["SERVER_NAME"] . $port;
 				$retval = $serverPath . $retval;
+			}
+			
+			foreach (System::$Variables as $variable)
+			{
+				$retval = str_replace("\$(" . $variable->Name . ")", $variable->Value, $retval);
 			}
 			return $retval;
 		}
@@ -327,6 +333,7 @@
 	require("WebApplicationTask.inc.php");
 	
 	require("WebNamespaceReference.inc.php");
+	require("WebVariable.inc.php");
 	
 	require("WebOpenGraphSettings.inc.php");
 	require("WebResourceLink.inc.php");
@@ -359,6 +366,7 @@
 	{
 		echo($e->Message);
 	};
+	System::$Variables = array();
 	
 	global $WebFXRootPath;
 	$WebFXRootPath = dirname(__FILE__);
