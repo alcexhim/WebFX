@@ -22,6 +22,65 @@
 	{
 		public static $Namespaces;
 		
+		public static function ParseChildren($elem, &$obj)
+		{
+			// our parent is a WebControl and we should parse its children as properties
+			if (is_array($elem->Elements))
+			{
+				foreach ($elem->Elements as $elem1)
+				{
+					if (get_class($elem1) != "UniversalEditor\\ObjectModels\\Markup\\MarkupTagElement") continue;
+					
+					foreach ($elem1->Elements as $elem2)
+					{
+						if (get_class($elem2) != "UniversalEditor\\ObjectModels\\Markup\\MarkupTagElement") continue;
+					
+						$i = stripos($elem->Name, ":");
+						$prefix = substr($elem2->Name, 0, $i);
+						$name = substr($elem2->Name, $i + 1);
+						
+						if (isset(ControlLoader::$Namespaces[$prefix]) && ControlLoader::$Namespaces[$prefix] != "")
+						{
+							$realname = ControlLoader::$Namespaces[$prefix] . "\\" . $name;
+						}
+						else
+						{
+							$realname = $name;
+						}
+						
+						$obj1 = new $realname();
+						ControlLoader::LoadAttributes($elem2, $obj1);
+						
+						if ($obj1->ParseChildElements)
+						{
+							ControlLoader::ParseChildren($elem2, $obj1);
+						}
+						else
+						{
+							if (is_array($elem2->Elements))
+							{
+								foreach ($elem2->Elements as $elem3)
+								{
+									ControlLoader::LoadControl($elem3, $obj1);
+								}
+							}
+						}
+						
+						$obj->{$elem1->Name}[] = $obj1;
+					}
+				}
+			}
+		}
+		public static function LoadAttributes($elem, &$obj)
+		{
+			if (is_array($elem->Attributes))
+			{
+				foreach ($elem->Attributes as $attr)
+				{
+					$obj->{$attr->Name} = $attr->Value;
+				}
+			}
+		}
 		public static function LoadControl($elem, $parent)
 		{
 			if (get_class($elem) == "UniversalEditor\\ObjectModels\\Markup\\MarkupTagElement")
@@ -42,19 +101,23 @@
 					}
 					
 					$obj = new $realname();
+					ControlLoader::LoadAttributes($elem, $obj);
 					
-					if (is_array($elem->Elements))
+					if (is_subclass_of($obj, "WebFX\\WebControl") && $obj->ParseChildElements)
 					{
-						foreach ($elem->Elements as $elem1)
+						ControlLoader::ParseChildren($elem, $obj);
+					}
+					else
+					{
+						if (is_array($elem->Elements))
 						{
-							ControlLoader::LoadControl($elem1, $obj);
+							foreach ($elem->Elements as $elem1)
+							{
+								ControlLoader::LoadControl($elem1, $obj);
+							}
 						}
 					}
 					
-					foreach ($elem->Attributes as $attr)
-					{
-						$obj->{$attr->Name} = $attr->Value;
-					}
 					$obj->ParentObject = $parent;
 					$parent->Controls[] = $obj;
 				}
@@ -98,6 +161,8 @@
 		public $Scripts;
 		public $StyleSheets;
 		
+		public $Title;
+		
 		public function __construct()
 		{
 			$this->Controls = array();
@@ -135,6 +200,7 @@
 		public function Render()
 		{
 			header('Content-Type: application/xhtml+xml;charset=UTF-8');
+			
 			$controls = $this->Controls;
 			if ($this->MasterPage != null)
 			{
@@ -266,6 +332,11 @@
 			if ($attrMasterPageFileName != null)
 			{
 				$page->MasterPage = $parser->GetMasterPageByFileName($attrMasterPageFileName->Value);
+			}
+			$attTitle = $element->GetAttribute("Title");
+			if ($attTitle != null)
+			{
+				$page->Title = $attTitle->Value;
 			}
 			
 			$tagScripts = $element->GetElement("Scripts");

@@ -62,10 +62,10 @@ function ListView(parentElement)
 		{
 			(function(i)
 			{
-				parentElement.tBodies[0].rows[i].onclick = function()
+				parentElement.tBodies[0].rows[i].addEventListener("click", function(e)
 				{
 					parentElement.NativeObject.SetSelectedRow(i);
-				};
+				});
 			})(i);
 		}
 	}

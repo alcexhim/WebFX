@@ -34,6 +34,8 @@
 		public $ToolTipTitle;
 		public $ToolTipText;
 		
+		public $ParseChildElements;
+		
 		public function FindParentPage()
 		{
 			$parent = $this->ParentObject;
@@ -87,6 +89,8 @@
 			$this->ClassList = array();
 			$this->Attributes = array();
 			$this->StyleRules = array();
+			
+			$this->ParseChildElements = false;
 		}
 		
 		public function GetClientProperty($name, $defaultValue = null)

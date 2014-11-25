@@ -4,6 +4,7 @@
 	use WebFX\System;
 	use WebFX\WebControl;
 	use WebFX\WebControlAttribute;
+	use WebFX\WebScript;
 	use WebFX\WebStyleSheetRule;
 	
 	use WebFX\HTMLControls\HTMLControlAnchor;
@@ -54,6 +55,7 @@
 				$this->Columns = $columns;
 			}
 			$this->Selected = $selected;
+			$this->ParseChildElements = true;
 		}
 	}
 	class ListViewItemColumn
@@ -110,6 +112,14 @@
 			$this->ShowGridLines = true;
 			$this->HighlightAlternateRows = false;
 			$this->EnableAddRemoveRows = false;
+			
+			$this->ParseChildElements = true;
+		}
+		
+		protected function OnInitialize()
+		{
+			$parent = $this->FindParentPage();
+			if ($parent != null) $parent->Scripts[] = new WebScript("$(WebFXStaticPath)/Scripts/Controls/ListView.js");
 		}
 		
 		protected function RenderContent()
@@ -193,6 +203,10 @@
 								$link->TargetScript = "lvListView.Sort('" . $column->Name . "'); return false;";
 								$link->InnerHTML = $column->Title;
 								$link->Render();
+							}
+							else
+							{
+								echo("<!-- Undefined column class: " . get_class($column) . " -->");
 							}
 							
 							$table->EndHeaderCell();
@@ -315,7 +329,14 @@
 										}
 										else
 										{
-											echo($column->Content);
+											if ($column->Content == null)
+											{
+												echo($column->Text);
+											}
+											else
+											{
+												echo($column->Content);
+											}
 										}
 										
 										if ($item->NavigateURL != null)
