@@ -3,6 +3,7 @@
 	
 	use WebFX\WebControl;
 	use WebFX\WebControlAttribute;
+	use WebFX\WebScript;
 	
 	use WebFX\Controls\ListView;
 	use WebFX\Controls\ListViewColumn;
@@ -28,17 +29,20 @@
 		
 		public $SuggestionURL;
 		
-		public function __construct($id, $name = null)
+		public function __construct()
 		{
-			parent::__construct($id);
-			if ($name == null) $name = $id;
-			
 			$this->Name = $name;
 			$this->ShowColumnHeaders = true;
 			$this->Items = array();
 			
 			$this->TagName = "div";
 			$this->ClassList[] = "TextBox";
+		}
+		
+		protected function OnInitialize()
+		{
+			$parent = $this->FindParentPage();
+			if ($parent != null) $parent->Scripts[] = new WebScript("$(WebFXStaticPath)/Scripts/Controls/TextBox.js");
 		}
 		
 		protected function RenderBeginTag()

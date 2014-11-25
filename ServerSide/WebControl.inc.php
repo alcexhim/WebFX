@@ -8,6 +8,7 @@
 		public $ClientIDMode;
 		
 		public $Controls;
+		public $HasContent;
 		
 		public $ParentObject;
 		
@@ -24,6 +25,7 @@
 		public $HorizontalAlignment;
 		public $VerticalAlignment;
 		
+		public $CssClass;
 		public $ClassList;
 		public $TagName;
 		public $Attributes;
@@ -79,6 +81,7 @@
 			$this->VerticalAlignment = VerticalAlignment::Inherit;
 			
 			$this->Controls = array();
+			$this->HasContent = true;
 			
 			$this->TagName = null;
 			$this->ClassList = array();
@@ -262,8 +265,13 @@
 					}
 					echo("\"");
 				}
+				if ($this->CssClass != "")
+				{
+					$classAttributeContent .= $this->CssClass;
+				}
 				if (count($this->ClassList) > 0)
 				{
+					$classAttributeContent .= " ";
 					$count = count($this->ClassList);
 					for ($i = 0; $i < $count; $i++)
 					{
@@ -296,12 +304,14 @@
 				
 				if ($this->ToolTipTitle != null) echo(" data-tooltip-title=\"" . $this->ToolTipTitle . "\"");
 				if ($this->ToolTipText != null) echo(" data-tooltip-content=\"" . $this->ToolTipText . "\"");
+				
+				if (!$this->HasContent) echo(" /");
 				echo(">");
 			}
 		}
 		protected function RenderEndTag()
 		{
-			if ($this->TagName != "")
+			if ($this->TagName != "" && $this->HasContent)
 			{
 				echo("</" . $this->TagName . ">");
 			}

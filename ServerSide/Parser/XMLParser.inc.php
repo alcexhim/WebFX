@@ -263,12 +263,14 @@
 		{
 			$this->mvarOutput = array();
 			
+			$input = utf8_encode(html_entity_decode($input));
+			
 			$this->resParser = xml_parser_create ();
 			xml_parser_set_option($this->resParser, XML_OPTION_CASE_FOLDING, 0);
 			
 			xml_set_object($this->resParser, $this);
 			xml_set_element_handler($this->resParser, "tagOpen", "tagClosed");
-		   
+			
 			xml_set_character_data_handler($this->resParser, "tagData");
 	   
 			$this->strXmlData = xml_parse($this->resParser, $input);

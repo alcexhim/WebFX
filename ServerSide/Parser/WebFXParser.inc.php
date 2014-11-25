@@ -8,6 +8,7 @@
 	use WebFX\WebNamespaceReference;
 	use WebFX\WebScript;
 	use WebFX\WebStyleSheet;
+	use WebFX\WebVariable;
 	
 	use WebFX\WebControlAttribute;
 	use WebFX\WebControlClientIDMode;
@@ -104,35 +105,39 @@
 			$this->StyleSheets = array();
 		}
 		
-		public function Render()
+		public function MergeMasterPageControls($controls)
 		{
-			// header('Content-Type: application/xhtml+xml;charset=UTF-8');
-			
-			$controls = $this->Controls;
+			$newControls = array();
 			if ($this->MasterPage != null)
 			{
-				$controls = array();
-				
-				foreach ($this->MasterPage->Controls as $control)
+				foreach ($controls as $control)
 				{
 					if (get_class($control) == "WebFX\\Controls\\SectionPlaceholder")
 					{
-						foreach ($this->Controls as $control1)
+						$pageControls = $this->Controls;
+						foreach ($pageControls as $pageControl)
 						{
-							if (get_class($control1) == "WebFX\\Controls\\Section")
-							{
-								if ($control1->PlaceholderID == $control->ID)
-								{
-									$controls[] = $control1;
-								}
-							}
+							if (get_class($pageControl) != "WebFX\\Controls\\Section") continue;
+							$newControls[] = $pageControl;
 						}
 					}
 					else
 					{
-						$controls[] = $control;
+						$control->Controls = $this->MergeMasterPageControls($control->Controls);
+						$newControls[] = $control;
 					}
 				}
+			}
+			return $newControls;
+		}
+		
+		public function Render()
+		{
+			// header('Content-Type: application/xhtml+xml;charset=UTF-8');
+			$controls = $this->Controls;
+			if ($this->MasterPage != null)
+			{
+				$controls = $this->MergeMasterPageControls($this->MasterPage->Controls);
 			}
 			
 			foreach ($controls as $ctl)
@@ -169,6 +174,17 @@
 					$references[] = $reference;
 				}
 			}
+			
+			$variables = $this->Variables;
+			if ($this->MasterPage != null)
+			{
+				$variables = $this->MasterPage->Variables;
+				foreach ($this->Variables as $variables)
+				{
+					$variables[] = $variables;
+				}
+			}
+			System::$Variables = $variables;
 			
 			/* echo("<?xml version=\"1.0\" encoding=\"utf-8\"?>"); */
 			echo("<!DOCTYPE html>");
@@ -212,6 +228,7 @@
 			{
 				$tagStyleSheet = new HTMLControl();
 				$tagStyleSheet->ClientIDMode = WebControlClientIDMode::None;
+				$tagStyleSheet->HasContent = false;
 				$tagStyleSheet->TagName = "link";
 				$tagStyleSheet->Attributes[] = new WebControlAttribute("rel", "stylesheet");
 				$tagStyleSheet->Attributes[] = new WebControlAttribute("type", "text/css");
@@ -275,6 +292,23 @@
 					if ($attFileName == null) continue;
 					
 					$page->StyleSheets[] = new WebStyleSheet($attFileName->Value);
+				}
+			}
+			$tagVariables = $element->GetElement("Variables");
+			if ($tagVariables != null)
+			{
+				foreach ($tagVariables->Elements as $elem)
+				{
+					if (get_class($elem) != "UniversalEditor\\ObjectModels\\Markup\\MarkupTagElement") continue;
+					
+					$attName = $elem->GetAttribute("Name");
+					if ($attName == null) continue;
+					
+					$value = "";
+					$attValue = $elem->GetAttribute("Value");
+					if ($attValue != null) $value = $attValue->Value;
+					
+					$page->Variables[] = new WebVariable($attName->Value, $value);
 				}
 			}
 			

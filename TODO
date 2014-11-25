@@ -1,0 +1,4 @@
+phpX parser 
+* Templating (Sections/SectionPlaceholders) seems to work, will need further testing
+* NEED to implement support for child element processing
+	* .NET does this with attributes applied to the property in question... PHP doesn't support attribute metadata.

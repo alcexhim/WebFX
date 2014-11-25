@@ -21,7 +21,7 @@
 		protected function OnInitialize()
 		{
 			$parent = $this->FindParentPage();
-			if ($parent != null) $parent->Scripts[] = new WebScript("http://static.alcehosting.net/dropins/WebFramework/Scripts/Controls/Disclosure.js");
+			if ($parent != null) $parent->Scripts[] = new WebScript("$(WebFXStaticPath)/Scripts/Controls/Disclosure.js");
 		}
 		
 		protected function RenderBeginTag()
