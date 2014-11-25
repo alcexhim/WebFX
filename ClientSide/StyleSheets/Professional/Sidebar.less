@@ -6,7 +6,7 @@ body
 		{
 			left: 72px;
 		}
-		&> div.Sidebar
+		&> nav.Sidebar
 		{
 			width: 72px;
 			li.Separator
@@ -31,14 +31,14 @@ body
 		{
 			left: 0px;
 		}
-		&> div.Sidebar
+		&> nav.Sidebar
 		{
 			width: 0px;
 		}
 	}
 	&> div.Page
 	{
-		&> div.Sidebar
+		&> nav.Sidebar
 		{
 			position: fixed;
 			left: 0px;
@@ -134,7 +134,7 @@ body
 		
 		&.HideSidebar
 		{
-			&> div.Sidebar:not(.Expanded)
+			&> nav.Sidebar:not(.Expanded)
 			{
 				display: none;
 			}
@@ -153,7 +153,7 @@ body
 		{
 			left: 0px;
 		}
-		&> div.Sidebar
+		&> nav.Sidebar
 		{
 			transition: width linear 0.3s, opacity linear 0.3s;
 			width: 0px;
