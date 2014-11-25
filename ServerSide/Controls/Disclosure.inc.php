@@ -40,7 +40,7 @@
 		
 		protected function BeforeContent()
 		{
-			echo("<div class=\"Title\"><a href=\"#\"><span class=\"DisclosureButton\">&nbsp;</span> <span class=\"Title\">" . $this->Title . "</span></a></div>");
+			echo("<div class=\"Title\"><a href=\"#\"><span class=\"DisclosureButton\"></span> <span class=\"Title\">" . $this->Title . "</span></a></div>");
 			echo("<div class=\"Content\">");
 		}
 		protected function AfterContent()
