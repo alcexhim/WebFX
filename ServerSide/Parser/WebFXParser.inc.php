@@ -101,6 +101,7 @@
 		public function __construct()
 		{
 			$this->Controls = array();
+			$this->References = array();
 			$this->Scripts = array();
 			$this->StyleSheets = array();
 		}
@@ -133,7 +134,7 @@
 		
 		public function Render()
 		{
-			// header('Content-Type: application/xhtml+xml;charset=UTF-8');
+			header('Content-Type: application/xhtml+xml;charset=UTF-8');
 			$controls = $this->Controls;
 			if ($this->MasterPage != null)
 			{
@@ -186,7 +187,7 @@
 			}
 			System::$Variables = $variables;
 			
-			/* echo("<?xml version=\"1.0\" encoding=\"utf-8\"?>"); */
+			echo("<?xml version=\"1.0\" encoding=\"utf-8\"?>");
 			echo("<!DOCTYPE html>");
 			echo("<html xmlns=\"http://www.w3.org/1999/xhtml\"");
 			
