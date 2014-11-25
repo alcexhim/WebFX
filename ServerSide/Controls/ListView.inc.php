@@ -18,7 +18,7 @@
 	{
 		public $Checked;
 		
-		public function __construct($name, $title = null, $imageURL = null, $width = null, $checked = false)
+		public function __construct($name = null, $title = null, $imageURL = null, $width = null, $checked = false)
 		{
 			parent::__construct($name, $title, $imageURL, ($width == null ? "64px" : $width));
 			$this->Checked = $checked;
@@ -31,7 +31,7 @@
 		public $ImageURL;
 		public $Width;
 		
-		public function __construct($name, $title, $imageURL = null, $width = null)
+		public function __construct($name = null, $title = null, $imageURL = null, $width = null)
 		{
 			$this->Name = $name;
 			$this->Title = $title;
@@ -64,7 +64,7 @@
 		public $OnRetrieveContent;
 		public $UserData;
 		
-		public function __construct($name, $content, $text = null, $onRetrieveContent = null, $userData = null)
+		public function __construct($name = null, $content = null, $text = null, $onRetrieveContent = null, $userData = null)
 		{
 			$this->Name = $name;
 			$this->Content = $content;
@@ -99,9 +99,9 @@
 			return null;
 		}
 		
-		public function __construct($id)
+		public function __construct()
 		{
-			parent::__construct($id);
+			parent::__construct();
 			$this->Columns = array();
 			$this->Items = array();
 			$this->AllowFiltering = true;
