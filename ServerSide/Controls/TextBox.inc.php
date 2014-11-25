@@ -31,7 +31,8 @@
 		
 		public function __construct()
 		{
-			$this->Name = $name;
+			parent::__construct();
+			
 			$this->ShowColumnHeaders = true;
 			$this->Items = array();
 			
