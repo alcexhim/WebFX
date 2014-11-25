@@ -74,7 +74,7 @@
 			return $random_string;
 		}
 		
-		public function __construct($id = null)
+		public function __construct()
 		{
 			$this->Visible = true;
 			$this->HorizontalAlignment = HorizontalAlignment::Inherit;
@@ -192,10 +192,20 @@
 				
 				$styleAttributeContent = "";
 				$classAttributeContent = "";
-				if (count($this->Attributes) > 0)
+				
+				$count = count($this->Attributes);
+				if ($count > 0)
 				{
-					echo(" ");
-					$count = count($this->Attributes);
+					$found = false;
+					foreach ($this->Attributes as $attr)
+					{
+						if (!(strtolower($attr->Name) == "style" || strtolower($attr->Name) == "class"))
+						{
+							$found = true;
+							break;
+						}
+					}
+					if ($found) echo(" ");
 					$i = 0;
 					foreach ($this->Attributes as $attr)
 					{
@@ -212,7 +222,7 @@
 						}
 						else if (strtolower($attr->Name) == "class")
 						{
-							$classAttributeContent .= $attr->Value . " ";
+							$classAttributeContent .= $attr->Value;
 						}
 						else
 						{
@@ -267,11 +277,12 @@
 				}
 				if ($this->CssClass != "")
 				{
+					if ($classAttributeContent != "") $classAttributeContent .= " ";
 					$classAttributeContent .= $this->CssClass;
 				}
 				if (count($this->ClassList) > 0)
 				{
-					$classAttributeContent .= " ";
+					if ($classAttributeContent != "") $classAttributeContent .= " ";
 					$count = count($this->ClassList);
 					for ($i = 0; $i < $count; $i++)
 					{
@@ -279,6 +290,7 @@
 						if ($i < $count - 1) $classAttributeContent .= " ";
 					}
 				}
+				
 				if ($classAttributeContent != "")
 				{
 					echo(" class=\"" . $classAttributeContent . "\"");
