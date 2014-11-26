@@ -182,12 +182,16 @@
 		
 		public $Title;
 		
+		public $UseCompatibleRenderingMode;
+		
 		public function __construct()
 		{
 			$this->Controls = array();
 			$this->References = array();
 			$this->Scripts = array();
 			$this->StyleSheets = array();
+			$this->Variables = array();
+			$this->UseCompatibleRenderingMode = false;
 		}
 		
 		public function MergeMasterPageControls($controls)
@@ -218,7 +222,10 @@
 		
 		public function Render()
 		{
-			header('Content-Type: application/xhtml+xml;charset=UTF-8');
+			if (!$this->UseCompatibleRenderingMode)
+			{
+				header('Content-Type: application/xhtml+xml;charset=UTF-8');
+			}
 			
 			$controls = $this->Controls;
 			if ($this->MasterPage != null)
@@ -265,28 +272,38 @@
 			if ($this->MasterPage != null)
 			{
 				$variables = $this->MasterPage->Variables;
-				foreach ($this->Variables as $variables)
+				foreach ($this->Variables as $variable)
 				{
-					$variables[] = $variables;
+					$variables[] = $variable;
 				}
 			}
 			System::$Variables = $variables;
 			
-			echo("<?xml version=\"1.0\" encoding=\"utf-8\"?>");
-			echo("<!DOCTYPE html>");
-			echo("<html xmlns=\"http://www.w3.org/1999/xhtml\"");
-			
-			$referenceAlreadyUsed = array();
-			foreach ($references as $reference)
+			if (!$this->UseCompatibleRenderingMode)
 			{
-				$referenceAlreadyUsed[$reference->TagPrefix] = false;
+				echo("<?xml version=\"1.0\" encoding=\"utf-8\"?>");
+			}
+			else
+			{
+				echo("<!DOCTYPE html>");
 			}
 			
-			foreach ($references as $reference)
+			echo("<html");
+			if (!$this->UseCompatibleRenderingMode)
 			{
-				if ($referenceAlreadyUsed[$reference->TagPrefix]) continue;
-				echo(" xmlns:" . $reference->TagPrefix . "=\"" . $reference->NamespaceURL . "\"");
-				$referenceAlreadyUsed[$reference->TagPrefix] = true;
+				echo(" xmlns=\"http://www.w3.org/1999/xhtml\"");
+				$referenceAlreadyUsed = array();
+				foreach ($references as $reference)
+				{
+					$referenceAlreadyUsed[$reference->TagPrefix] = false;
+				}
+				
+				foreach ($references as $reference)
+				{
+					if ($referenceAlreadyUsed[$reference->TagPrefix]) continue;
+					echo(" xmlns:" . $reference->TagPrefix . "=\"" . $reference->NamespaceURL . "\"");
+					$referenceAlreadyUsed[$reference->TagPrefix] = true;
+				}
 			}
 			echo(">");
 			echo("<head>");
@@ -322,9 +339,12 @@
 				{
 					$tagStyleSheet->Attributes[] = new WebControlAttribute("href", System::ExpandRelativePath($stylesheet->FileName));
 				}
-				if ($stylesheet->Content != "")
+				if (isset($stylesheet->Content))
 				{
-					$tagStyleSheet->InnerHTML = $stylesheet->Content;
+					if ($stylesheet->Content != "")
+					{
+						$tagStyleSheet->InnerHTML = $stylesheet->Content;
+					}
 				}
 				$tagStyleSheet->Render();
 			}
@@ -356,6 +376,11 @@
 			if ($attTitle != null)
 			{
 				$page->Title = $attTitle->Value;
+			}
+			$attUseCompatibleRenderingMode = $element->GetAttribute("UseCompatibleRenderingMode");
+			if ($attUseCompatibleRenderingMode != null)
+			{
+				$page->UseCompatibleRenderingMode = ($attUseCompatibleRenderingMode->Value == "true");
 			}
 			
 			$tagScripts = $element->GetElement("Scripts");
@@ -443,6 +468,30 @@
 				foreach ($tagContent->Elements as $elem)
 				{
 					ControlLoader::LoadControl($elem, $page);
+				}
+			}
+			
+			$attrClassName = $element->GetAttribute("ClassName");
+			if ($attrClassName != null)
+			{
+				$page->ClassName = $attrClassName->Value;
+				if (class_exists($page->ClassName))
+				{
+					$page->ClassReference = new $page->ClassName();
+					$page->IsPostback = ($_SERVER["REQUEST_METHOD"] == "POST");
+					
+					$arrPage = (array)$page;
+					foreach ($arrPage as $name => $value)
+					{
+						$page->ClassReference->{$name} = $value;
+					}
+					
+					$page->ClassReference->OnInit();
+					
+					if (is_array($page->ClassReference->Controls))
+					{
+						$page->Controls = $page->ClassReference->Controls;
+					}
 				}
 			}
 			return $page;
