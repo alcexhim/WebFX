@@ -91,16 +91,9 @@ function Notification(parentElement)
 	};
 }
 
-Notification.Show = function(title, content, cssClass, timeoutInMilliseconds)
+Notification.Show = function(content, title, cssClass, timeoutInMilliseconds)
 {
 	var n = new Notification();
-	
-	if (typeof(title) === "undefined")
-	{
-		console.warn("showing notification with empty title");
-		title = "";
-	}
-	n.SetTitle(title);
 	
 	if (typeof(content) === "undefined")
 	{
@@ -108,6 +101,13 @@ Notification.Show = function(title, content, cssClass, timeoutInMilliseconds)
 		content = "";
 	}
 	n.SetContent(content);
+	
+	if (typeof(title) === "undefined")
+	{
+		console.warn("showing notification with empty title");
+		title = "";
+	}
+	n.SetTitle(title);
 	
 	if (typeof(cssClass) === "undefined") cssClass = "";
 	n.SetCssClass(cssClass);
