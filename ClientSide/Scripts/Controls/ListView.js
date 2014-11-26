@@ -33,8 +33,8 @@ function ListView(parentElement)
 			}
 		}
 	};
-	
-	if (parentElement.tagName == "TABLE")
+
+	if (parentElement.tagName.toUpperCase() == "TABLE")
 	{
 		if (parentElement.tHead != null && parentElement.tHead.rows[0] != null)
 		{
