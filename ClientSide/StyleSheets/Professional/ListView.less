@@ -60,12 +60,12 @@ table.ListView
 		{
 			&> td, th
 			{
-				background-color: lighten(@ThemeColor, 45%);
-				border-top: solid 1px @ThemeColor;
-				border-bottom: solid 1px @ThemeColor;
+				background-color: lighten(@ThemeColor, 45%) !important;
+				border-top: double 1px @ThemeColor !important;
+				border-bottom: double 1px @ThemeColor !important;
 				&:first-child
 				{
-					border-left: solid 3px @ThemeColor;
+					box-shadow: 3px 0 0 @ThemeColor inset;
 				}
 				&:last-child
 				{
