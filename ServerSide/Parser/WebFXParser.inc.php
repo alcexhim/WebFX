@@ -9,6 +9,7 @@
 	use WebFX\WebScript;
 	use WebFX\WebStyleSheet;
 	use WebFX\WebVariable;
+	use WebFX\WebPageMessage;
 	
 	use WebFX\WebControlAttribute;
 	use WebFX\WebControlClientIDMode;
@@ -20,6 +21,7 @@
 	
 	class ControlLoader
 	{
+		public static $Messages;
 		public static $Namespaces;
 		
 		public static function ParseChildren($elem, &$obj)
@@ -47,8 +49,15 @@
 						{
 							$realname = $name;
 						}
-						
-						$obj1 = new $realname();
+						if (class_exists($realname))
+						{
+							$obj1 = new $realname();
+						}
+						else
+						{
+							ControlLoader::$Messages[] = new WebPageMessage("Unknown class " . $realname . " (" . $prefix . ":" . $name . ")", WebPageMessageSeverity::Error);
+							continue;
+						}
 						ControlLoader::LoadAttributes($elem2, $obj1);
 						
 						if ($obj1->ParseChildElements)
@@ -100,7 +109,15 @@
 						$realname = $name;
 					}
 					
-					$obj = new $realname();
+					if (class_exists($realname))
+					{
+						$obj = new $realname();
+					}
+					else
+					{
+						ControlLoader::$Messages[] = new WebPageMessage("Unknown class " . $realname . " (" . $prefix . ":" . $name . ")", WebPageMessageSeverity::Error);
+						continue;
+					}
 					ControlLoader::LoadAttributes($elem, $obj);
 					
 					if (is_subclass_of($obj, "WebFX\\WebControl") && $obj->ParseChildElements)
@@ -149,6 +166,8 @@
 			}
 		}
 	}
+	ControlLoader::$Messages = array();
+	
 	class Page
 	{
 		public $Controls;
