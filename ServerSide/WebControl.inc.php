@@ -106,9 +106,16 @@
         public function Initialize()
         {
             $this->OnInitialize();
-			foreach ($this->Controls as $control)
+			if (is_array($this->Controls))
 			{
-				$control->Initialize();
+				foreach ($this->Controls as $control)
+				{
+					$control->Initialize();
+				}
+			}
+			else
+			{
+				trigger_error("Controls is not array in " . get_class($this) . " ; did you forget to call parent::__construct() ?");
 			}
         }
 		
@@ -228,6 +235,10 @@
 						{
 							$classAttributeContent .= $attr->Value;
 						}
+						else if (strtolower($attr->Name) == "id")
+						{
+							$this->ID = $attr->Value;
+						}
 						else
 						{
 							echo($attr->Name);
@@ -300,14 +311,14 @@
 					echo(" class=\"" . $classAttributeContent . "\"");
 				}
 				
-				if ($id == null)
+				if (!isset($id) || $id == null)
 				{
 					if ($this->ClientIDMode == WebControlClientIDMode::Automatic)
 					{
 						$id = "WFX" . WebControl::GenerateRandomString("ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890", 10);
 					}
 				}
-				$this->ID = $id;
+				if (isset($id)) $this->ID = $id;
 				
 				if ($this->ClientID != null)
 				{
