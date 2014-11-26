@@ -3,6 +3,8 @@
 	
 	use WebFX\HTMLControls\HTMLControlInput;
 	use WebFX\HTMLControls\HTMLControlInputType;
+	
+	use WebFX\HTMLControls\HTMLControlTextArea;
 
 	class FormView extends \WebFX\WebControl
 	{
@@ -10,6 +12,7 @@
 		
 		public function __construct()
 		{
+			parent::__construct();
 			$this->ParseChildElements = true;
 		}
 		
@@ -40,51 +43,7 @@
 				if ($item->Required) echo(" Required");
 				echo("\">");
 				echo("<label for=\"" . $item->ID . "\">" . $item->Title . "</label>");
-				switch (get_class($item))
-				{
-					case 'WebFX\Controls\FormViewItemText':
-					{
-						$elem = new HTMLControlInput();
-						$elem->ID = $item->ID;
-						$elem->Type = HTMLControlInputType::Text;
-						$elem->Name = $item->Name;
-						$elem->Value = $item->DefaultValue;
-						$elem->Render();
-						break;
-					}
-					case 'WebFX\Controls\FormViewItemPassword':
-					{
-						$elem = new HTMLControlInput();
-						$elem->ID = $item->ID;
-						$elem->Type = HTMLControlInputType::Password;
-						$elem->Name = $item->Name;
-						$elem->Value = $item->DefaultValue;
-						$elem->Render();
-						break;
-					}
-					case 'WebFX\Controls\FormViewItemMemo':
-					{
-						echo("<textarea");
-						echo(" id=\"" . $item->ID . "\"");
-						echo(" name=\"" . $item->Name . "\"");
-						if ($item->Rows != null)
-						{
-							echo(" rows=\"" . $item->Rows . "\"");
-						}
-						if ($item->Columns != null)
-						{
-							echo(" cols=\"" . $item->Columns . "\"");
-						}
-						echo(">");
-						echo($item->DefaultValue);
-						echo("</textarea>");
-						break;
-					}
-					default:
-					{
-						echo("<!-- class not implemented: " . get_class($item) . " -->");
-					}
-				}
+				$item->Render();
 				echo("</div>");
 			}
 			echo("</div>");
@@ -99,7 +58,7 @@
 		public $DefaultValue;
 		public $Required;
 		
-		public function __construct($id, $name = null, $title = null, $defaultValue = null)
+		public function __construct($id = null, $name = null, $title = null, $defaultValue = null)
 		{
 			$this->ID = $id;
 			
@@ -111,30 +70,82 @@
 			
 			$this->DefaultValue = $defaultValue;
 			$this->Required = false;
+			
+			$this->ParseChildElements = false;
 		}
+		
+		public function Render()
+		{
+			$this->RenderContent();
+		}
+		
+		protected abstract function RenderContent();
 	}
 	class FormViewItemText extends FormViewItem
 	{
-		public function __construct($id, $name = null, $title = null, $defaultValue = null)
+		public $PlaceholderText;
+		
+		public function __construct($id = null, $name = null, $title = null, $defaultValue = null)
 		{
 			parent::__construct($id, $name, $title, $defaultValue);
+		}
+		
+		protected function RenderContent()
+		{
+			$elem = new HTMLControlInput();
+			$elem->ID = $this->ID;
+			$elem->Type = HTMLControlInputType::Text;
+			$elem->Name = $this->Name;
+			$elem->Value = $this->DefaultValue;
+			if (isset($this->PlaceholderText))
+			{
+				$elem->PlaceholderText = $this->PlaceholderText;
+			}
+			$elem->Render();
 		}
 	}
 	class FormViewItemPassword extends FormViewItemText
 	{
-		public function __construct($id, $name = null, $title = null, $defaultValue = null)
+		public function __construct($id = null, $name = null, $title = null, $defaultValue = null)
 		{
 			parent::__construct($id, $name, $title, $defaultValue);
+		}
+		
+		protected function RenderContent()
+		{
+			$elem = new HTMLControlInput();
+			$elem->ID = $this->ID;
+			$elem->Type = HTMLControlInputType::Password;
+			$elem->Name = $this->Name;
+			$elem->Value = $this->DefaultValue;
+			if (isset($this->PlaceholderText))
+			{
+				$elem->PlaceholderText = $this->PlaceholderText;
+			}
+			$elem->Render();
 		}
 	}
 	class FormViewItemMemo extends FormViewItemText
 	{
 		public $Rows;
 		public $Columns;
+		public $PlaceholderText;
 		
-		public function __construct($id, $name = null, $title = null, $defaultValue = null)
+		public function __construct($id = null, $name = null, $title = null, $defaultValue = null)
 		{
 			parent::__construct($id, $name, $title, $defaultValue);
+		}
+		
+		protected function RenderContent()
+		{
+			$elem = new HTMLControlTextArea();
+			$elem->ID = $this->ID;
+			$elem->Name = $this->Name;
+			if (isset($this->Rows)) $elem->Rows = $this->Rows;
+			if (isset($this->Columns)) $elem->Columns = $this->Columns;
+			$elem->DefaultValue = $this->DefaultValue;
+			if (isset($this->PlaceholderText)) $elem->PlaceholderText = $this->PlaceholderText;
+			$elem->Render();
 		}
 	}
 ?>
