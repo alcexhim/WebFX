@@ -247,6 +247,6 @@ window.addEventListener("load", function(e)
 	for (var i = 0; i < textBoxes.length; i++)
 	{
 		textBoxes[i].NativeObject = new TextBox(textBoxes[i]);
-		eval("window." + textBoxes[i].id + " = document.getElementById('" + textBoxes[i].id + "').NativeObject;");
+		if (textBoxes[i].id != "") eval("window." + textBoxes[i].id + " = document.getElementById('" + textBoxes[i].id + "').NativeObject;");
 	}
 });
