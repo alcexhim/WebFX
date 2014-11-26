@@ -14,6 +14,7 @@
 		{
 			parent::__construct();
 			$this->TagName = "input";
+			$this->HasContent = false;
 		}
 		
 		public $Name;
