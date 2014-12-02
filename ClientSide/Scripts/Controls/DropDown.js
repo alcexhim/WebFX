@@ -1,3 +1,9 @@
+function DropDownWrapper(parentElement)
+{
+	this.ParentElement = parentElement;
+	
+}
+
 function DropDown(id)
 {
 	this.ID = id;
@@ -249,9 +255,9 @@ document.addEventListener("mousedown", function(e)
 	DropDown.CloseAll();
 });
 
-// add a global hook to find DropDownButtons to trigger
 window.addEventListener("load", function(e)
 {
+	// find DropDownButtons to trigger
 	var dropdowns = document.getElementsByClassName("DropDownButton");
 	for (var i = 0; i < dropdowns.length; i++)
 	{
@@ -269,5 +275,12 @@ window.addEventListener("load", function(e)
 				}
 			});
 		})(i);
+	}
+	
+	// retrofit SELECT elements
+	var selects = document.getElementsByTagName("SELECT");
+	for (var i = 0; i < selects.length; i++)
+	{
+		selects[i].NativeObject = new DropDownWrapper(selects[i]);
 	}
 });

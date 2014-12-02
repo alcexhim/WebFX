@@ -1,6 +1,6 @@
-var Window = function(id)
+var Window = function(parentElement)
 {
-	this.ID = id;
+	this.ParentElement = parentElement;
 	
 	this.Opened = new Callback(this);
 	this.Closed = new Callback(this);
@@ -8,29 +8,36 @@ var Window = function(id)
 	this.DefaultHorizontalAlignment = HorizontalAlignment.Center;
 	this.DefaultVerticalAlignment = VerticalAlignment.Middle;
 	
-	var TitleBar = document.getElementById("Window_" + this.ID + "_TitleBar");
+	var TitleBar = parentElement.childNodes[0];
 	TitleBar.Parent = this;
-	TitleBar.onmousedown = function(e)
+	TitleBar.addEventListener("mousedown", function(e)
 	{
 		Window.BeginDrag(this.Parent, e);
 		e.preventDefault();
 		e.stopPropagation();
 		return false;
+	});
+	
+	this.GetWidth = function()
+	{
+		return this.ParentElement.clientWidth;
+	};
+	this.GetHeight = function()
+	{
+		return this.ParentElement.clientHeight;
 	};
 	
 	this.GetTitle = function()
 	{
-		var Title = document.getElementById("Window_" + this.ID + "_TitleBar_Title");
-		return Title.innerHTML;
+		return this.ParentElement.childNodes[0].childNodes[0].innerHTML;
 	};
 	this.SetTitle = function(title)
 	{
-		var Title = document.getElementById("Window_" + this.ID + "_TitleBar_Title");
-		Title.innerHTML = title;
+		this.ParentElement.childNodes[0].childNodes[0].innerHTML = title;
 	};
 	this.SetHorizontalAlignment = function(alignment)
 	{
-		var Window = document.getElementById("Window_" + this.ID);
+		var Window = this.ParentElement;
 		switch(alignment)
 		{
 			case HorizontalAlignment.Left:
@@ -40,19 +47,19 @@ var Window = function(id)
 			}
 			case HorizontalAlignment.Center:
 			{
-				Window.style.left = ((parseInt(window.GetWidth()) - parseInt(Window.clientWidth)) / 2) + "px";
+				Window.style.left = ((parseInt(this.GetWidth()) - parseInt(Window.clientWidth)) / 2) + "px";
 				break;
 			}
 			case HorizontalAlignment.Right:
 			{
-				Window.style.left = (parseInt(window.GetWidth()) - parseInt(Window.clientWidth) - 16) + "px";
+				Window.style.left = (parseInt(this.GetWidth()) - parseInt(Window.clientWidth) - 16) + "px";
 				break;
 			}
 		}
 	};
 	this.SetVerticalAlignment = function(alignment)
 	{
-		var Window = document.getElementById("Window_" + this.ID);
+		var Window = this.ParentElement;
 		switch(alignment)
 		{
 			case VerticalAlignment.Top:
@@ -62,12 +69,12 @@ var Window = function(id)
 			}
 			case VerticalAlignment.Middle:
 			{
-				Window.style.top = ((parseInt(window.GetHeight()) - parseInt(Window.clientHeight)) / 2) + "px";
+				Window.style.top = ((parseInt(this.GetHeight()) - parseInt(Window.clientHeight)) / 2) + "px";
 				break;
 			}
 			case VerticalAlignment.Bottom:
 			{
-				Window.style.top = (parseInt(window.GetHeight()) - parseInt(Window.clientHeight) - 16) + "px";
+				Window.style.top = (parseInt(this.GetHeight()) - parseInt(Window.clientHeight) - 16) + "px";
 				break;
 			}
 		}
@@ -75,13 +82,13 @@ var Window = function(id)
 	
 	this.SetTop = function(y)
 	{
-		var Window = document.getElementById("Window_" + this.ID);
+		var Window = this.ParentElement;
 		Window.style.top = y + "px";
 	};
 	
 	this.Show = function()
 	{
-		var Window = document.getElementById("Window_" + this.ID);
+		var Window = this.ParentElement;
 		Window.style.display = "block";
 		this.Opened.Execute(CallbackArgument.Empty);
 	};
@@ -89,14 +96,19 @@ var Window = function(id)
 	{
 		Window.DialogCount++;
 		
-		var WindowModalBackground = document.getElementById(Window.ModalBackgroundID);
-		WindowModalBackground.style.display = "block";
-		WindowModalBackground.style.zIndex = (100 + Window.DialogCount);
+		if (Window.ModalBackgroundElement == null)
+		{
+			Window.ModalBackgroundElement = document.createElement("div");
+			Window.ModalBackgroundElement.className = "WindowModalBackground";
+			document.body.appendChild(Window.ModalBackgroundElement);
+		}
+		Window.ModalBackgroundElement.style.display = "block";
+		Window.ModalBackgroundElement.style.zIndex = (100 + Window.DialogCount);
 		
-		var WindowDOMObject = document.getElementById("Window_" + this.ID);
+		var WindowDOMObject = this.ParentElement;
 		WindowDOMObject.className = "Window Visible";
 		
-		WindowDOMObject.style.zIndex = (100 + Window.DialogCount);
+		WindowDOMObject.style.zIndex = (100 + Window.DialogCount + 1);
 		
 		this.SetHorizontalAlignment(this.DefaultHorizontalAlignment);
 		this.SetVerticalAlignment(this.DefaultVerticalAlignment);
@@ -104,22 +116,30 @@ var Window = function(id)
 	};
 	this.Hide = function()
 	{
-		var WindowDOMObject = document.getElementById("Window_" + this.ID);
+		var WindowDOMObject = this.ParentElement;
 		WindowDOMObject.className = "Window";
 		this.Closed.Execute(CallbackArgument.Empty);
 		
 		Window.DialogCount--;
 		
-		var WindowModalBackground = document.getElementById(Window.ModalBackgroundID);
-		WindowModalBackground.style.zIndex = (100 + Window.DialogCount);
+		if (Window.ModalBackgroundElement != null)
+		{
+			Window.ModalBackgroundElement.style.zIndex = (100 + Window.DialogCount);
+		}
 			
 		if (Window.DialogCount == 0)
 		{
-			WindowModalBackground.style.display = "none";
+			if (Window.ModalBackgroundElement != null)
+			{
+				Window.ModalBackgroundElement.parentNode.removeChild(Window.ModalBackgroundElement);
+				Window.ModalBackgroundElement = null;
+			}
 		}
 	};
+	
+	if (this.ParentElement.id != "") eval("window." + this.ParentElement.id + " = this;");
 };
-Window.ModalBackgroundID = "smwbKageModal__33661E2DD4B44AC39AD7EA460DF79355";
+Window.ModalBackgroundElement = null;
 Window.DialogCount = 0;
 Window.BeginDrag = function(sender, e)
 {
@@ -127,7 +147,7 @@ Window.BeginDrag = function(sender, e)
 	Window.CursorOriginalX = e.clientX;
 	Window.CursorOriginalY = e.clientY;
 	
-	var obj = document.getElementById("Window_" + Window.DragWindow.ID);
+	var obj = Window.DragWindow.ParentElement;
 	Window.DragWindowOriginalX = obj.style.left.substring(0, obj.style.left.length - 2);
 	Window.DragWindowOriginalY = obj.style.top.substring(0, obj.style.top.length - 2);
 };
@@ -135,7 +155,7 @@ Window.ContinueDrag = function(e)
 {
 	if (!Window.DragWindow) return;
 	
-	var obj = document.getElementById("Window_" + Window.DragWindow.ID);
+	var obj = Window.DragWindow.ParentElement;
 	
 	var ix = parseInt(Window.DragWindowOriginalX), iy = parseInt(Window.DragWindowOriginalY);
 	if (ix.toString() == "NaN") ix = 0;
@@ -146,7 +166,6 @@ Window.ContinueDrag = function(e)
 };
 Window.EndDrag = function()
 {
-	var obj = document.getElementById("Window_" + Window.DragWindow.ID);
 	Window.DragWindow = null;
 };
 
@@ -165,5 +184,13 @@ window.addEventListener("mouseup", function(e)
 	if (Window.DragWindow)
 	{
 		Window.EndDrag();
+	}
+});
+window.addEventListener("load", function(e)
+{
+	var items = document.getElementsByClassName("Window");
+	for (var i = 0; i < items.length; i++)
+	{
+		items[i].NativeObject = new Window(items[i]);
 	}
 });
