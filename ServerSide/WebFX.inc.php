@@ -400,6 +400,7 @@
 	
 	require("WebPage.inc.php");
 	require("WebPageCommand.inc.php");
+	require("WebPageMessage.inc.php");
 	require("WebPageMetadata.inc.php");
 	require("WebPageVariable.inc.php");
 	
@@ -486,7 +487,14 @@
 	*/
 	
 	require_once("DataFX/DataFX.inc.php");
-	require_once("PDO.inc.php");
+	try
+	{
+		require_once("PDO.inc.php");	
+	}
+	catch (\PDOException $ex)
+	{
+		trigger_error("Could not connect to the database via PDO");
+	}
 	
 	session_start();
 ?>
