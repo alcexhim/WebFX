@@ -116,7 +116,7 @@
 					else
 					{
 						ControlLoader::$Messages[] = new WebPageMessage("Unknown class " . $realname . " (" . $prefix . ":" . $name . ")", WebPageMessageSeverity::Error);
-						continue;
+						return;
 					}
 					ControlLoader::LoadAttributes($elem, $obj);
 					
