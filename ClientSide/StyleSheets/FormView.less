@@ -3,27 +3,28 @@ div.FormView
 	display: table;
 	width: -moz-available;
 	
-	div.Field
+	&> div.Field
 	{
 		display: table-row;
 		width: -moz-available;
 		
-		label
+		&> *
+		{
+			vertical-align: baseline;
+		}
+		
+		&> label
 		{
 			width: 96px;
+			vertical-align: inherit;
 		}
-		label, input, textarea
+		&> label, input, textarea
 		{
 			display: table-cell;
 		}
-		input, textarea
+		&> input, textarea
 		{
 			width: -moz-available;
-		}
-		
-		&.Memo label
-		{
-			vertical-align: top;
 		}
 	}
 }
