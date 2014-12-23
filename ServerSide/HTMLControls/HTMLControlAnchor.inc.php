@@ -1,6 +1,8 @@
 <?php
 	namespace WebFX\HTMLControls;
 	
+	use WebFX\System;
+	
 	use WebFX\HTMLControl;
 	use WebFX\WebControl;
 	
