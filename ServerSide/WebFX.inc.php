@@ -326,8 +326,62 @@
 	require_once("StringMethods.inc.php");
 	require_once("JH.Utilities.inc.php");
 	
-	\Enum::Create("WebFX\\HorizontalAlignment", "Inherit", "Left", "Center", "Right");
-	\Enum::Create("WebFX\\VerticalAlignment", "Inherit", "Top", "Middle", "Bottom");
+	require("Enumeration.inc.php");
+
+	/**
+	 * Provides an enumeration of predefined values for horizontal alignment of content.
+	 * @author Michael Becker
+	 */
+	abstract class HorizontalAlignment extends Enumeration
+	{
+		/**
+		 * The horizontal alignment is not specified.
+		 * @var int 0
+		 */
+		const Inherit = 0;
+		/**
+		 * The content is aligned to the left (near).
+		 * @var int 1
+		 */
+		const Left = 1;
+		/**
+		 * The content is aligned in the center.
+		 * @var int 2
+		 */
+		const Center = 2;
+		/**
+		 * The content is aligned to the right (far).
+		 * @var int 3
+		 */
+		const Right = 3;
+	}
+	/**
+	 * Provides an enumeration of predefined values for vertical alignment of content.
+	 * @author Michael Becker
+	 */
+	abstract class VerticalAlignment extends Enumeration
+	{
+		/**
+		 * The vertical alignment is not specified.
+		 * @var int 0
+		 */
+		const Inherit = 0;
+		/**
+		 * The content is aligned to the top (near).
+		 * @var int 1
+		 */
+		const Top = 1;
+		/**
+		 * The content is aligned in the middle.
+		 * @var int 2
+		 */
+		const Middle = 2;
+		/**
+		 * The content is aligned to the bottom (far).
+		 * @var int 3
+		 */
+		const Bottom = 3;
+	}
 	
 	require("WebApplication.inc.php");
 	require("WebApplicationTask.inc.php");
@@ -346,6 +400,7 @@
 	
 	require("WebPage.inc.php");
 	require("WebPageCommand.inc.php");
+	require("WebPageMessage.inc.php");
 	require("WebPageMetadata.inc.php");
 	require("WebPageVariable.inc.php");
 	
@@ -432,7 +487,14 @@
 	*/
 	
 	require_once("DataFX/DataFX.inc.php");
-	require_once("PDO.inc.php");
+	try
+	{
+		require_once("PDO.inc.php");	
+	}
+	catch (\PDOException $ex)
+	{
+		trigger_error("Could not connect to the database via PDO");
+	}
 	
 	session_start();
 ?>
