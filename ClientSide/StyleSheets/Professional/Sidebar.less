@@ -50,13 +50,41 @@ body
 			opacity: 1;
 			transition: opacity linear 0.3s;
 		
-			background-color: #FFFFFF;
+			background-color: @SidebarBackground;
 			border: solid 1px #D9D9D9;
 
 			-moz-user-select: none;
 			
 			overflow: auto;
 			overflow-x: hidden;
+			
+			/**
+			 * Styles for child-level lists 
+			 */
+			&> ul
+			{
+				li ul
+				{
+					background-color: @SidebarMenuChildBackground;
+					color: @SidebarMenuChildForeground;
+					
+					a
+					{
+						padding: 5px 20px 5px 47px;
+					}
+				}
+				&> li.Button > a
+				{			
+					background-color: @SidebarMenuTopLevelItemBackground;
+					color: @SidebarMenuTopLevelItemForeground;
+					
+					&:hover
+					{
+						background-color: @SidebarMenuTopLevelItemBackgroundHover;
+						color: @SidebarMenuTopLevelItemForegroundHover;
+					}	
+				}
+			}
 			
 			&.Expanded
 			{
@@ -80,7 +108,14 @@ body
 				&> a
 				{
 					position: relative;
-					color: #515253;
+					background-color: @SidebarMenuChildItemBackground;
+					color: @SidebarMenuChildItemForeground;
+					&:hover
+					{
+						background-color: @SidebarMenuChildItemBackgroundHover;
+						color: @SidebarMenuChildItemForegroundHover;
+					}
+					
 					display: block;
 					font-weight: 400;
 					letter-spacing: 0.025em;
