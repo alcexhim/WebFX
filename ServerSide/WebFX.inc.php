@@ -429,6 +429,12 @@
 	global $RootPath;
 	require_once($RootPath . "/Include/Configuration.inc.php");
 	
+	require_once("DataFX/DataFX.inc.php");
+	
+	// After loading the configuration, attempt to establish PDO connection (must be done before everything
+	// else gets initialized, in case something depends on the PDO)
+	include_once("PDO.inc.php");
+	
 	// Global Controls loader
 	$a = glob($WebFXRootPath . "/Controls/*.inc.php");
 	foreach ($a as $filename)
@@ -485,16 +491,6 @@
 		include_once($filename);
 	}
 	*/
-	
-	require_once("DataFX/DataFX.inc.php");
-	try
-	{
-		require_once("PDO.inc.php");	
-	}
-	catch (\PDOException $ex)
-	{
-		trigger_error("Could not connect to the database via PDO");
-	}
 	
 	session_start();
 ?>
