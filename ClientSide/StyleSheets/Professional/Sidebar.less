@@ -129,7 +129,16 @@ body
 				{
 					&> div.Column
 					{
-						display: table-cell;
+						display: inline-block;
+						vertical-align: top;
+						border-right: solid 1px #E6EAED;
+						padding: 0px 20px;
+						
+						div.Title, a
+						{
+							padding: 6px 20px;
+							margin: 0px -20px;
+						}
 						
 						div.Title
 						{
@@ -145,6 +154,7 @@ body
 						{
 							color: #5F7676;
 							display: block;
+							text-decoration: none;
 							
 							&:hover
 							{
