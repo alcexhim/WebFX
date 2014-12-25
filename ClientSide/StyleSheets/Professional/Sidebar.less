@@ -1,3 +1,6 @@
+@HeaderHeight: 56px;
+@SidebarWidth: 256px;
+
 body
 {
 	&.SidebarCollapsed > div.Page
@@ -42,27 +45,35 @@ body
 		{
 			position: fixed;
 			left: 0px;
-			top: 56px;
+			top: @HeaderHeight;
 			bottom: 0px;
 			z-index: 1;
 			
-			width: 256px;
+			width: @SidebarWidth;
 			opacity: 1;
-			transition: opacity linear 0.3s;
+			transition: width linear 0.3s, opacity linear 0.3s;
 		
 			background-color: @SidebarBackground;
-			border: solid 1px #D9D9D9;
 
 			-moz-user-select: none;
-			
-			overflow: auto;
-			overflow-x: hidden;
+			overflow: hidden;
 			
 			/**
 			 * Styles for child-level lists 
 			 */
 			&> ul
 			{
+				overflow: auto;
+				overflow-x: hidden;
+				
+				position: absolute;
+				left: 0px;
+				top: 0px;
+				bottom: 0px;
+				width: @SidebarWidth - 40px;
+				
+				margin: 0px;
+				
 				li ul
 				{
 					background-color: @SidebarMenuChildBackground;
@@ -73,16 +84,75 @@ body
 						padding: 5px 20px 5px 47px;
 					}
 				}
-				&> li.Button > a
-				{			
-					background-color: @SidebarMenuTopLevelItemBackground;
-					color: @SidebarMenuTopLevelItemForeground;
-					
-					&:hover
+				&> li.Button
+				{
+					&:first-child > a
 					{
-						background-color: @SidebarMenuTopLevelItemBackgroundHover;
-						color: @SidebarMenuTopLevelItemForegroundHover;
-					}	
+						border-bottom: solid 1px transparent;
+					}
+					&:last-child > a
+					{
+						border-top: solid 1px transparent;
+					}
+					&> a
+					{
+						border-bottom: solid 1px #384646;
+						
+						background-color: @SidebarMenuTopLevelItemBackground;
+						color: @SidebarMenuTopLevelItemForeground;
+						
+						&:hover
+						{
+							background-color: @SidebarMenuTopLevelItemBackgroundHover;
+							color: @SidebarMenuTopLevelItemForegroundHover;
+						}	
+					}
+				}
+			}
+			
+			/**
+			 * Styles for backstage view 
+			*/
+			&> ul, div.BackstageView
+			{
+				display: table-cell;
+			}
+			&> div.BackstageView
+			{
+				position: absolute;
+				left: @SidebarWidth;
+				top: 0px;
+				right: 0px;
+				bottom: 0px;
+				background-color: #F2F5F7;
+				&> div.Content
+				{
+					&> div.Column
+					{
+						display: table-cell;
+						
+						div.Title
+						{
+							color: #93A8A8;
+							font-size: 14px;
+							text-transform: uppercase;
+							letter-spacing: 0.1em;
+							font-weight: 400;
+							margin-top: 10px;
+							margin-bottom: 10px;
+						}
+						a
+						{
+							color: #5F7676;
+							display: block;
+							
+							&:hover
+							{
+								background-color: #E6EAED;
+								color: #313E3E;
+							}
+						}
+					}
 				}
 			}
 			
@@ -190,9 +260,20 @@ body
 		}
 		&> nav.Sidebar
 		{
-			transition: width linear 0.3s, opacity linear 0.3s;
 			width: 0px;
 			opacity: 0;
+			
+			ul
+			{
+				width: 100%;
+				-webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */
+				-moz-box-sizing: border-box;    /* Firefox, other Gecko */
+				box-sizing: border-box;         /* Opera/IE 8+ */
+			}
+			&> div.BackstageView
+			{
+				display: none;
+			}
 		}
 	}
 }
