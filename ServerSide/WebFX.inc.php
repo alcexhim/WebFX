@@ -14,39 +14,109 @@
 	
 	use WebFX\Pages\ErrorPage;
 
+	/**
+	 * Provides event arguments during an error event.
+	 * @author Michael Becker
+	 */
 	class ErrorEventArgs
 	{
+	    /**
+	     * The human-readable message associated with the error.
+	     * @var string
+	     */
 		public $Message;
+		/**
+		 * The error which caused this error, or null if this is the top-level error.
+		 * @var NULL|ErrorEventArgs
+		 */
 		public $ParentError;
 		
+		/**
+		 * Creates a new ErrorEventArgs with the given parameters.
+		 * @param string $message The human-readable message associated with the error.
+		 * @param NULL|ErrorEventArgs $parentError The error which caused this error, or null if this is the top-level error.
+		 */
 		public function __construct($message, $parentError = null)
 		{
 			$this->Message = $message;
 			$this->ParentError = $parentError;
 		}
 	}
+	/**
+	 * A code file that is included at the immediate start of the call to System::Execute(). 
+	 * @author Michael Becker
+	 */
 	class IncludeFile
 	{
+	    /**
+	     * The file name of the PHP code file to include.
+	     * @var string
+	     */
 		public $FileName;
+		/**
+		 * True if the file is required; false otherwise.
+		 * @var boolean
+		 */
 		public $IsRequired;
 		
+		/**
+		 * Creates a new IncludeFile with the given parameters.
+		 * @param string $filename The file name of the PHP code file to include.
+		 * @param boolean $isRequired True if the file is required; false otherwise.
+		 */
 		public function __construct($filename, $isRequired = false)
 		{
 			$this->FileName = $filename;
 			$this->IsRequired = $isRequired;
 		}
 	}
+	/**
+	 * The class which contains all core functionality for the WebFX system.
+	 * @author Michael Becker
+	 */
 	class System
 	{
+	    /**
+	     * Array of global application configuration name/value pairs. 
+	     * @var array
+	     */
 		public static $Configuration;
+		/**
+		 * Array of IncludeFiles which represent PHP code files to include before executing the application.
+		 * @var IncludeFile[]
+		 */
 		public static $IncludeFiles;
+		/**
+		 * True if tenanted hosting is enabled; false if this is a single-tenant application.
+		 * @var boolean
+		 */
 		public static $EnableTenantedHosting;
+		/**
+		 * The name of the currently-loaded tenant. 
+		 * @var string
+		 */
 		public static $TenantName;
+		/**
+		 * Error handler raised when the tenant name is unspecified in a multiple-tenant application.
+		 * @var callable
+		 */
 		public static $UnspecifiedTenantErrorHandler;
+		
+		/**
+		 * Global application variables
+		 * @var string[]
+		 */
 		public static $Variables;
 		
 		public static $Tasks;
 		
+		/**
+		 * Retrieves the value of the global configuration property with the given key if it is defined,
+		 * or the default value if it has not been defined.
+		 * @param string $key The key of the configuration property to search for.
+		 * @param string $defaultValue The value to return if the global configuration property with the specified key has not been defined.
+		 * @return string The value of the global configuration property with the given key if defined; otherwise, defaultValue.
+		 */
 		public static function GetConfigurationValue($key, $defaultValue = null)
 		{
 			if (System::HasConfigurationValue($key))
@@ -55,31 +125,60 @@
 			}
 			return $defaultValue;
 		}
+		/**
+		 * Sets the global configuration property with the given key to the specified value.
+		 * @param string $key The key of the configuration property to set.
+		 * @param string $value The value to which to set the property.
+		 */
 		public static function SetConfigurationValue($key, $value)
 		{
 			System::$Configuration[$key] = $value;
 		}
+		/**
+		 * Clears the value of the global configuration property with the given key.
+		 * @param string $key The key of the configuration property whose value will be cleared.
+		 */
 		public static function ClearConfigurationValue($key)
 		{
 			unset(System::$Configuration[$key]);
 		}
+		/**
+		 * Determines whether a global configuration property with the given key is defined.
+		 * @param string $key The key of the configuration property to search for.
+		 * @return boolean True if the global configuration property exists; false otherwise.
+		 */
 		public static function HasConfigurationValue($key)
 		{
 			return isset(System::$Configuration[$key]);
 		}
 		
+		/**
+		 * Array of Modules which are loaded when this application executes.
+		 * @var Module
+		 */
 		public static $Modules;
 		
 		public static $ErrorEventHandler;
 		public static $BeforeLaunchEventHandler;
 		public static $AfterLaunchEventHandler;
 		
+		/**
+		 * Redirects the user to the specified path via a Location header.
+		 * @param string $path The expandable string path to navigate to.
+		 */
 		public static function Redirect($path)
 		{
 			$realpath = System::ExpandRelativePath($path);
 			header("Location: " . $realpath);
 			return;
 		}
+		/**
+		 * Expands the given path by replacing the tilde character (~) with the value of the
+		 * configuration property Application.BasePath.
+		 * @param string $path The path to expand.
+		 * @param boolean $includeServerInfo True if server information should be included in the response; false otherwise.
+		 * @return string The expanded form of the given expandable string path.
+		 */
 		public static function ExpandRelativePath($path, $includeServerInfo = false)
 		{
 			$torepl = System::GetConfigurationValue("Application.BasePath");
@@ -148,6 +247,10 @@
 			}
 		}
 		
+		/**
+		 * Starts the WebFX application.
+		 * @return boolean True if the launch succeeded; false if a failure occurred.
+		 */
 		public static function Launch()
 		{
 			global $RootPath;
