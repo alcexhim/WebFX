@@ -8,6 +8,10 @@
 	
 	use WebFX\WebControlAttribute;
 	
+	/**
+	 * Provides an HTMLControl for the <A> HTML tag.
+	 * @author Michael Becker
+	 */
 	class HTMLControlAnchor extends HTMLControl
 	{
 		public function __construct()
@@ -17,7 +21,15 @@
 			$this->TagName = "a";
 		}
 		
+		/**
+		 * The URL to navigate to when this anchor is activated.
+		 * @var string
+		 */
 		public $TargetURL;
+		/**
+		 * The script to execute when this anchor is activated.
+		 * @var string
+		 */
 		public $TargetScript;
 		
 		protected function RenderBeginTag()
