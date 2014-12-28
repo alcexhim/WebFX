@@ -50,6 +50,12 @@
 			return null;
 		}
 		
+		/**
+		 * Generates a random string of the specified length using the characters specified in the string valid_chars.
+		 * @param string $valid_chars Set of characters used to build the resulting random string.
+		 * @param int $length The length of the resulting random string.
+		 * @return string The random string of the specified length using the specified character set.
+		 */
 		private static function GenerateRandomString($valid_chars, $length)
 		{
 			// start with an empty random string
@@ -93,16 +99,32 @@
 			$this->ParseChildElements = false;
 		}
 		
+		/**
+		 * Retrieves a ClientProperty associated with this control via a browser cookie.
+		 * @param string $name The name of the property to retrieve.
+		 * @param string $defaultValue The value to retrieve if the ClientProperty has not been set.
+		 * @return string The value of the property with the given name, or defaultValue if the property has not been set.
+		 */
 		public function GetClientProperty($name, $defaultValue = null)
 		{
 			if (!isset($_COOKIE[$this->ID . "__ClientProperty_" . $name])) return $defaultValue;
 			return $_COOKIE[$this->ID . "__ClientProperty_" . $name];
 		}
+		/**
+		 * Updates a ClientProperty associated with this control via a browser cookie.
+		 * @param string $name The name of the property to update.
+		 * @param string $value The value with which to update the property.
+		 * @param string $expires Expiration data for the cookie associated with the ClientProperty.
+		 */
 		public function SetClientProperty($name, $value, $expires = null)
 		{
 			setcookie($this->ID . "__ClientProperty_" . $name, $value, $expires);
 		}
 		
+		/**
+		 * Initializes this control, calling the OnInitialize() function and initializing any child
+		 * controls.
+		 */
         public function Initialize()
         {
             $this->OnInitialize();
@@ -137,6 +159,11 @@
             
         }
 		
+        /**
+         * Renders an HTML beginning tag with the specified parameters.
+         * @param string $tagName The name of the tag to open.
+         * @param array $namedParameters Associative array that specifies ClassNames, Attributes, and StyleRules to render with the beginning tag.  
+         */
 		public static function BeginTag($tagName, $namedParameters)
 		{
 			echo("<" . $tagName);
@@ -190,11 +217,19 @@
 			}
 			echo(">");
 		}
+		/**
+		 * Renders an HTML ending tag with the given tag name.
+		 * @param string $tagName The name of the tag to close.
+		 */
 		public static function EndTag($tagName)
 		{
 			echo("</" . $tagName . ">");
 		}
 		
+		/**
+		 * Renders the beginning tag of this WebControl, including any attribute, CSS class, or style
+		 * information specified by the control author or the caller.
+		 */
 		protected function RenderBeginTag()
 		{
 			if ($this->TagName != "")
@@ -336,6 +371,9 @@
 				echo(">");
 			}
 		}
+		/**
+		 * Renders the ending tag of this WebControl.
+		 */
 		protected function RenderEndTag()
 		{
 			if ($this->TagName != "" && $this->HasContent)
@@ -344,17 +382,28 @@
 			}
 		}
 		
+		/**
+		 * Renders the beginning tag of this WebControl, followed by any leading content specified by
+		 * the control author.
+		 */
 		public function BeginContent()
 		{
 			$this->RenderBeginTag();
             $this->BeforeContent();
 		}
+		/**
+		 * Renders any trailing content specified by the control author before the ending tag of this
+		 * WebControl, followed by the ending tag itself.
+		 */
 		public function EndContent()
 		{
             $this->AfterContent();
 			$this->RenderEndTag();
 		}
         
+		/**
+		 * Renders this WebControl and any child controls.
+		 */
         public function Render()
         {
             $this->BeginContent();
