@@ -333,12 +333,33 @@
 			return true;
 		}
 	}
+	/**
+	 * Represents a module, a collection of related ModulePages.
+	 * @author Michael Becker
+	 */
 	class Module
 	{
+		/**
+		 * The name of this Module.
+		 * @var string
+		 */
 		public $Name;
+		/**
+		 * True if this Module is enabled and will respond to ModulePage requests; false otherwise.
+		 * @var boolean
+		 */
 		public $Enabled;
+		/**
+		 * Array of ModulePages that are handled by this Module.
+		 * @var ModulePage[]
+		 */
 		public $Pages;
 		
+		/**
+		 * Creates a new Module with the specified parameters.
+		 * @param string $name The name of this Module.
+		 * @param ModulePage[] $pages Array of ModulePages that are handled by this Module.
+		 */
 		public function __construct($name, $pages)
 		{
 			$this->Name = $name;
@@ -353,15 +374,52 @@
 			}
 		}
 	}
+	/**
+	 * Represents a page provided by a Module that is accessible by the specified URL.
+	 * @author Michael Becker
+	 */
 	class ModulePage
 	{
+		/**
+		 * The relative path of this ModulePage.
+		 * @var string
+		 */
 		public $PathName;
+		/**
+		 * The user function that is executed when this ModulePage is accessed. Only valid if Pages is
+		 * not defined.
+		 * @var callable
+		 */
 		public $UserFunction;
+		/**
+		 * Array of ModulePages that are sub-pages of this ModulePage. Only valid if UserFunction is not
+		 * defined.
+		 * @var ModulePage[]
+		 */
 		public $Pages;
+		/**
+		 * The user function that is executed before this ModulePage is accessed. 
+		 * @var callable
+		 */
 		public $BeforeExecute;
+		/**
+		 * The user function that is executed after this ModulePage is accessed.
+		 * @var callable
+		 */
 		public $AfterExecute;
+		/**
+		 * Extra data associated with this ModulePage.
+		 * @var unknown
+		 */
 		public $ExtraData;
 		
+		/**
+		 * Creates a ModulePage with the specified parameters.
+		 * @param string $pathName The relative path of this ModulePage.
+		 * @param callable|ModulePage[] $userFunctionOrPages Either a user function to execute when this ModulePage is accessed, or an array of ModulePages that are sub-pages of this ModulePage.
+		 * @param callable $beforeExecute The user function that is executed before this ModulePage is accessed.
+		 * @param callable $afterExecute The user function that is executed after this ModulePage is accessed.
+		 */
 		public function __construct($pathName, $userFunctionOrPages, $beforeExecute = null, $afterExecute = null)
 		{
 			$this->PathName = $pathName;
@@ -377,6 +435,11 @@
 			$this->AfterExecute = $afterExecute;
 		}
 		
+		/**
+		 * Executes this ModulePage with the specified path.
+		 * @param string $path The relative path to handle via this ModulePage.
+		 * @return boolean True if the specified path was handled by this ModulePage or a sub-page; false otherwise.
+		 */
 		public function Execute($path)
 		{
 			foreach (System::$IncludeFiles as $includefile)
