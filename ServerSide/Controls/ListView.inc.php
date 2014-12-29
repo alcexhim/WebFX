@@ -275,9 +275,9 @@
 										}
 										else
 										{
-											$vps = $_POST["ListView_" . $this->ID . "_Filter_" . $column->Name];
-											if (isset($vps))
+											if (isset($_POST["ListView_" . $this->ID . "_Filter_" . $column->Name]))
 											{
+												$vps = $_POST["ListView_" . $this->ID . "_Filter_" . $column->Name];
 												if ($vps != "" && (mb_stripos($column->Text, $vps) === false))
 												{
 													$continueItem = true;
