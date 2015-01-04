@@ -29,7 +29,24 @@
 				echo("<div class=\"Field");
 				if ($item->Required) echo(" Required");
 				echo("\">");
-				echo("<label for=\"" . $item->ID . "\">" . $item->Title . "</label>");
+				
+				$title = $item->Title;
+				$i = stripos($title, "_");
+				$char = null;
+				if ($i !== FALSE)
+				{
+					$before = substr($title, 0, $i);
+					$after = substr($title, $i + 1);
+					$char = substr($after, 0, 1);
+					$title = $before . "<u>" . $char . "</u>" . substr($after, 1);
+				}
+				
+				echo("<label for=\"" . $item->ID . "\"");
+				if ($char !== null)
+				{
+					echo(" accesskey=\"" . $char . "\"");
+				}
+				echo(">" . $title . "</label>");
 				$item->Render();
 				echo("</div>");
 			}
