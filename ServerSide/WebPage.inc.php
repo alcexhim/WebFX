@@ -1,9 +1,18 @@
 <?php
 	namespace WebFX;
 	
+	/**
+	 * Contains functionality common to all WebFX Web pages. 
+	 * @author Michael Becker
+	 */
     class WebPage
     {
 		public $BreadcrumbItems;
+		
+		/**
+		 * The title of this Web page.
+		 * @var string
+		 */
         public $Title;
 		public $CssClass;
         public $Metadata;
@@ -14,8 +23,18 @@
 		public $ContextMenu;
 		public $Variables;
 		public $OpenGraph;
+		
+		/**
+		 * When true, omits the DOCTYPE HTML declaration at the beginning of the document to be compatible with
+		 * older Web browsers.
+		 * @var boolean
+		 */
 		public $UseCompatibleRenderingMode;
 		
+		/**
+		 * Specifies whether the request for this page is for partial content only.
+		 * @var boolean
+		 */
 		public $IsPartial;
 		
 		public function __construct()
@@ -69,35 +88,50 @@
         {
             
         }
+        /**
+         * Performs any necessary processing before the main content of the Web page. Designed for use by page developers.
+         */
         protected function BeforeContent()
         {
             
         }
+        /**
+         * Renders the main content of the Web page. Designed for use by page developers.
+         */
         protected function RenderContent()
         {
             
         }
+        /**
+         * Performs any necessary processing after the main content of the Web page. Designed for use by page developers.
+         */
         protected function AfterContent()
         {
             
         }
 		
-		/// <summary>
-		/// This function is called before the content for a full page is generated. To generate a partial page, pass "partial" in the query string.
-		/// </summary>
+        /**
+         * This function is called before the content for a full page is generated. To generate a partial page, pass
+         * "partial" in the query string.
+         */
 		protected function BeforeFullContent()
 		{
 			
 		}
-		/// <summary>
-		/// This function is called after the content for a full page is generated. To generate a partial page, pass "partial" in the query string.
-		/// </summary>
+		/**
+		 * This function is called after the content for a full page is generated. To generate a partial page, pass
+		 * "partial" in the query string.
+		 */
 		protected function AfterFullContent()
 		{
 			
 		}
 		
-		// WebPage Variables
+		/**
+		 * Retrieves the WebPageVariable with the given name associated with this WebPage.
+		 * @param string $name The name of the WebPageVariable to return. 
+		 * @return WebPageVariable|NULL The WebPageVariable with the given name, or NULL if no WebPageVariable with the given name is defined for this WebPage.
+		 */
 		public function GetVariable($name)
 		{
 			foreach ($this->Variables as $variable)
@@ -106,12 +140,24 @@
 			}
 			return null;
 		}
+		/**
+		 * Retrieves the string value for the WebPageVariable with the given name associated with this WebPage.
+		 * @param string $name The name of the WebPageVariable whose value is to be returned. 
+		 * @return string The value of the WebPageVariable with the given name, or the empty string ("") if no WebPageVariable with the given name is defined for this WebPage.
+		 */
 		public function GetVariableValue($name)
 		{
 			$variable = $this->GetVariable($name);
 			if ($variable == null) return null;
 			return $variable->Value;
 		}
+		/**
+		 * Updates the WebPageVariable with the given name associated with this WebPage.
+		 * @param string $name The name of the WebPageVariable to update.
+		 * @param string $value The value to set for the specified WebPageVariable.
+		 * @param boolean $autoDeclare True if the variable should be created if it doesn't exist; false if the function should fail.
+		 * @return boolean True if the variable was updated successfully; false otherwise.
+		 */
 		public function SetVariableValue($name, $value, $autoDeclare = false)
 		{
 			$variable = $this->GetVariable($name);
@@ -126,12 +172,22 @@
 			$variable->Value = $value;
 			return true;
 		}
+		/**
+		 * Determines if a WebPageVariable with the given name is defined on this WebPage.
+		 * @param string $name The name of the WebPageVariable to search for.
+		 * @return boolean True if a WebPageVariable with the given name is defined on this WebPage; false if not.
+		 */
 		public function IsVariableDefined($name)
 		{
 			$variable = $this->GetVariable($name);
 			if ($variable == null) return false;
 			return true;
 		}
+		/**
+		 * Determines if a WebPageVariable with the given name has a value (is not null) on this WebPage.
+		 * @param string $name The name of the WebPageVariable to search for.
+		 * @return boolean True if a WebPageVariable with the given name is defined and not null on this WebPage; false if either the variable is not defined or the variable is defined but does not have a value.
+		 */
 		public function IsVariableSet($name)
 		{
 			$variable = $this->GetVariable($name);
@@ -348,12 +404,19 @@
 			echo("</script>\r\n");
 		}
 		
+		/**
+		 * Renders the complete Web page, including beginning and ending content. Designed for use by end-users.
+		 */
         public function Render()
         {
             $this->BeginContent();
             $this->RenderContent();
             $this->EndContent();
         }
+        
+        /**
+         * Renders the ending content of the Web page. Designed for use by end-users.
+         */
         public function EndContent()
         {
 			$this->AfterContent();
