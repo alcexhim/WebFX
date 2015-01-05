@@ -87,8 +87,19 @@
 	}
 	class FormViewItemText extends FormViewItem
 	{
+		/**
+		 * Text that is displayed in the textbox of the FormViewItem when the user has not entered a value.
+		 * @var string
+		 */
 		public $PlaceholderText;
 		
+		/**
+		 * Creates a new Text FormViewItem with the given parameters.
+		 * @param string $id The control ID for the FormViewItem.
+		 * @param string $name The name of the form field to associate with the FormViewItem.
+		 * @param string $title The title of the FormViewItem.
+		 * @param string $defaultValue The default value of the FormViewItem.
+		 */
 		public function __construct($id = null, $name = null, $title = null, $defaultValue = null)
 		{
 			parent::__construct($id, $name, $title, $defaultValue);
