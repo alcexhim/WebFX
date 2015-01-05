@@ -44,6 +44,7 @@
 	{
 		public $ID;
 		public $Columns;
+		public $Checked;
 		public $Selected;
 		public $NavigateURL;
 		public $OnClientClick;
@@ -275,9 +276,9 @@
 										}
 										else
 										{
-											$vps = $_POST["ListView_" . $this->ID . "_Filter_" . $column->Name];
-											if (isset($vps))
+											if (isset($_POST["ListView_" . $this->ID . "_Filter_" . $column->Name]))
 											{
+												$vps = $_POST["ListView_" . $this->ID . "_Filter_" . $column->Name];
 												if ($vps != "" && (mb_stripos($column->Text, $vps) === false))
 												{
 													$continueItem = true;
@@ -296,7 +297,12 @@
 							$table->BeginRow(array("ClassNames" => $classNames));
 								
 							$table->BeginHeaderCell(array("ClassNames" => array("RowCheckBoxes")));
-							echo("<input type=\"checkbox\" />");
+							echo("<input type=\"checkbox\"");
+							if ($item->Checked)
+							{
+								echo(" checked=\"checked\"");
+							}
+							echo(" />");
 							$table->EndHeaderCell();
 							
 							if ($this->EnableAddRemoveRows)

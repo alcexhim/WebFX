@@ -9,14 +9,13 @@
      */
     class Enumeration
     {
-    
         private static $constCacheArray = NULL;
-    
+        
         public static function GetValues()
         {
             if (self::$constCacheArray == NULL)
             {
-                self::$constCacheArray = [];
+                self::$constCacheArray = array();
             }
             $calledClass = get_called_class();
             if (!array_key_exists($calledClass, self::$constCacheArray))

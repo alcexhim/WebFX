@@ -6,7 +6,7 @@
 	
 	use WebFX\WebControlAttribute;
 	
-	\Enum::Create("WebFX\\HTMLControls\\HTMLControlInputType", "None", "Text", "Password");
+	\Enum::Create("WebFX\\HTMLControls\\HTMLControlInputType", "None", "Text", "Password", "CheckBox", "RadioButton", "Hidden");
 	
 	class HTMLControlInput extends HTMLControl
 	{
@@ -34,6 +34,21 @@
 				case HTMLControlInputType::Password:
 				{
 					$this->Attributes[] = new WebControlAttribute("type", "password");
+					break;
+				}
+				case HTMLControlInputType::CheckBox:
+				{
+					$this->Attributes[] = new WebControlAttribute("type", "checkbox");
+					break;
+				}
+				case HTMLControlInputType::RadioButton:
+				{
+					$this->Attributes[] = new WebControlAttribute("type", "radio");
+					break;
+				}
+				case HTMLControlInputType::Hidden:
+				{
+					$this->Attributes[] = new WebControlAttribute("type", "hidden");
 					break;
 				}
 			}

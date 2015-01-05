@@ -14,39 +14,109 @@
 	
 	use WebFX\Pages\ErrorPage;
 
+	/**
+	 * Provides event arguments during an error event.
+	 * @author Michael Becker
+	 */
 	class ErrorEventArgs
 	{
+	    /**
+	     * The human-readable message associated with the error.
+	     * @var string
+	     */
 		public $Message;
+		/**
+		 * The error which caused this error, or null if this is the top-level error.
+		 * @var NULL|ErrorEventArgs
+		 */
 		public $ParentError;
 		
+		/**
+		 * Creates a new ErrorEventArgs with the given parameters.
+		 * @param string $message The human-readable message associated with the error.
+		 * @param NULL|ErrorEventArgs $parentError The error which caused this error, or null if this is the top-level error.
+		 */
 		public function __construct($message, $parentError = null)
 		{
 			$this->Message = $message;
 			$this->ParentError = $parentError;
 		}
 	}
+	/**
+	 * A code file that is included at the immediate start of the call to System::Execute(). 
+	 * @author Michael Becker
+	 */
 	class IncludeFile
 	{
+	    /**
+	     * The file name of the PHP code file to include.
+	     * @var string
+	     */
 		public $FileName;
+		/**
+		 * True if the file is required; false otherwise.
+		 * @var boolean
+		 */
 		public $IsRequired;
 		
+		/**
+		 * Creates a new IncludeFile with the given parameters.
+		 * @param string $filename The file name of the PHP code file to include.
+		 * @param boolean $isRequired True if the file is required; false otherwise.
+		 */
 		public function __construct($filename, $isRequired = false)
 		{
 			$this->FileName = $filename;
 			$this->IsRequired = $isRequired;
 		}
 	}
+	/**
+	 * The class which contains all core functionality for the WebFX system.
+	 * @author Michael Becker
+	 */
 	class System
 	{
+	    /**
+	     * Array of global application configuration name/value pairs. 
+	     * @var array
+	     */
 		public static $Configuration;
+		/**
+		 * Array of IncludeFiles which represent PHP code files to include before executing the application.
+		 * @var IncludeFile[]
+		 */
 		public static $IncludeFiles;
+		/**
+		 * True if tenanted hosting is enabled; false if this is a single-tenant application.
+		 * @var boolean
+		 */
 		public static $EnableTenantedHosting;
+		/**
+		 * The name of the currently-loaded tenant. 
+		 * @var string
+		 */
 		public static $TenantName;
+		/**
+		 * Error handler raised when the tenant name is unspecified in a multiple-tenant application.
+		 * @var callable
+		 */
 		public static $UnspecifiedTenantErrorHandler;
+		
+		/**
+		 * Global application variables
+		 * @var string[]
+		 */
 		public static $Variables;
 		
 		public static $Tasks;
 		
+		/**
+		 * Retrieves the value of the global configuration property with the given key if it is defined,
+		 * or the default value if it has not been defined.
+		 * @param string $key The key of the configuration property to search for.
+		 * @param string $defaultValue The value to return if the global configuration property with the specified key has not been defined.
+		 * @return string The value of the global configuration property with the given key if defined; otherwise, defaultValue.
+		 */
 		public static function GetConfigurationValue($key, $defaultValue = null)
 		{
 			if (System::HasConfigurationValue($key))
@@ -55,31 +125,60 @@
 			}
 			return $defaultValue;
 		}
+		/**
+		 * Sets the global configuration property with the given key to the specified value.
+		 * @param string $key The key of the configuration property to set.
+		 * @param string $value The value to which to set the property.
+		 */
 		public static function SetConfigurationValue($key, $value)
 		{
 			System::$Configuration[$key] = $value;
 		}
+		/**
+		 * Clears the value of the global configuration property with the given key.
+		 * @param string $key The key of the configuration property whose value will be cleared.
+		 */
 		public static function ClearConfigurationValue($key)
 		{
 			unset(System::$Configuration[$key]);
 		}
+		/**
+		 * Determines whether a global configuration property with the given key is defined.
+		 * @param string $key The key of the configuration property to search for.
+		 * @return boolean True if the global configuration property exists; false otherwise.
+		 */
 		public static function HasConfigurationValue($key)
 		{
 			return isset(System::$Configuration[$key]);
 		}
 		
+		/**
+		 * Array of Modules which are loaded when this application executes.
+		 * @var Module
+		 */
 		public static $Modules;
 		
 		public static $ErrorEventHandler;
 		public static $BeforeLaunchEventHandler;
 		public static $AfterLaunchEventHandler;
 		
+		/**
+		 * Redirects the user to the specified path via a Location header.
+		 * @param string $path The expandable string path to navigate to.
+		 */
 		public static function Redirect($path)
 		{
 			$realpath = System::ExpandRelativePath($path);
 			header("Location: " . $realpath);
 			return;
 		}
+		/**
+		 * Expands the given path by replacing the tilde character (~) with the value of the
+		 * configuration property Application.BasePath.
+		 * @param string $path The path to expand.
+		 * @param boolean $includeServerInfo True if server information should be included in the response; false otherwise.
+		 * @return string The expanded form of the given expandable string path.
+		 */
 		public static function ExpandRelativePath($path, $includeServerInfo = false)
 		{
 			$torepl = System::GetConfigurationValue("Application.BasePath");
@@ -148,6 +247,10 @@
 			}
 		}
 		
+		/**
+		 * Starts the WebFX application.
+		 * @return boolean True if the launch succeeded; false if a failure occurred.
+		 */
 		public static function Launch()
 		{
 			global $RootPath;
@@ -230,12 +333,33 @@
 			return true;
 		}
 	}
+	/**
+	 * Represents a module, a collection of related ModulePages.
+	 * @author Michael Becker
+	 */
 	class Module
 	{
+		/**
+		 * The name of this Module.
+		 * @var string
+		 */
 		public $Name;
+		/**
+		 * True if this Module is enabled and will respond to ModulePage requests; false otherwise.
+		 * @var boolean
+		 */
 		public $Enabled;
+		/**
+		 * Array of ModulePages that are handled by this Module.
+		 * @var ModulePage[]
+		 */
 		public $Pages;
 		
+		/**
+		 * Creates a new Module with the specified parameters.
+		 * @param string $name The name of this Module.
+		 * @param ModulePage[] $pages Array of ModulePages that are handled by this Module.
+		 */
 		public function __construct($name, $pages)
 		{
 			$this->Name = $name;
@@ -250,15 +374,52 @@
 			}
 		}
 	}
+	/**
+	 * Represents a page provided by a Module that is accessible by the specified URL.
+	 * @author Michael Becker
+	 */
 	class ModulePage
 	{
+		/**
+		 * The relative path of this ModulePage.
+		 * @var string
+		 */
 		public $PathName;
+		/**
+		 * The user function that is executed when this ModulePage is accessed. Only valid if Pages is
+		 * not defined.
+		 * @var callable
+		 */
 		public $UserFunction;
+		/**
+		 * Array of ModulePages that are sub-pages of this ModulePage. Only valid if UserFunction is not
+		 * defined.
+		 * @var ModulePage[]
+		 */
 		public $Pages;
+		/**
+		 * The user function that is executed before this ModulePage is accessed. 
+		 * @var callable
+		 */
 		public $BeforeExecute;
+		/**
+		 * The user function that is executed after this ModulePage is accessed.
+		 * @var callable
+		 */
 		public $AfterExecute;
+		/**
+		 * Extra data associated with this ModulePage.
+		 * @var unknown
+		 */
 		public $ExtraData;
 		
+		/**
+		 * Creates a ModulePage with the specified parameters.
+		 * @param string $pathName The relative path of this ModulePage.
+		 * @param callable|ModulePage[] $userFunctionOrPages Either a user function to execute when this ModulePage is accessed, or an array of ModulePages that are sub-pages of this ModulePage.
+		 * @param callable $beforeExecute The user function that is executed before this ModulePage is accessed.
+		 * @param callable $afterExecute The user function that is executed after this ModulePage is accessed.
+		 */
 		public function __construct($pathName, $userFunctionOrPages, $beforeExecute = null, $afterExecute = null)
 		{
 			$this->PathName = $pathName;
@@ -274,6 +435,11 @@
 			$this->AfterExecute = $afterExecute;
 		}
 		
+		/**
+		 * Executes this ModulePage with the specified path.
+		 * @param string $path The relative path to handle via this ModulePage.
+		 * @return boolean True if the specified path was handled by this ModulePage or a sub-page; false otherwise.
+		 */
 		public function Execute($path)
 		{
 			foreach (System::$IncludeFiles as $includefile)
@@ -429,6 +595,12 @@
 	global $RootPath;
 	require_once($RootPath . "/Include/Configuration.inc.php");
 	
+	require_once("DataFX/DataFX.inc.php");
+	
+	// After loading the configuration, attempt to establish PDO connection (must be done before everything
+	// else gets initialized, in case something depends on the PDO)
+	include_once("PDO.inc.php");
+	
 	// Global Controls loader
 	$a = glob($WebFXRootPath . "/Controls/*.inc.php");
 	foreach ($a as $filename)
@@ -485,16 +657,6 @@
 		include_once($filename);
 	}
 	*/
-	
-	require_once("DataFX/DataFX.inc.php");
-	try
-	{
-		require_once("PDO.inc.php");	
-	}
-	catch (\PDOException $ex)
-	{
-		trigger_error("Could not connect to the database via PDO");
-	}
 	
 	session_start();
 ?>
