@@ -158,8 +158,21 @@
 		 */
 		public static $Modules;
 		
+		/**
+		 * The event handler that is called when an irrecoverable error occurs.
+		 * @var callable
+		 */
 		public static $ErrorEventHandler;
+		
+		/**
+		 * The event handler that is called before this application executes.
+		 * @var callable
+		 */
 		public static $BeforeLaunchEventHandler;
+		/**
+		 * The event handler that is called after this application executes.
+		 * @var callable
+		 */
 		public static $AfterLaunchEventHandler;
 		
 		/**
