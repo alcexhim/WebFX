@@ -493,6 +493,10 @@
 						$page->Controls = $page->ClassReference->Controls;
 					}
 				}
+				else
+				{
+					trigger_error("Code-behind for '" . $page->ClassName . "' not found");
+				}
 			}
 			return $page;
 		}

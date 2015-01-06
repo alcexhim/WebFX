@@ -170,14 +170,14 @@
 			
 			if (is_array($namedParameters))
 			{
-				$classNames = $namedParameters["ClassNames"];
-				$attributes = $namedParameters["Attributes"];
-				$styleRules = $namedParameters["StyleRules"];
+				if (isset($namedParameters["ClassNames"])) $classNames = $namedParameters["ClassNames"];
+				if (isset($namedParameters["Attributes"])) $attributes = $namedParameters["Attributes"];
+				if (isset($namedParameters["StyleRules"])) $styleRules = $namedParameters["StyleRules"];
 			}
 			
-			if (!is_array($classNames)) $classNames = array();
-			if (!is_array($attributes)) $attributes = array();
-			if (!is_array($styleRules)) $styleRules = array();
+			if (!isset($classNames) || !is_array($classNames)) $classNames = array();
+			if (!isset($attributes) ||!is_array($attributes)) $attributes = array();
+			if (!isset($styleRules) ||!is_array($styleRules)) $styleRules = array();
 			
 			$count = count($classNames);
 			if ($count > 0)
