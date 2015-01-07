@@ -2,7 +2,13 @@ div.FormView
 {
 	display: table;
 	width: -moz-available;
+	border-collapse: collapse;
 	
+	&> div.Separator
+	{
+		display: table-row;
+		width: 100%;
+	}
 	&> div.Field
 	{
 		display: table-row;

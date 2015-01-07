@@ -26,29 +26,40 @@
 			echo("<div class=\"FormView\">");
 			foreach ($this->Items as $item)
 			{
-				echo("<div class=\"Field");
-				if ($item->Required) echo(" Required");
-				echo("\">");
-				
-				$title = $item->Title;
-				$i = stripos($title, "_");
-				$char = null;
-				if ($i !== FALSE)
+				if (get_class($item) == "WebFX\\Controls\\FormViewItemSeparator")
 				{
-					$before = substr($title, 0, $i);
-					$after = substr($title, $i + 1);
-					$char = substr($after, 0, 1);
-					$title = $before . "<u>" . $char . "</u>" . substr($after, 1);
+					echo("<div class=\"Separator\">");
+					echo("<div class=\"Title\">");
+					echo($item->Title);
+					echo("</div>");
+					echo("</div>");
 				}
-				
-				echo("<label for=\"" . $item->ID . "\"");
-				if ($char !== null)
+				else
 				{
-					echo(" accesskey=\"" . $char . "\"");
+					echo("<div class=\"Field");
+					if ($item->Required) echo(" Required");
+					echo("\">");
+					
+					$title = $item->Title;
+					$i = stripos($title, "_");
+					$char = null;
+					if ($i !== FALSE)
+					{
+						$before = substr($title, 0, $i);
+						$after = substr($title, $i + 1);
+						$char = substr($after, 0, 1);
+						$title = $before . "<u>" . $char . "</u>" . substr($after, 1);
+					}
+					
+					echo("<label for=\"" . $item->ID . "\"");
+					if ($char !== null)
+					{
+						echo(" accesskey=\"" . $char . "\"");
+					}
+					echo(">" . $title . "</label>");
+					$item->Render();
+					echo("</div>");
 				}
-				echo(">" . $title . "</label>");
-				$item->Render();
-				echo("</div>");
 			}
 			echo("</div>");
 		}
@@ -84,6 +95,18 @@
 		}
 		
 		protected abstract function RenderContent();
+	}
+	class FormViewItemSeparator extends FormViewItem
+	{
+		public function __construct($id = null, $title = null)
+		{
+			parent::__construct($id, $id, $title);
+		}
+		
+		protected function RenderContent()
+		{
+			
+		}
 	}
 	class FormViewItemText extends FormViewItem
 	{
