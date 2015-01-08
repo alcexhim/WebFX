@@ -97,6 +97,8 @@
 			$this->StyleRules = array();
 			
 			$this->ParseChildElements = false;
+			
+			$this->ClientIDMode = WebControlClientIDMode::None;
 		}
 		
 		/**
@@ -121,17 +123,40 @@
 			setcookie($this->ID . "__ClientProperty_" . $name, $value, $expires);
 		}
 		
+		private $Initialized;
+		
 		/**
 		 * Initializes this control, calling the OnInitialize() function and initializing any child
 		 * controls.
 		 */
         public function Initialize()
         {
+        	$id = null;
+        	$clientid = null;
+        	
+        	if ($this->ClientIDMode == WebControlClientIDMode::Automatic && $this->ID == null)
+        	{
+        		$parent = $this->ParentObject;
+        		$clientid = "";
+        		
+        		while ($parent != null)
+        		{
+        			$clientid = $parent->ID . "_" . $clientid;
+        			$parent = $parent->ParentObject;
+        		}
+        		
+        		$id = "WFX" . WebControl::GenerateRandomString("ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890", 10);
+        		$clientid .= $id;
+        	}
+        	if ($id != null) $this->ID = $id;
+        	if ($clientid != null) $this->ClientID = $clientid;
+        	
             $this->OnInitialize();
 			if (is_array($this->Controls))
 			{
 				foreach ($this->Controls as $control)
 				{
+					$control->ParentObject = $this;
 					$control->Initialize();
 				}
 			}
@@ -139,6 +164,7 @@
 			{
 				trigger_error("Controls is not array in " . get_class($this) . " ; did you forget to call parent::__construct() ?");
 			}
+			$this->Initialized = true;
         }
 		
 		protected function OnInitialize()
@@ -346,15 +372,6 @@
 					echo(" class=\"" . $classAttributeContent . "\"");
 				}
 				
-				if (!isset($id) || $id == null)
-				{
-					if ($this->ClientIDMode == WebControlClientIDMode::Automatic)
-					{
-						$id = "WFX" . WebControl::GenerateRandomString("ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890", 10);
-					}
-				}
-				if (isset($id)) $this->ID = $id;
-				
 				if ($this->ClientID != null)
 				{
 					echo(" id=\"" . $this->ClientID . "\"");
@@ -406,6 +423,8 @@
 		 */
         public function Render()
         {
+        	if (!$this->Initialized) $this->Initialize();
+        	
             $this->BeginContent();
 			if (count($this->Controls) > 0)
 			{
