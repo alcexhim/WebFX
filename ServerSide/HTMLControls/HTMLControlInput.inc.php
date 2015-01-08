@@ -52,7 +52,6 @@
 					break;
 				}
 			}
-			if (isset($this->ID)) $this->Attributes[] = new WebControlAttribute("id", $this->ID);
 			if (isset($this->Name)) $this->Attributes[] = new WebControlAttribute("name", $this->Name);
 			if (isset($this->Value)) $this->Attributes[] = new WebControlAttribute("value", $this->Value);
 			if (isset($this->PlaceholderText)) $this->Attributes[] = new WebControlAttribute("placeholder", $this->PlaceholderText);
