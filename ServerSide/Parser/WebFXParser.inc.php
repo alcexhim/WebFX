@@ -288,25 +288,38 @@
 				echo("<!DOCTYPE html>");
 			}
 			
-			echo("<html");
+			$tagHTML = new HTMLControl();
+			$tagHTML->TagName = "html";
+			
 			if (!$this->UseCompatibleRenderingMode)
 			{
-				echo(" xmlns=\"http://www.w3.org/1999/xhtml\"");
+				$tagHTML->Attributes[] = new WebControlAttribute("xmlns", "http://www.w3.org/1999/xhtml");
+				
 				$referenceAlreadyUsed = array();
 				foreach ($references as $reference)
 				{
 					$referenceAlreadyUsed[$reference->TagPrefix] = false;
 				}
-				
 				foreach ($references as $reference)
 				{
 					if ($referenceAlreadyUsed[$reference->TagPrefix]) continue;
-					echo(" xmlns:" . $reference->TagPrefix . "=\"" . $reference->NamespaceURL . "\"");
+					$tagHTML->Attributes[] = new WebControlAttribute("xmlns:" . $reference->TagPrefix, $reference->NamespaceURL);					
 					$referenceAlreadyUsed[$reference->TagPrefix] = true;
 				}
 			}
-			echo(">");
-			echo("<head>");
+			
+			$tagHead = new HTMLControl();
+			$tagHead->TagName = "head";
+			
+			// <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+			
+			$meta = new HTMLControl();
+			$meta->TagName = "meta";
+			$meta->HasContent = false;
+			$meta->Attributes[] = new WebControlAttribute("name", "viewport");
+			$meta->Attributes[] = new WebControlAttribute("content", "width=device-width,minimum-scale=1.0");
+			$tagHead->Controls[] = $meta;
+			
 			foreach ($scripts as $script)
 			{
 				$tagScript = new HTMLControl();
@@ -325,7 +338,7 @@
 				{
 					$tagScript->InnerHTML = $script->Content;
 				}
-				$tagScript->Render();
+				$tagHead->Controls[] = $tagScript;
 			}
 			foreach ($stylesheets as $stylesheet)
 			{
@@ -346,16 +359,20 @@
 						$tagStyleSheet->InnerHTML = $stylesheet->Content;
 					}
 				}
-				$tagStyleSheet->Render();
+				$tagHead->Controls[] = $tagStyleSheet;
 			}
-			echo("</head>");
-			echo("<body>");
+			$tagHTML->Controls[] = $tagHead;
+			
+			$tagBody = new HTMLControl();
+			$tagBody->TagName = "body";
+			
 			foreach ($controls as $ctl)
 			{
-				$ctl->Render();
+				$tagBody->Controls[] = $ctl;
 			}
-			echo("</body>");
-			echo("</html>");
+			
+			$tagHTML->Controls[] = $tagBody;
+			$tagHTML->Render();
 		}
 		
 		public static function FromMarkup($element, $parser)
