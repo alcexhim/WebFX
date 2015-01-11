@@ -238,6 +238,12 @@
 				$ctl->Initialize();
 			}
 			
+			if (!$this->ClassReference == null)
+			{
+				$retval = $this->ClassReference->OnInit();
+				if ($retval === false) return;
+			}
+			
 			$scripts = $this->Scripts;
 			if ($this->MasterPage != null)
 			{
@@ -502,9 +508,7 @@
 					{
 						$page->ClassReference->{$name} = $value;
 					}
-					
-					$page->ClassReference->OnInit();
-					
+
 					if (is_array($page->ClassReference->Controls))
 					{
 						$page->Controls = $page->ClassReference->Controls;
@@ -552,6 +556,10 @@
 			$this->Pages = array();
 		}
 		
+		/**
+		 * Loads an XML file describing a portion or portions of the WebFX environment.
+		 * @param string $filename The name of the XML file to load into the environment.
+		 */
 		public function LoadFile($filename)
 		{
 			$markup = MarkupObjectModel::FromFile($filename);
