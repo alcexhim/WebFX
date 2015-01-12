@@ -15,9 +15,11 @@ function ContextMenu()
 				elem1.setAttribute("href", "#");
 				elem1.addEventListener("click", function(e)
 				{
+					this.NativeObject.Hide();
 					this.MenuItem.Execute();
 				});
 				elem1.innerHTML = this.Items[i].Title;
+				elem1.NativeObject = this;
 				elem1.MenuItem = this.Items[i];
 				
 				elem.appendChild(elem1);
