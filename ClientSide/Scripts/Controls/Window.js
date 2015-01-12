@@ -1,5 +1,24 @@
 var Window = function(parentElement)
 {
+	if (!parentElement)
+	{
+		parentElement = document.createElement("div");
+		parentElement.className = "Window";
+		
+		var titleBar = document.createElement("div");
+		titleBar.className = "TitleBar";
+		parentElement.appendChild(titleBar);
+		
+		var content = document.createElement("div");
+		content.className = "Content";
+		parentElement.appendChild(content);
+		
+		var footer = document.createElement("div");
+		footer.className = "Footer";
+		parentElement.appendChild(footer);
+		
+		document.body.appendChild(parentElement);
+	}
 	this.ParentElement = parentElement;
 	
 	this.Opened = new Callback(this);
@@ -17,6 +36,15 @@ var Window = function(parentElement)
 		e.stopPropagation();
 		return false;
 	});
+	
+	this.GetContent = function()
+	{
+		return this.ParentElement.childNodes[1].innerHTML;
+	};
+	this.SetContent = function(value)
+	{
+		this.ParentElement.childNodes[1].innerHTML = value;
+	};
 	
 	this.GetWidth = function()
 	{
@@ -167,6 +195,14 @@ Window.ContinueDrag = function(e)
 Window.EndDrag = function()
 {
 	Window.DragWindow = null;
+};
+
+Window.ShowDialog = function(message, title, buttons)
+{
+	var wnd = new Window();
+	wnd.SetTitle(title);
+	wnd.SetContent(message);
+	wnd.ShowDialog();
 };
 
 window.addEventListener("mousemove", function(e)
