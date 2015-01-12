@@ -7,6 +7,11 @@ var Window = function(parentElement)
 		
 		var titleBar = document.createElement("div");
 		titleBar.className = "TitleBar";
+		
+		var title = document.createElement("span");
+		title.className = "Title";
+		titleBar.appendChild(title);
+		
 		parentElement.appendChild(titleBar);
 		
 		var content = document.createElement("div");
@@ -14,12 +19,16 @@ var Window = function(parentElement)
 		parentElement.appendChild(content);
 		
 		var footer = document.createElement("div");
-		footer.className = "Footer";
+		footer.className = "Buttons";
+		footer.NativeObject = this;
+		footer.style.display = "none";
 		parentElement.appendChild(footer);
 		
 		document.body.appendChild(parentElement);
 	}
 	this.ParentElement = parentElement;
+	
+	this.ContentURL = null;
 	
 	this.Opened = new Callback(this);
 	this.Closed = new Callback(this);
@@ -44,6 +53,22 @@ var Window = function(parentElement)
 	this.SetContent = function(value)
 	{
 		this.ParentElement.childNodes[1].innerHTML = value;
+	};
+	this.GetFooter = function()
+	{
+		return this.ParentElement.childNodes[2].innerHTML;
+	};
+	this.SetFooter = function(value)
+	{
+		this.ParentElement.childNodes[2].innerHTML = value;
+		if (value == null)
+		{
+			this.ParentElement.childNodes[2].style.display = "none";			
+		}
+		else
+		{
+			this.ParentElement.childNodes[2].style.display = "block";
+		}
 	};
 	
 	this.GetWidth = function()
@@ -114,10 +139,36 @@ var Window = function(parentElement)
 		Window.style.top = y + "px";
 	};
 	
-	this.Show = function()
+	this.Show = function(parent)
 	{
+		if (parent)
+		{
+			this.ParentElement.parentNode.removeChild(this.ParentElement);
+			parent.appendChild(this.ParentElement);
+			
+			// NOTE: parent must have its style not set to the default for this to work
+			if (!(parent.style.position == "relative" || parent.style.position == "absolute"))
+			{
+				parent.style.position = "relative";			
+			}
+			this.ParentElement.style.position = "absolute";
+		}
+		else
+		{
+			this.ParentElement.parentNode.removeChild(this.ParentElement);
+			document.body.appendChild(this.ParentElement);
+			this.ParentElement.style.position = "fixed";
+		}
+		
 		var Window = this.ParentElement;
-		Window.style.display = "block";
+		Window.className = "Window Visible";
+		
+		if (this.ContentURL != null)
+		{
+			// TODO: execute AJAX request to load content
+			
+		}
+		
 		this.Opened.Execute(CallbackArgument.Empty);
 	};
 	this.ShowDialog = function()
