@@ -23,6 +23,9 @@ function ContextMenu()
 				elem.appendChild(elem1);
 			}
 			
+			elem.style.left = x + "px";
+			elem.style.top = y + "px";
+			
 			document.body.appendChild(elem);
 			this.ParentElement = elem;
 		}
