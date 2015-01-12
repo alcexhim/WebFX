@@ -17,6 +17,10 @@ function ContextMenu()
 				{
 					this.NativeObject.Hide();
 					this.MenuItem.Execute();
+					
+					e.preventDefault();
+					e.stopPropagation();
+					return false;
 				});
 				elem1.innerHTML = this.Items[i].Title;
 				elem1.NativeObject = this;
