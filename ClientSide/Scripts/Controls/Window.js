@@ -28,7 +28,20 @@ var Window = function(parentElement)
 	}
 	this.ParentElement = parentElement;
 	
-	this.ContentURL = null;
+	this.mvarContentURL = null;
+	this.GetContentURL = function()
+	{
+		return this.mvarContentURL;
+	};
+	this.SetContentURL = function(value)
+	{
+		this.mvarContentURL = value;
+	};
+	
+	if (parentElement.hasAttribute("data-content-url"))
+	{
+		this.SetContentURL(parentElement.getAttribute("data-content-url"));
+	}
 	
 	this.Opened = new Callback(this);
 	this.Closed = new Callback(this);
@@ -41,6 +54,21 @@ var Window = function(parentElement)
 	TitleBar.addEventListener("mousedown", function(e)
 	{
 		Window.BeginDrag(this.Parent, e);
+		e.preventDefault();
+		return false;
+	});
+	TitleBar.addEventListener("contextmenu", function(e)
+	{
+		var menu = new ContextMenu();
+		menu.Items =
+		[
+		 	new MenuItemCommand("mnuWindowClose", "Close", function(e1)
+			{
+		 		TitleBar.Parent.Hide();
+			})
+		];
+		menu.Show(e.clientX, e.clientY);
+		
 		e.preventDefault();
 		e.stopPropagation();
 		return false;
@@ -163,10 +191,30 @@ var Window = function(parentElement)
 		var Window = this.ParentElement;
 		Window.className = "Window Visible";
 		
-		if (this.ContentURL != null)
+		if (this.mvarContentURL != null)
 		{
-			// TODO: execute AJAX request to load content
+			this.SetContent("<div class=\"Throbber\">&nbsp;</div>");
 			
+			// TODO: execute AJAX request to load content
+			var xhr = new XMLHttpRequest();
+			xhr.ParentWindow = this;
+			xhr.onreadystatechange = function()
+			{
+				if (this.readyState == 4)
+				{
+					if (this.status == 200)
+					{
+						this.ParentWindow.SetContent(this.responseText);
+					}
+					else
+					{
+						this.ParentWindow.SetContent("<div class=\"Alert Failure\"><div class=\"Title\">Could not load window content</div><div class=\"Content\">Check your Internet connection and try again</div></div>");
+					}
+				}
+			};
+			xhr.open("GET", this.mvarContentURL, true);
+			xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest");
+			xhr.send(null);
 		}
 		
 		this.Opened.Execute(CallbackArgument.Empty);
