@@ -1,3 +1,103 @@
+nav.Primary
+{
+	background-color: #313E3E;
+	border-color: #485A5A;
+	color: #93A8A8;
+	
+	padding-left: 48px;
+	padding-right: 48px;
+	
+	&> div.Menu
+	{
+		border: none;
+	}
+	
+	div.Menu
+	{
+		position: relative;
+		
+		background-color: inherit;
+		color: inherit;
+		
+		div.Separator
+		{
+			background-color: #E6EAED;
+			height: 1px;
+			overflow: hidden;
+			border-bottom: 1px solid #3D4C4C;
+			margin: 8px 4px;
+			box-sizing: border-box;
+		}
+		
+		&> div.MenuItems
+		{
+			&> div.MenuItem
+			{
+				display: inline-block;
+				&.Right
+				{
+					float: right;
+					&> div.Menu
+					{
+						right: 0px;
+						div.MenuItem > div.Menu
+						{
+							margin-left: initial;
+							right: 160px;
+						}
+					}
+				}
+				
+				&> a
+				{
+					display: inline-block;
+					padding: 16px;
+					text-decoration: none;
+					color: inherit;
+				}
+				&> div.Menu
+				{
+					display: none;
+					position: absolute;
+					padding: 0px;
+					a
+					{
+						padding: 8px;
+						display: block;
+					}
+				}
+				&:hover
+				{
+					&> a
+					{
+						background-color: #3D4C4C;
+						color: #CBD6D6;
+					}
+					&> div.Menu
+					{
+						display: block;
+						background-color: #485A5A;
+					}
+				}
+				
+				/*
+				 *  n-level menu item menus below the primary menu item
+				 */
+				div.Menu div.MenuItem
+				{
+					display: block;
+					min-width: 160px;
+					div.Menu
+					{
+						margin-left: 160px;
+						margin-top: -38px;
+					}
+				}			
+			}
+		}
+	}
+}
+
 div.Page > nav.Top
 {
 	position: fixed;
