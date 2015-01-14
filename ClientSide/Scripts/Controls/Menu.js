@@ -2,7 +2,7 @@ function ContextMenu()
 {
 	this.Items = [];
 	this.ParentElement = null;
-	this.Show = function(x, y)
+	this.Show = function(x, y, parent)
 	{
 		if (this.ParentElement == null)
 		{
@@ -22,6 +22,12 @@ function ContextMenu()
 					e.stopPropagation();
 					return false;
 				});
+				elem1.addEventListener("contextmenu", function(e)
+				{
+					e.preventDefault();
+					e.stopPropagation();
+					return false;
+				});
 				elem1.innerHTML = this.Items[i].Title;
 				elem1.NativeObject = this;
 				elem1.MenuItem = this.Items[i];
@@ -32,7 +38,9 @@ function ContextMenu()
 			elem.style.left = x + "px";
 			elem.style.top = y + "px";
 			
-			document.body.appendChild(elem);
+			if (parent == null) parent = document.body;
+			
+			parent.appendChild(elem);
 			this.ParentElement = elem;
 		}
 		this.ParentElement.className = "Menu Popup Visible";
