@@ -7,6 +7,8 @@
 		public $ClientID;
 		public $ClientIDMode;
 		
+		public $Content;
+		
 		public $Controls;
 		public $HasContent;
 		
@@ -435,7 +437,14 @@
 			}
 			else
 			{
-				$this->RenderContent();
+				if (is_callable($this->Content))
+				{
+					call_user_function($this->Content);
+				}
+				else
+				{
+					$this->RenderContent();
+				}
 			}
             $this->EndContent();
         }
