@@ -10,20 +10,45 @@
 	use WebFX\HTMLControls\HTMLControlTextArea;
 	
 	use WebFX\WebControlAttribute;
-
+	use WebFX\Enumeration;
+	
+	class FormViewLabelStyle extends Enumeration
+	{
+		/**
+		 * The labels for FormView items are rendered as an HTML <label> element beside the form element.
+		 * @var FormViewLabelStyle
+		 */
+		const Label = 1;
+		/**
+		 * The labels for FormView items are rendered in-place where possible.
+		 * @var FormViewLabelStyle
+		 */
+		const Placeholder = 2;
+	}
+	
 	class FormView extends \WebFX\WebControl
 	{
+		/**
+		 * The style of the labels applied to FormView items.
+		 * @var FormViewLabelStyle
+		 */
+		public $LabelStyle;
+		/**
+		 * Array of FormViewItems contained within this FormView.
+		 * @var FormViewItem[]
+		 */
 		public $Items;
 		
 		public function __construct()
 		{
 			parent::__construct();
 			$this->ParseChildElements = true;
+			$this->TagName = "div";
+			$this->ClassList[] = "FormView";
 		}
 		
 		protected function RenderContent()
 		{
-			echo("<div class=\"FormView\">");
 			foreach ($this->Items as $item)
 			{
 				if (get_class($item) == "WebFX\\Controls\\FormViewItemSeparator")
@@ -61,7 +86,6 @@
 					echo("</div>");
 				}
 			}
-			echo("</div>");
 		}
 	}
 	
