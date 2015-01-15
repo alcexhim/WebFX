@@ -1,4 +1,8 @@
-var Window = function(parentElement)
+/**
+ * Creates a Window.
+ * @param parentElement Element The parent element with which to associate the Window.
+ */
+function Window(parentElement)
 {
 	if (!parentElement)
 	{
@@ -29,15 +33,23 @@ var Window = function(parentElement)
 	this.ParentElement = parentElement;
 	
 	this.mvarContentURL = null;
+	/**
+	 * Gets the content URL used for dynamically-loading content via AJAX.
+	 */
 	this.GetContentURL = function()
 	{
 		return this.mvarContentURL;
 	};
+	/**
+	 * Sets the content URL used for dynamically-loading content via AJAX.
+	 * @param value string The URL from which to load content when the Window is opened.
+	 */
 	this.SetContentURL = function(value)
 	{
 		this.mvarContentURL = value;
 	};
 	
+	// Set the content URL automatically if we specify it in the attribute
 	if (parentElement.hasAttribute("data-content-url"))
 	{
 		this.SetContentURL(parentElement.getAttribute("data-content-url"));
@@ -74,18 +86,32 @@ var Window = function(parentElement)
 		return false;
 	});
 	
+	/**
+	 * Gets the content of this Window
+	 */
 	this.GetContent = function()
 	{
 		return this.ParentElement.childNodes[1].innerHTML;
 	};
+	/**
+	 * Sets the content of this Window
+	 * @param value string The content to insert into this Window
+	 */
 	this.SetContent = function(value)
 	{
 		this.ParentElement.childNodes[1].innerHTML = value;
 	};
+	/**
+	 * Gets the footer area content (e.g. buttons, etc.) of this Window
+	 */
 	this.GetFooter = function()
 	{
 		return this.ParentElement.childNodes[2].innerHTML;
 	};
+	/**
+	 * Sets the footer area content (e.g. buttons, etc.) of this Window
+	 * @param value string The footer area content (e.g. buttons, etc.) to insert into this Window
+	 */
 	this.SetFooter = function(value)
 	{
 		this.ParentElement.childNodes[2].innerHTML = value;
@@ -99,23 +125,41 @@ var Window = function(parentElement)
 		}
 	};
 	
+	/**
+	 * Gets the client width, in pixels, of this Window.
+	 */
 	this.GetWidth = function()
 	{
 		return this.ParentElement.clientWidth;
 	};
+	/**
+	 * Gets the client height, in pixels, of this Window.
+	 */
 	this.GetHeight = function()
 	{
 		return this.ParentElement.clientHeight;
 	};
-	
+
+	/**
+	 * Gets the title of this Window.
+	 */
 	this.GetTitle = function()
 	{
 		return this.ParentElement.childNodes[0].childNodes[0].innerHTML;
 	};
+	/**
+	 * Sets the title of this Window.
+	 * @param title string The title to set
+	 */
 	this.SetTitle = function(title)
 	{
 		this.ParentElement.childNodes[0].childNodes[0].innerHTML = title;
 	};
+
+	/**
+	 * Sets the horizontal alignment (left, center, right) of this Window.
+	 * @param alignment HorizontalAlignment One of these: HorizontalAlignment.Left, HorizontalAlignment.Center, or HorizontalAlignment.Right.
+	 */
 	this.SetHorizontalAlignment = function(alignment)
 	{
 		var Window = this.ParentElement;
@@ -167,6 +211,10 @@ var Window = function(parentElement)
 		Window.style.top = y + "px";
 	};
 	
+	/**
+	 * Presents this Window to the user.
+	 * @param parent Element The Element to assign as the owner of this Window, or null to keep current owner 
+	 */
 	this.Show = function(parent)
 	{
 		if (parent)
