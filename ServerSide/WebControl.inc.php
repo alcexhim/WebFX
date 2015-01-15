@@ -439,7 +439,7 @@
 			{
 				if (is_callable($this->Content))
 				{
-					call_user_function($this->Content);
+					call_user_func($this->Content);
 				}
 				else
 				{
