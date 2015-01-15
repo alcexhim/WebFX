@@ -1,15 +1,43 @@
-var HorizontalAlignment =
+/**
+ * Enumeration for horizontal alignment values
+ */
+function HorizontalAlignment(value)
 {
-	"Left": 0,
-	"Center": 1,
-	"Right": 2
-};
-var VerticalAlignment =
+	this._value = value;
+}
+/**
+ * Specifies that content is aligned to the left.
+ */
+HorizontalAlignment.Left = new HorizontalAlignment(0);
+/**
+ * Specifies that content is aligned in the center of the screen.
+ */
+HorizontalAlignment.Center = new HorizontalAlignment(1);
+/**
+ * Specifies that content is aligned to the right.
+ */
+HorizontalAlignment.Right = new HorizontalAlignment(2);
+
+/**
+ * Enumeration for vertical alignment values
+ */
+function VerticalAlignment(value)
 {
-	"Top": 0,
-	"Middle": 1,
-	"Bottom": 2
-};
+	this._value = value;
+}
+/**
+ * Specifies that content is aligned to the top.
+ */
+VerticalAlignment.Top = new VerticalAlignment(0);
+/**
+ * Specifies that content is aligned in the middle of the screen.
+ */
+VerticalAlignment.Middle = new VerticalAlignment(1);
+/**
+ * Specifies that content is aligned to the bottom.
+ */
+VerticalAlignment.Bottom = new VerticalAlignment(2);
+
 function Callback(sender)
 {
 	this._items = [];
