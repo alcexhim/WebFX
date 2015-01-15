@@ -33,6 +33,12 @@
 				{
 					if (get_class($elem1) != "UniversalEditor\\ObjectModels\\Markup\\MarkupTagElement") continue;
 					
+					if (!is_array($elem1->Elements))
+					{
+						trigger_error("\$elem1->Elements not array for tag '" . $elem1->Name . "'");
+						continue;
+					}
+					
 					foreach ($elem1->Elements as $elem2)
 					{
 						if (get_class($elem2) != "UniversalEditor\\ObjectModels\\Markup\\MarkupTagElement") continue;
