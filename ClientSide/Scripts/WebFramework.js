@@ -88,6 +88,10 @@ var Page =
 
 var WebFramework =
 {
+	"ExpandRelativePath": function(path)
+	{
+		return path.replace(/~\//, WebFramework.BasePath + "/");
+	},
 	"RaiseEvent": function(element, eventName, args)
 	{
 		var event; // The custom event that will be created
