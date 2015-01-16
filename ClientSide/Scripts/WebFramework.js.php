@@ -8,6 +8,11 @@
 	{
 		$bundles[] = $file;
 	}
+	$files = glob("Controls/*.js");
+	foreach ($files as $file)
+	{
+		$bundles[] = $file;
+	}
 	
 	$input = "";
 	foreach ($bundles as $bundle)
