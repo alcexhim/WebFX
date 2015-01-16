@@ -260,7 +260,7 @@ function Window(parentElement)
 					}
 				}
 			};
-			xhr.open("GET", this.mvarContentURL, true);
+			xhr.open("GET", WebFramework.ExpandRelativePath(this.mvarContentURL), true);
 			xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest");
 			xhr.send(null);
 		}
