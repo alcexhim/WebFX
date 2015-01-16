@@ -252,7 +252,13 @@
 						$this->OutputHeaderStyleSheet($stylesheet);
 					}
 				}
+
+				$this->OutputHeaderScript(new WebScript(System::$Configuration["WebFramework.StaticPath"] . "/dropins/WebFramework/Scripts/WebFramework.js.php"));
+				$script = new WebScript();
+				$script->Content = "WebFramework.BasePath = \"" . System::GetConfigurationValue("Application.BasePath") . "\"";
+				$this->OutputHeaderScript($script);
 				
+				/*
 				$this->OutputHeaderScript(new WebScript(System::$Configuration["WebFramework.StaticPath"] . "/dropins/JH.Utilities/Scripts/JH.Utilities.js"));
 				$this->OutputHeaderScript(new WebScript(System::$Configuration["WebFramework.StaticPath"] . "/dropins/XMLHttpRequest/Scripts/XMLHttpRequest.js"));
 				$this->OutputHeaderScript(new WebScript(System::$Configuration["WebFramework.StaticPath"] . "/dropins/CodeMirror/Scripts/CodeMirror.js"));
@@ -284,6 +290,7 @@
 				$this->OutputHeaderScript(new WebScript(System::$Configuration["WebFramework.StaticPath"] . "/dropins/WebFramework/Scripts/Controls/TextBox.js"));
 				$this->OutputHeaderScript(new WebScript(System::$Configuration["WebFramework.StaticPath"] . "/dropins/WebFramework/Scripts/Controls/ToolTip.js"));
 				$this->OutputHeaderScript(new WebScript(System::$Configuration["WebFramework.StaticPath"] . "/dropins/WebFramework/Scripts/Controls/Window.js"));
+				*/
 				
 				if (is_array($this->Scripts))
 				{
