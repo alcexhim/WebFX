@@ -8,6 +8,7 @@
 		
 	class Panel extends WebControl
 	{
+		public $FooterContent;
 		public $Width;
 		public $Title;
 		
@@ -50,6 +51,14 @@
 		protected function AfterContent()
 		{
 			echo("</div>");
+			
+			if (is_callable($this->FooterContent))
+			{
+				$this->BeginFooter();
+				call_user_func($this->FooterContent);
+				$this->EndFooter();
+			}
+			
 			echo("</div>");
 		}
 	}
