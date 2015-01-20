@@ -97,6 +97,12 @@
 		public $DefaultValue;
 		public $Required;
 		
+		/**
+		 * The client-side script called when the value of this FormViewItem changed and validated.
+		 * @var string
+		 */
+		public $OnClientValueChanged;
+		
 		public function __construct($id = null, $name = null, $title = null, $defaultValue = null)
 		{
 			$this->ID = $id;
@@ -162,6 +168,10 @@
 			if (isset($this->PlaceholderText))
 			{
 				$elem->PlaceholderText = $this->PlaceholderText;
+			}
+			if ($this->OnClientValueChanged != null)
+			{
+				$elem->Attributes[] = new WebControlAttribute("onchange", $this->OnClientValueChanged);
 			}
 			$elem->Render();
 		}
