@@ -1,11 +1,13 @@
 <?php
 	namespace WebFX\Controls;
-	use System;
-	use WebFX\WebControl;
 	
+	use System;
+	
+	use WebFX\HorizontalAlignment;
+	use WebFX\WebControl;
+		
 	class Panel extends WebControl
 	{
-		public $HorizontalAlignment;
 		public $Width;
 		public $Title;
 		
@@ -24,7 +26,7 @@
 			}
 			switch ($this->HorizontalAlignment)
 			{
-				case "center":
+				case HorizontalAlignment::Center:
 				{
 					echo("margin-left: auto; ");
 					echo("margin-right: auto; ");
