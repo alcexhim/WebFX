@@ -24,7 +24,15 @@
 		
 		public $Visible;
 		
+		/**
+		 * The horizontal alignment of this WebControl.
+		 * @var HorizontalAlignment
+		 */
 		public $HorizontalAlignment;
+		/**
+		 * The vertical alignment of this WebControl.
+		 * @var VerticalAlignment
+		 */
 		public $VerticalAlignment;
 		
 		public $CssClass;
