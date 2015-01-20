@@ -34,9 +34,19 @@
 				}
 			}
 			echo("\">");
-			echo("<div class=\"PanelTitle\">" . $this->Title . "</div>");
-			echo("<div class=\"PanelContent\">");
+			echo("<div class=\"Header\">" . $this->Title . "</div>");
+			echo("<div class=\"Content\">");
 		}
+		
+		public function BeginFooter()
+		{
+			echo("<div class=\"Footer\">");
+		}
+		public function EndFooter()
+		{
+			echo("</div>");
+		}
+		
 		protected function AfterContent()
 		{
 			echo("</div>");
