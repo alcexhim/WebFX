@@ -8,31 +8,41 @@ function ContextMenu()
 		{
 			var elem = document.createElement("div");
 			elem.className = "Menu Popup";
+			elem.addEventListener("contextmenu", function(e)
+			{
+				e.preventDefault();
+				e.stopPropagation();
+				return false;
+			});
 			
 			for (var i = 0; i < this.Items.length; i++)
 			{
-				var elem1 = document.createElement("a");
-				elem1.setAttribute("href", "#");
-				elem1.addEventListener("click", function(e)
+				if (this.Items[i].ClassName == "MenuItemCommand")
 				{
-					this.NativeObject.Hide();
-					this.MenuItem.Execute();
+					var elem1 = document.createElement("a");
+					elem1.setAttribute("href", "#");
+					elem1.addEventListener("click", function(e)
+					{
+						this.NativeObject.Hide();
+						this.MenuItem.Execute();
+						
+						e.preventDefault();
+						e.stopPropagation();
+						return false;
+					});
+					elem1.innerHTML = this.Items[i].Title;
+					elem1.NativeObject = this;
+					elem1.MenuItem = this.Items[i];
 					
-					e.preventDefault();
-					e.stopPropagation();
-					return false;
-				});
-				elem1.addEventListener("contextmenu", function(e)
+					elem.appendChild(elem1);
+				}
+				else if (this.Items[i].ClassName == "MenuItemSeparator")
 				{
-					e.preventDefault();
-					e.stopPropagation();
-					return false;
-				});
-				elem1.innerHTML = this.Items[i].Title;
-				elem1.NativeObject = this;
-				elem1.MenuItem = this.Items[i];
-				
-				elem.appendChild(elem1);
+					var elem1 = document.createElement("div");
+					elem1.className = "Separator";
+					elem1.innerHTML = this.Items[i].Title;
+					elem.appendChild(elem1);
+				}
 			}
 			
 			elem.style.left = x + "px";
@@ -51,8 +61,15 @@ function ContextMenu()
 		this.ParentElement.className = "Menu Popup";
 	};
 }
+function MenuItemSeparator(id, title)
+{
+	this.ClassName = "MenuItemSeparator";
+	this.ID = id;
+	this.Title = title;
+}
 function MenuItemCommand(id, title, onclick)
 {
+	this.ClassName = "MenuItemCommand";
 	this.ID = id;
 	this.Title = title;
 	this.OnClientClick = onclick;
