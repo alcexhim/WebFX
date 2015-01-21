@@ -15,6 +15,7 @@
 		 */
         public $Title;
 		public $CssClass;
+		public $ClassList;
         public $Metadata;
         public $ResourceLinks;
         public $Scripts;
@@ -43,6 +44,7 @@
 			$this->Metadata = array();
 			$this->OpenGraph = new WebOpenGraphSettings();
 			$this->ResourceLinks = array();
+			$this->ClassList = array();
 			$this->Scripts = array();
 			$this->StyleSheets = array();
 			$this->Styles = array();
@@ -325,9 +327,34 @@
 				$this->AfterHeader();
 				echo("\t</head>\r\n");
 				echo("\t<body");
+				$classList = array();
 				if ($this->CssClass != null)
 				{
-					echo(" class=\"" . $this->CssClass . "\"");
+					$classList[] = $this->CssClass;
+				}
+				if (is_array($this->ClassList))
+				{
+					foreach ($this->ClassList as $item)
+					{
+						$classList[] = $item;
+					}
+				}
+
+				$count = count($classList);
+				if ($count > 0)
+				{
+					echo(" class=\"");
+					$i = 0;
+					foreach ($classList as $item)
+					{
+						echo($item);
+						$i++;
+						if ($i > $count - 1)
+						{
+							echo(" ");
+						}
+					}
+					echo("\"");
 				}
 				if (is_array($this->Styles) && count($this->Styles) > 0)
 				{
