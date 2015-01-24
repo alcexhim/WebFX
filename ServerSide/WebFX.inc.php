@@ -111,6 +111,15 @@
 		public static $Tasks;
 		
 		/**
+		 * Gets the relative path on the Web site for the current page.
+		 * @return string $_SERVER["REQUEST_URI"]
+		 */
+		public static function GetCurrentRelativePath()
+		{
+			return $_SERVER["REQUEST_URI"];
+		}
+		
+		/**
 		 * Retrieves the value of the global configuration property with the given key if it is defined,
 		 * or the default value if it has not been defined.
 		 * @param string $key The key of the configuration property to search for.
