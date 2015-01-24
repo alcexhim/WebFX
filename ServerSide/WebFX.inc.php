@@ -226,7 +226,11 @@
 				$serverPath = $protocol . "://" . $_SERVER["SERVER_NAME"] . $port;
 				$retval = $serverPath . $retval;
 			}
-			
+
+			foreach (System::$Configuration as $name => $value)
+			{
+				$retval = str_replace("\$(Configuration:" . $name . ")", $value, $retval);
+			}
 			foreach (System::$Variables as $variable)
 			{
 				$retval = str_replace("\$(" . $variable->Name . ")", $variable->Value, $retval);
