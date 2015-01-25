@@ -4,9 +4,11 @@ nav.Primary
 	border-color: #485A5A;
 	color: #93A8A8;
 	
+	/*
 	padding-left: 48px;
 	padding-right: 48px;
-	
+	*/
+
 	&> div.Menu
 	{
 		border: none;
@@ -34,6 +36,18 @@ nav.Primary
 			&> div.MenuItem
 			{
 				display: inline-block;
+				&.Image
+				{
+					&> a
+					{
+						padding: 6px 16px;
+						&> img
+						{
+							height: 40px;
+							vertical-align: middle;
+						}
+					}
+				}
 				&.Right
 				{
 					float: right;
@@ -66,7 +80,7 @@ nav.Primary
 						display: block;
 					}
 				}
-				&:hover
+				&:hover, &.Opened
 				{
 					&> a
 					{
