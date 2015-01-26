@@ -353,7 +353,7 @@
 			
 			if (!$success)
 			{
-				header("HTTP/1.1 404 Not Found");
+				$retval = call_user_func(System::$ErrorEventHandler, new ErrorEventArgs("The specified resource is not available on this server."));
 				return false;
 			}
 			return true;
