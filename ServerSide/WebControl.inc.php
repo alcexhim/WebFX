@@ -8,6 +8,7 @@
 		public $ClientIDMode;
 		
 		public $Content;
+		public $ExtraData;
 		
 		public $Controls;
 		public $HasContent;
@@ -447,7 +448,7 @@
 			{
 				if (is_callable($this->Content))
 				{
-					call_user_func($this->Content);
+					call_user_func($this->Content, $this);
 				}
 				else
 				{
