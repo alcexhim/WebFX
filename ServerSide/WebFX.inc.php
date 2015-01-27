@@ -111,6 +111,23 @@
 		public static $Tasks;
 		
 		/**
+		 * Gets the Module with the specified name, or creates it if no Module with the specified name exists.
+		 * @param string $name The name of the Module to search for.
+		 */
+		public static function GetModuleByName($name)
+		{
+			foreach (System::$Modules as $module)
+			{
+				if ($module->Name == $name) return $module;
+			}
+			
+			$module = new Module();
+			$module->Name = $name;
+			System::$Modules[] = $module;
+			return $module;
+		}
+		
+		/**
 		 * Gets the relative path on the Web site for the current page.
 		 * @return string $_SERVER["REQUEST_URI"]
 		 */
@@ -382,6 +399,22 @@
 		public $Pages;
 		
 		/**
+		 * Retrieves the ModulePage with the specified name on this Module, or creates one if no ModulePage with the specified name exists on this Module.
+		 * @param string $name
+		 * @return ModulePage
+		 */
+		public function GetPageByName($name)
+		{
+			foreach ($this->Pages as $page)
+			{
+				if ($page->PathName == $name) return $page;
+			}
+			$page = new ModulePage($name, null);
+			$this->Pages[] = $page;
+			return $page;
+		}
+		
+		/**
 		 * Creates a new Module with the specified parameters.
 		 * @param string $name The name of this Module.
 		 * @param ModulePage[] $pages Array of ModulePages that are handled by this Module.
@@ -459,6 +492,22 @@
 			}
 			$this->BeforeExecute = $beforeExecute;
 			$this->AfterExecute = $afterExecute;
+		}
+		
+		/**
+		 * Retrieves the ModulePage with the specified name on this ModulePage, or creates one if no ModulePage with the specified name exists on this ModulePage.
+		 * @param string $name
+		 * @return ModulePage
+		 */
+		public function GetPageByName($name)
+		{
+			foreach ($this->Pages as $page)
+			{
+				if ($page->PathName == $name) return $page;
+			}
+			$page = new ModulePage($name, null);
+			$this->Pages[] = $page;
+			return $page;
 		}
 		
 		/**
