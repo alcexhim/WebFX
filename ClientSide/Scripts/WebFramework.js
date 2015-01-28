@@ -1,4 +1,40 @@
 /**
+ * Enumeration for mouse button values
+ */
+function MouseButtons()
+{
+}
+/**
+ * No mouse buttons are being pressed.
+ */
+MouseButtons.None = 0;
+/**
+ * The primary (usually left) button is being pressed.
+ */
+MouseButtons.Primary = 1;
+/**
+ * The secondary (usually right) button is being pressed.
+ */
+MouseButtons.Secondary = 2;
+/**
+ * The tertiary (usually wheel) button is being pressed.
+ */
+MouseButtons.Tertiary = 4;
+/**
+ * The additional primary button is being pressed.
+ */
+MouseButtons.XButton1 = 8;
+/**
+ * The additional secondary button is being pressed.
+ */
+MouseButtons.XButton2 = 16;
+function KeyboardKeys()
+{
+};
+KeyboardKeys.Escape = 27;
+KeyboardKeys.F1 = 112;
+
+/**
  * Enumeration for horizontal alignment values
  */
 function HorizontalAlignment(value)
@@ -60,291 +96,345 @@ function CallbackArgument()
 }
 CallbackArgument.Empty = new CallbackArgument();
 
-var Page =
+function Page()
 {
-	"Cookies":
+}
+Page.Cookies = new Object();
+/**
+ * Gets the cookie with the specified name.
+ */
+Page.Cookies.Get = function(name)
+{
+	var cookie = document.cookie.split(';');
+	for (var i = 0; i < cookie.length; i++)
 	{
-		"Get": function(name)
-		{
-			var cookie = document.cookie.split(';');
-			for (var i = 0; i < cookie.length; i++)
-			{
-				var cookie1 = cookie[i].split(';', 2);
-				if (cookie1[0] == name) return cookie1[1];
-			}
-			return null;
-		},
-		"Set": function(name, value, expires)
-		{
-			var cookie = name + "=" + value;
-			if (expires)
-			{
-				cookie += ";expires=" + expires;
-			}
-			document.cookie = cookie;
-		}
+		var cookie1 = cookie[i].split(';', 2);
+		if (cookie1[0] == name) return cookie1[1];
 	}
+	return null;
+};
+/**
+ * Sets the cookie with the given name to the given value, and optionally sets an expiration date.
+ * @param name string The name of the cookie to set or update.
+ * @param value string The value of the cookie.
+ * @param expires string The date and time at which the cookie should expire.
+ */
+Page.Cookies.Set = function(name, value, expires)
+{
+	var cookie = name + "=" + value;
+	if (expires)
+	{
+		cookie += ";expires=" + expires;
+	}
+	document.cookie = cookie;
 };
 
-var WebFramework =
+/**
+ * The WebFramework static members
+ */
+function WebFramework()
 {
-	"ExpandRelativePath": function(path)
-	{
-		return path.replace(/~\//, WebFramework.BasePath + "/");
-	},
-	"RaiseEvent": function(element, eventName, args)
-	{
-		var event; // The custom event that will be created
-		if (document.createEvent)
-		{
-			event = document.createEvent("HTMLEvents");
-			event.initEvent(eventName, true, true);
-		}
-		else
-		{
-			event = document.createEventObject();
-			event.eventType = eventName;
-		}
-		event.eventName = eventName;
+}
 
-		if (document.createEvent)
+/**
+ * Redirects the browser to the given page.
+ */
+WebFramework.Redirect = function(path)
+{
+	window.location.href = WebFramework.ExpandRelativePath(path);
+};
+/**
+ * Expands the given path using the tilde (~) character and variable replacement.
+ */
+WebFramework.ExpandRelativePath = function(path)
+{
+	return path.replace(/~\//, WebFramework.BasePath + "/");
+};
+/**
+ * Raises a custom DOM event on the given element.
+ * @param element string The element on which to raise the event.
+ * @param eventName string The name of the Event to raise.
+ * @param args any Arguments passed into the event handler.
+ */
+WebFramework.RaiseEvent = function(element, eventName, args)
+{
+	var event; // The custom event that will be created
+	if (document.createEvent)
+	{
+		event = document.createEvent("HTMLEvents");
+		event.initEvent(eventName, true, true);
+	}
+	else
+	{
+		event = document.createEventObject();
+		event.eventType = eventName;
+	}
+	event.eventName = eventName;
+
+	if (document.createEvent)
+	{
+		return element.dispatchEvent(event);
+	}
+	else
+	{
+		element.fireEvent("on" + eventName, event);
+	}
+};
+/**
+ * Provides an event handler for custom-handled events.
+ * @deprecated Use DOM events and WebFramework.RaiseEvent() instead.
+ */
+WebFramework.EventHandler = function()
+{
+	this._functions = new Array();
+	this.Add = function (func)
+	{
+		this._functions.push(func);
+	};
+	this.Execute = function()
+	{
+		for (var i = 0; i < this._functions.length; i++)
 		{
-			return element.dispatchEvent(event);
+			var retval = this._functions[i]();
+			if (!retval) return false;
 		}
-		else
-		{
-			element.fireEvent("on" + eventName, event);
-		}
-	},
-	"EventHandler": function()
+		return true;
+	};
+};
+WebFramework.Navigation = new Object();
+/**
+ * Retrieves partial content from a URL and loads it into the specified element's innerHTML property.
+ *
+ * @param url string The URL to fetch.
+ * @param targetFrame string The DOM element in which to load the data.
+ * @param throbber DOMElement The DOM element used as the waiting indicator (optional).
+ * @param throbberClassDefault string The CSS class for the waiting indicator (optional).
+ * @param throbberClassHidden string The CSS class for the hidden waiting indicator (optional).
+ * @param throbberClassVisible string The CSS class for the visible waiting indicator (optional).
+ */
+WebFramework.Navigation.LoadPartialContent = function(url, targetFrame, async, throbber, throbberClassDefault, throbberClassHidden, throbberClassVisible)
+{
+	if (typeof(async) === "undefined") async = false;
+	if (!throbberClassDefault) throbberClassDefault = "";
+	if (!throbberClassHidden) throbberClassHidden = "Hidden";
+	if (!throbberClassVisible) throbberClassHidden = "Visible";
+	
+	// fetch the data from the URL, should be a same-origin URL
+	var xhr = new XMLHttpRequest();
+	xhr.onreadystatechange = function()
 	{
-		this._functions = new Array();
-		this.Add = function (func)
+		if (this.readyState == 4)
 		{
-			this._functions.push(func);
-		};
-		this.Execute = function()
-		{
-			for (var i = 0; i < this._functions.length; i++)
-			{
-				var retval = this._functions[i]();
-				if (!retval) return false;
-			}
-			return true;
-		};
-	},
-	"MouseButtons":
-	{
-		"Left": 0,
-		"Middle": 1,
-		"Right": 2
-	},
-	"Navigation":
-	{
-		/// <summary>
-		/// Retrieves partial content from a URL and loads it into the specified element's innerHTML property.
-		/// </summary>
-		/// <param name="url">The URL to fetch.</param>
-		/// <param name="targetFrame">The DOM element in which to load the data.</param>
-		/// <param name="throbber">The DOM element used as the waiting indicator (optional).</param>
-		/// <param name="throbberClassDefault">The CSS class for the waiting indicator (optional).</param>
-		/// <param name="throbberClassHidden">The CSS class for the hidden waiting indicator (optional).</param>
-		/// <param name="throbberClassVisible">The CSS class for the visible waiting indicator (optional).</param>
-		"LoadPartialContent": function(url, targetFrame, async, throbber, throbberClassDefault, throbberClassHidden, throbberClassVisible)
-		{
-			if (typeof(async) === "undefined") async = false;
-			if (!throbberClassDefault) throbberClassDefault = "";
-			if (!throbberClassHidden) throbberClassHidden = "Hidden";
-			if (!throbberClassVisible) throbberClassHidden = "Visible";
-			
-			// fetch the data from the URL, should be a same-origin URL
-			var xhr = new XMLHttpRequest();
-			xhr.onreadystatechange = function()
-			{
-				if (this.readyState == 4)
-				{
-					targetFrame.innerHTML = xhr.responseText;
-					if (throbber)
-					{
-						var cssclass = "";
-						if (throbberClassDefault) cssclass += throbberClassDefault + " ";
-						if (throbberClassVisible) cssclass += throbberClassHidden;
-						throbber.className = cssclass;
-					}
-				}
-			};
-			xhr.open('GET', url, async);
-			xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
-			xhr.send(null);
-			
+			targetFrame.innerHTML = xhr.responseText;
 			if (throbber)
 			{
 				var cssclass = "";
 				if (throbberClassDefault) cssclass += throbberClassDefault + " ";
-				if (throbberClassVisible) cssclass += throbberClassVisible;
+				if (throbberClassVisible) cssclass += throbberClassHidden;
 				throbber.className = cssclass;
 			}
 		}
-	},
-	"KeyboardKeys":
+	};
+	xhr.open('GET', url, async);
+	xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+	xhr.send(null);
+	
+	if (throbber)
 	{
-		"Escape": 27,
-		"F1": 112
-	},
-	"TerminateIfSenderIs": function(sender, compareTo)
+		var cssclass = "";
+		if (throbberClassDefault) cssclass += throbberClassDefault + " ";
+		if (throbberClassVisible) cssclass += throbberClassVisible;
+		throbber.className = cssclass;
+	}
+};
+WebFramework.TerminateIfSenderIs = function(sender, compareTo)
+{
+	while (sender != null)
 	{
-		while (sender != null)
+		if (sender.classList)
 		{
-			if (sender.classList)
+			for (var i = 0; i < compareTo.length; i++)
 			{
-				for (var i = 0; i < compareTo.length; i++)
+				if (sender.classList.contains(compareTo[i]))
 				{
-					if (sender.classList.contains(compareTo[i]))
-					{
-						// do not close the popup when we click inside itself
-						// e.preventDefault();
-						// e.stopPropagation();
-						// alert(compareTo[i] + " = " + sender.className + " ? true ");
-						return true;
-					}
+					// do not close the popup when we click inside itself
+					// e.preventDefault();
+					// e.stopPropagation();
+					// alert(compareTo[i] + " = " + sender.className + " ? true ");
+					return true;
 				}
 			}
-			sender = sender.parentNode;
-			if (sender == null) break;
 		}
-		return false;
-	},
-	"EnterFullScreen": function(element)
+		sender = sender.parentNode;
+		if (sender == null) break;
+	}
+	return false;
+};
+/**
+ * Enters full screen mode on the specified element. If no element is specified, the entire page becomes full screen.
+ * @param element DOMElement The element with which to fill the screen. If not specified, document.body will be used.
+ */
+WebFramework.EnterFullScreen = function(element)
+{
+	if (!element) element = document.body;
+	if (element.requestFullscreen)
 	{
-		if (!element) element = document.body;
-		if (element.requestFullscreen)
-		{
-			// The HTML5 way
-			element.requestFullscreen();
-		}
-		else if (element.webkitRequestFullscreen)
-		{
-			// The WebKit (safari/chrome) way
-			element.webkitRequestFullscreen();
-		}
-		else if (element.mozRequestFullScreen)
-		{
-			// The Firefox way
-			element.mozRequestFullScreen();
-		}
-		else if (element.msRequestFullscreen)
-		{
-			// The Internet Explorer way
-			element.msRequestFullscreen();
-		}
-	},
-	"ExitFullScreen": function()
+		// The HTML5 way
+		element.requestFullscreen();
+	}
+	else if (element.webkitRequestFullscreen)
 	{
-		if (document.exitFullscreen)
-		{
-			document.exitFullscreen();
-		}
-		else if (document.webkitExitFullscreen)
-		{
-			document.webkitExitFullscreen();
-		}
-		else if (document.mozCancelFullScreen)
-		{
-			document.mozCancelFullScreen();
-		}
-		else if (document.msExitFullscreen)
-		{
-			document.msExitFullscreen();
-		}
-	},
-	"Events":
+		// The WebKit (safari/chrome) way
+		element.webkitRequestFullscreen();
+	}
+	else if (element.mozRequestFullScreen)
 	{
-		"MouseClick":
-		{
-			"Name": "click"
-		},
-		"MouseWheel":
-		{
-			//FF doesn't recognize mousewheel as of FF3.x
-			"Name": ((/Firefox/i.test(navigator.userAgent)) ? "DOMMouseScroll" : "mousewheel"),
-			"GetEventArgs": function(e)
-			{
-				var delta = e.detail ? e.detail * (-120) : e.wheelDelta;
-				// delta returns +120 when wheel is scrolled up, -120 when scrolled down
-				var evt =
-				{
-					"Cancel": false,
-					"Delta": delta
-				};
-				return evt;
-			}
-		}
-	},
-	"GetClientProperty": function(controlName, propertyName)
+		// The Firefox way
+		element.mozRequestFullScreen();
+	}
+	else if (element.msRequestFullscreen)
 	{
-		return Page.Cookies.Get(controlName + "__ClientProperty_" + propertyName);
-	},
-	"SetClientProperty": function(controlName, propertyName, propertyValue)
+		// The Internet Explorer way
+		element.msRequestFullscreen();
+	}
+};
+/**
+ * Exits full screen mode.
+ */
+WebFramework.ExitFullScreen = function()
+{
+	if (document.exitFullscreen)
 	{
-		Page.Cookies.Set(controlName + "__ClientProperty_" + propertyName, propertyValue);
-	},
-	"AddEventListener": function(parent, eventTypeOrName, callback)
+		document.exitFullscreen();
+	}
+	else if (document.webkitExitFullscreen)
 	{
-		function CustomCallback(evt)
-		{
-			if (typeof eventTypeOrName.GetEventArgs !== 'undefined')
-			{
-				var eas = eventTypeOrName.GetEventArgs(evt);
-				eas.Cancel = false;
-				callback(eas);
-				if (eas.Cancel)
-				{
-					evt.preventDefault();
-					evt.stopPropagation();
-					return false;
-				}
-			}
-			else
-			{
-				var eas = evt;
-				eas.Cancel = false;
-				callback(eas);
-				if (eas.Cancel)
-				{
-					evt.preventDefault();
-					evt.stopPropagation();
-					return false;
-				}
-			}
-			return true;
-		}
+		document.webkitExitFullscreen();
+	}
+	else if (document.mozCancelFullScreen)
+	{
+		document.mozCancelFullScreen();
+	}
+	else if (document.msExitFullscreen)
+	{
+		document.msExitFullscreen();
+	}
+};
 
-		if (typeof eventTypeOrName !== "object")
+/**
+ * Gets the predefined WebFX events that are passed into event handlers.
+ */
+WebFramework.Events = new Object();
+
+WebFramework.Events.MouseClick = new Object();
+WebFramework.Events.MouseClick.Name = "click";
+
+/**
+ * The event that is raised when the mouse wheel is scrolled over an element.
+ */
+WebFramework.Events.MouseWheel = new Object();
+//FF doesn't recognize mousewheel as of FF3.x
+/**
+ * Gets the name of this event.
+ */
+WebFramework.Events.MouseWheel.Name = ((/Firefox/i.test(navigator.userAgent)) ? "DOMMouseScroll" : "mousewheel");
+/**
+ * Gets the event arguments for this event.
+ */
+WebFramework.Events.GetEventArgs = function(e)
+{
+	var delta = e.detail ? e.detail * (-120) : e.wheelDelta;
+	// delta returns +120 when wheel is scrolled up, -120 when scrolled down
+	var evt =
+	{
+		"Cancel": false,
+		"Delta": delta
+	};
+	return evt;
+};
+
+/**
+ * Gets the value of the ClientProperty with the given propertyName for the control with the given controlName.
+ * @param controlName string The name of the control for which to retrieve a ClientProperty.
+ * @param propertyName string The name of the property to search for.
+ */
+WebFramework.GetClientProperty = function(controlName, propertyName)
+{
+	return Page.Cookies.Get(controlName + "__ClientProperty_" + propertyName);
+};
+/**
+ * Sets the value of the ClientProperty with the given propertyName for the control with the given controlName to the given propertyValue.
+ * @param controlName string The name of the control for which to update a ClientProperty.
+ * @param propertyName string The name of the property to search for.
+ * @param propertyValue string The new value of the property.
+ */
+WebFramework.SetClientProperty = function(controlName, propertyName, propertyValue)
+{
+	Page.Cookies.Set(controlName + "__ClientProperty_" + propertyName, propertyValue);
+};
+/**
+ * Adds an event listener with the given eventTypeOrName to the parent element.
+ * @param parent DOMElement The element on which to add an event listener.
+ * @param eventTypeOrName string The name of the event for which to add a listener, minus the "on" prefix.
+ * @param callback EventListener The event listener that will be called when this event is raised.
+ */
+WebFramework.AddEventListener = function(parent, eventTypeOrName, callback)
+{
+	function CustomCallback(evt)
+	{
+		if (typeof eventTypeOrName.GetEventArgs !== 'undefined')
 		{
-			if (parent.attachEvent)
+			var eas = eventTypeOrName.GetEventArgs(evt);
+			eas.Cancel = false;
+			callback(eas);
+			if (eas.Cancel)
 			{
-				//if IE (and Opera depending on user setting)
-				parent.attachEvent("on" + eventTypeOrName, callback);
-			}
-			else if (parent.addEventListener) //WC3 browsers
-			{
-				parent.addEventListener(eventTypeOrName, callback, false);
+				evt.preventDefault();
+				evt.stopPropagation();
+				return false;
 			}
 		}
 		else
 		{
-			if (parent.attachEvent)
+			var eas = evt;
+			eas.Cancel = false;
+			callback(eas);
+			if (eas.Cancel)
 			{
-				//if IE (and Opera depending on user setting)
-				parent.attachEvent("on" + eventTypeOrName.Name, CustomCallback);
+				evt.preventDefault();
+				evt.stopPropagation();
+				return false;
 			}
-			else if (parent.addEventListener) //WC3 browsers
-			{
-				parent.addEventListener(eventTypeOrName.Name, CustomCallback, false);
-			}
+		}
+		return true;
+	}
+
+	if (typeof eventTypeOrName !== "object")
+	{
+		if (parent.attachEvent)
+		{
+			//if IE (and Opera depending on user setting)
+			parent.attachEvent("on" + eventTypeOrName, callback);
+		}
+		else if (parent.addEventListener) //WC3 browsers
+		{
+			parent.addEventListener(eventTypeOrName, callback, false);
+		}
+	}
+	else
+	{
+		if (parent.attachEvent)
+		{
+			//if IE (and Opera depending on user setting)
+			parent.attachEvent("on" + eventTypeOrName.Name, CustomCallback);
+		}
+		else if (parent.addEventListener) //WC3 browsers
+		{
+			parent.addEventListener(eventTypeOrName.Name, CustomCallback, false);
 		}
 	}
 };
+
 var WebPage =
 {
 	"Postback": function(url)
