@@ -86,12 +86,16 @@ function Window(parentElement)
 		return false;
 	});
 	
+	this.GetContentElement = function()
+	{
+		return this.ParentElement.childNodes[1];
+	};
 	/**
 	 * Gets the content of this Window
 	 */
 	this.GetContent = function()
 	{
-		return this.ParentElement.childNodes[1].innerHTML;
+		return this.GetContentElement().innerHTML;
 	};
 	/**
 	 * Sets the content of this Window
@@ -99,14 +103,18 @@ function Window(parentElement)
 	 */
 	this.SetContent = function(value)
 	{
-		this.ParentElement.childNodes[1].innerHTML = value;
+		this.GetContentElement().innerHTML = value;
+	};
+	this.GetFooterElement = function()
+	{
+		return this.ParentElement.childNodes[2];
 	};
 	/**
 	 * Gets the footer area content (e.g. buttons, etc.) of this Window
 	 */
 	this.GetFooter = function()
 	{
-		return this.ParentElement.childNodes[2].innerHTML;
+		return this.GetFooterElement().innerHTML;
 	};
 	/**
 	 * Sets the footer area content (e.g. buttons, etc.) of this Window
@@ -114,14 +122,15 @@ function Window(parentElement)
 	 */
 	this.SetFooter = function(value)
 	{
-		this.ParentElement.childNodes[2].innerHTML = value;
+		var footer = this.GetFooterElement();
+		footer.innerHTML = value;
 		if (value == null)
 		{
-			this.ParentElement.childNodes[2].style.display = "none";			
+			footer.style.display = "none";			
 		}
 		else
 		{
-			this.ParentElement.childNodes[2].style.display = "block";
+			footer.style.display = "block";
 		}
 	};
 	
@@ -377,3 +386,39 @@ window.addEventListener("load", function(e)
 		items[i].NativeObject = new Window(items[i]);
 	}
 });
+
+/**
+ * Dynamically creates and displays a Window with the specified content, title, and buttons. 
+ */
+Window.ShowDialog = function(content, title, buttons)
+{
+	var window = new Window();
+	window.SetTitle(title);
+	window.SetContent(content);
+	
+	for (var i = 0; i < buttons.length; i++)
+	{
+		var button = buttons[i];
+		var aButton = document.createElement("a");
+		aButton.className = "Button";
+		if (button.ClassName) aButton.className += " " + button.ClassName;
+		aButton.innerHTML = button.Text;
+		aButton.NativeButton = button;
+		aButton.NativeObject = window;
+		
+		aButton.addEventListener("click", function(e)
+		{
+			if (this.NativeButton.OnClientClick())
+			{
+				this.NativeObject.Hide();
+			}
+			e.preventDefault();
+			e.stopPropagation();
+			return false;
+		});
+		window.GetFooterElement().appendChild(aButton);
+	}
+	if (buttons.length > 0) window.GetFooterElement().style.display = "block";
+
+	window.ShowDialog();
+};
