@@ -10,7 +10,7 @@ function Window(parentElement)
 		parentElement.className = "Window";
 		
 		var titleBar = document.createElement("div");
-		titleBar.className = "TitleBar";
+		titleBar.className = "Header";
 		
 		var title = document.createElement("span");
 		title.className = "Title";
