@@ -31,7 +31,17 @@ MouseButtons.XButton2 = 16;
 function KeyboardKeys()
 {
 };
+/**
+ * The ENTER key.
+ */
+KeyboardKeys.Enter = 13;
+/**
+ * The ESC key.
+ */
 KeyboardKeys.Escape = 27;
+/**
+ * The F1 function key.
+ */
 KeyboardKeys.F1 = 112;
 
 /**
