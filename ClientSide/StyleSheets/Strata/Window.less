@@ -4,7 +4,9 @@ div.Window
 
 	opacity: 0;
 	visibility: hidden;
-	transition: opacity linear 0.3s, visibility linear 0.3s;
+	transition: opacity linear 0.3s, visibility linear 0.3s, transform linear 0.3s;
+	
+	transform: scale(0) scaleX(-2);
 	
 	margin: 30px auto;
 	width: 600px;
@@ -35,5 +37,6 @@ div.Window
 	{
 		opacity: 1;
 		visibility: visible;
+		transform: scale(1) scaleX(1);
 	}
 }
