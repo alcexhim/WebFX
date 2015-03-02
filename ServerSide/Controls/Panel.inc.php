@@ -12,10 +12,18 @@
 		public $Width;
 		public $Title;
 		
+		public $HeaderControls;
+		public $ContentControls;
+		public $FooterControls;
+		
 		public function __construct($id, $title = "")
 		{
 			parent::__construct($id);
 			$this->Title = $title;
+			
+			$this->HeaderControls = array();
+			$this->ContentControls = array();
+			$this->FooterControls = array();
 		}
 		
 		protected function BeforeContent()
@@ -35,7 +43,10 @@
 				}
 			}
 			echo("\">");
-			echo("<div class=\"Header\">" . $this->Title . "</div>");
+			if ($this->Title != "")
+			{
+				echo("<div class=\"Header\">" . $this->Title . "</div>");
+			}
 			echo("<div class=\"Content\">");
 		}
 		
@@ -48,6 +59,21 @@
 			echo("</div>");
 		}
 		
+		protected function RenderContent()
+		{
+			if (count($this->ContentControls) > 0)
+			{
+				foreach ($this->ContentControls as $ctl)
+				{
+					$ctl->Render();
+				}
+			}
+			else
+			{
+				parent::RenderContent();
+			}
+		}
+		
 		protected function AfterContent()
 		{
 			echo("</div>");
@@ -56,6 +82,15 @@
 			{
 				$this->BeginFooter();
 				call_user_func($this->FooterContent);
+				$this->EndFooter();
+			}
+			else if (count($this->FooterControls) > 0)
+			{
+				$this->BeginFooter();
+				foreach ($this->FooterControls as $ctl)
+				{
+					$ctl->Render();
+				}
 				$this->EndFooter();
 			}
 			
