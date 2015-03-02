@@ -109,6 +109,12 @@
 		public static $Variables;
 		
 		public static $Tasks;
+
+		public static function WriteErrorLog($message)
+		{
+			$caller = next(debug_backtrace());
+			trigger_error($message . " (in '" . $caller['function'] . "' called from '" . $caller['file'] . "' on line " . $caller['line'] . ")");
+		}
 		
 		/**
 		 * Gets the Module with the specified name, or creates it if no Module with the specified name exists.
