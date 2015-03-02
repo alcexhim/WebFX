@@ -3,10 +3,12 @@
 	
 	use WebFX\WebControl;
 	
-	/// <summary>
-	/// Provides a page section that can hold any <see cref="WebControl" />. Content is rendered to
-	/// the portion of the master page with the same ID as the <see cref="PlaceholderID" />.
-	/// </summary>
+	/**
+	 * Provides a page section that can hold any WebControl. Content is rendered to the portion of the master page with the same ID as the PlaceholderID.
+	 * 
+	 * @author Michael Becker
+	 * @see SectionPlaceholder
+	 */
 	class Section extends WebControl
 	{
 		public $PlaceholderID;
