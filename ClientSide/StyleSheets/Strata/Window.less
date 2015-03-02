@@ -4,7 +4,9 @@ div.Window
 
 	opacity: 0;
 	visibility: hidden;
-	transition: opacity linear 0.3s, visibility linear 0.3s;
+	transition: opacity linear 0.3s, visibility linear 0.3s, transform linear 0.3s;
+	
+	transform: scale(0) scaleX(-2);
 	
 	margin: 30px auto;
 	width: 600px;
@@ -14,13 +16,12 @@ div.Window
 	border: solid 1px rgba(0, 0, 0, 0.2);
 	border-radius: 6px;
 	
-	&> div.TitleBar
+	&> div.Header
 	{
-		border-bottom: 1px solid #E5E5E5;
-		font-weight: 700;
-		font-size: 18px;
-		min-height: 16.53px;
-		padding: 15px;
+		border-bottom: solid 1px #E5E5E5;
+		font-weight: 300;
+		font-size: 20px;
+		padding: 20px;
 	}
 	&> div.Content
 	{
@@ -36,5 +37,6 @@ div.Window
 	{
 		opacity: 1;
 		visibility: visible;
+		transform: scale(1) scaleX(1);
 	}
 }

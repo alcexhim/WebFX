@@ -72,7 +72,7 @@
 		
 		protected function BeforeContent()
 		{
-			echo("<div class=\"TitleBar\"><span class=\"Title\">" . $this->Title . "</span></div>");
+			echo("<div class=\"Header\"><span class=\"Title\">" . $this->Title . "</span></div>");
 			echo("<div class=\"Content\"");
 			if ($this->Width != null)
 			{

@@ -428,6 +428,13 @@
             $this->AfterContent();
 			$this->RenderEndTag();
 		}
+		
+		/**
+		 * Creates the child controls for this WebControl.
+		 */
+		protected function CreateControl()
+		{
+		}
         
 		/**
 		 * Renders this WebControl and any child controls.
@@ -435,6 +442,7 @@
         public function Render()
         {
         	if (!$this->Initialized) $this->Initialize();
+        	$this->CreateControl();
         	
             $this->BeginContent();
 			if (count($this->Controls) > 0)

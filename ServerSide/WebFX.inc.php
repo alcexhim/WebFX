@@ -127,8 +127,7 @@
 				if ($module->Name == $name) return $module;
 			}
 			
-			$module = new Module();
-			$module->Name = $name;
+			$module = new Module($name);
 			System::$Modules[] = $module;
 			return $module;
 		}
@@ -425,10 +424,11 @@
 		 * @param string $name The name of this Module.
 		 * @param ModulePage[] $pages Array of ModulePages that are handled by this Module.
 		 */
-		public function __construct($name, $pages)
+		public function __construct($name, $pages = null)
 		{
 			$this->Name = $name;
 			$this->Enabled = true;
+			if ($pages == null) $pages = array();
 			if (is_array($pages))
 			{
 				$this->Pages = $pages;
