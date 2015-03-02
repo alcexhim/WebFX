@@ -19,7 +19,7 @@
 			return $script;
 		}
         
-        public function __construct($fileName, $contentType = null)
+        public function __construct($fileName = null, $contentType = null)
         {
             $this->FileName = $fileName;
             if ($contentType == null)
