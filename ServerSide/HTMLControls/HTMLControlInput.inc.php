@@ -5,8 +5,44 @@
 	use WebFX\WebControl;
 	
 	use WebFX\WebControlAttribute;
-	
-	\Enum::Create("WebFX\\HTMLControls\\HTMLControlInputType", "None", "Text", "Password", "CheckBox", "RadioButton", "Hidden");
+
+	/**
+	 * Provides an enumeration of predefined values for type of input.
+	 * @author Michael Becker
+	 */
+	abstract class HTMLControlInputType extends Enumeration
+	{
+		/**
+		 * No type is specified
+		 * @var int 0
+		 */
+		const None = 0;
+		/**
+		 * Text
+		 * @var int 1
+		 */
+		const Text = 1;
+		/**
+		 * Password
+		 * @var int 2
+		 */
+		const Password = 2;
+		/**
+		 * CheckBox
+		 * @var int 3
+		 */
+		const CheckBox = 3;
+		/**
+		 * RadioButton
+		 * @var int 4
+		 */
+		const RadioButton = 4;
+		/**
+		 * Hidden
+		 * @var int 9
+		 */
+		const Hidden = 9;
+	}
 	
 	class HTMLControlInput extends HTMLControl
 	{
