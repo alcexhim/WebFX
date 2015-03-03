@@ -1,6 +1,13 @@
 <?php
 	namespace WebFX;
 	
+	use WebFX\Parser\ControlLoader;
+	
+	use WebFX\HTMLControls\HTMLControlForm;
+	use WebFX\HTMLControls\HTMLControlFormMethod;
+	use WebFX\HTMLControls\HTMLControlInput;
+	use WebFX\HTMLControls\HTMLControlInputType;
+
 	/**
 	 * Contains functionality common to all WebFX Web pages. 
 	 * @author Michael Becker
@@ -14,14 +21,39 @@
 		 * @var string
 		 */
         public $Title;
-		public $CssClass;
 		public $ClassList;
+		
+		/**
+		 * The user function that is called when this WebPage is rendered.
+		 * @var callable
+		 */
+		public $Content;
+		
+		/**
+		 * The controls that are rendered on this WebPage.
+		 * @var WebControl[]
+		 */
+		public $Controls;
+		
+		/**
+		 * The WebPage from which this WebPage inherits.
+		 * @var WebPage
+		 */
+		public $MasterPage;
+		
+		/**
+		 * The metadata associated with this WebPage.
+		 * @var WebPageMetadata[]
+		 */
         public $Metadata;
         public $ResourceLinks;
         public $Scripts;
+        /**
+         * The cascading style sheets associated with this WebPage.
+         * @var WebStyleSheet[]
+         */
         public $StyleSheets;
 		public $Styles;
-		public $ContextMenu;
 		public $Variables;
 		public $OpenGraph;
 		
@@ -38,6 +70,221 @@
 		 */
 		public $IsPartial;
 		
+		public static function FromMarkup($element, $parser)
+		{
+			$page = new WebPage();
+				
+			$attFileName = $element->GetAttribute("FileName");
+			if ($attFileName != null)
+			{
+				$page->FileName = $attFileName->Value;
+			}
+			$attrMasterPageFileName = $element->GetAttribute("MasterPageFileName");
+			if ($attrMasterPageFileName != null)
+			{
+				$page->MasterPage = $parser->GetMasterPageByFileName($attrMasterPageFileName->Value);
+			}
+			$attTitle = $element->GetAttribute("Title");
+			if ($attTitle != null)
+			{
+				$page->Title = $attTitle->Value;
+			}
+			$attUseCompatibleRenderingMode = $element->GetAttribute("UseCompatibleRenderingMode");
+			if ($attUseCompatibleRenderingMode != null)
+			{
+				$page->UseCompatibleRenderingMode = ($attUseCompatibleRenderingMode->Value == "true");
+			}
+				
+			$tagScripts = $element->GetElement("Scripts");
+			if ($tagScripts != null)
+			{
+				foreach ($tagScripts->Elements as $elem)
+				{
+					if (get_class($elem) != "UniversalEditor\\ObjectModels\\Markup\\MarkupTagElement") continue;
+						
+					$attContentType = $elem->GetAttribute("ContentType");
+					$contentType = "text/javascript";
+					if ($attContentType != null) $contentType = $attContentType->Value;
+						
+					$page->Scripts[] = new WebScript($elem->GetAttribute("FileName")->Value, $contentType);
+				}
+			}
+			$tagStyleSheets = $element->GetElement("StyleSheets");
+			if ($tagStyleSheets != null)
+			{
+				foreach ($tagStyleSheets->Elements as $elem)
+				{
+					if (get_class($elem) != "UniversalEditor\\ObjectModels\\Markup\\MarkupTagElement") continue;
+						
+					$attFileName = $elem->GetAttribute("FileName");
+					if ($attFileName == null) continue;
+						
+					$page->StyleSheets[] = new WebStyleSheet($attFileName->Value);
+				}
+			}
+			$tagVariables = $element->GetElement("Variables");
+			if ($tagVariables != null)
+			{
+				foreach ($tagVariables->Elements as $elem)
+				{
+					if (get_class($elem) != "UniversalEditor\\ObjectModels\\Markup\\MarkupTagElement") continue;
+						
+					$attName = $elem->GetAttribute("Name");
+					if ($attName == null) continue;
+						
+					$value = "";
+					$attValue = $elem->GetAttribute("Value");
+					if ($attValue != null) $value = $attValue->Value;
+						
+					$page->Variables[] = new WebVariable($attName->Value, $value);
+				}
+			}
+				
+			$tagReferences = $element->GetElement("References");
+			if ($tagReferences != null)
+			{
+				foreach ($tagReferences->Elements as $elem)
+				{
+					if (get_class($elem) != "UniversalEditor\\ObjectModels\\Markup\\MarkupTagElement") continue;
+						
+					$attTagPrefix = $elem->GetAttribute("TagPrefix");
+					if ($attTagPrefix == null) continue;
+						
+					$attNamespacePath = $elem->GetAttribute("NamespacePath");
+					if ($attNamespacePath == null) continue;
+						
+					$attNamespaceURL = $elem->GetAttribute("NamespaceURL");
+					$namespaceURL = "";
+					if ($attNamespaceURL != null) $namespaceURL = $attNamespaceURL->Value;
+						
+					$page->References[] = new WebNamespaceReference($attTagPrefix->Value, $attNamespacePath->Value, $namespaceURL);
+				}
+			}
+				
+			$references = $page->References;
+			if ($page->MasterPage != null)
+			{
+				$references = $page->MasterPage->References;
+				foreach ($page->References as $reference)
+				{
+					$references[] = $reference;
+				}
+			}
+			foreach ($references as $reference)
+			{
+				ControlLoader::$Namespaces[$reference->TagPrefix] = $reference->NamespacePath;
+			}
+				
+			$tagContent = $element->GetElement("Content");
+			if ($tagContent != null)
+			{
+				foreach ($tagContent->Elements as $elem)
+				{
+					ControlLoader::LoadControl($elem, $page);
+				}
+			}
+				
+			$attrCssClass = $element->GetAttribute("CssClass");
+			if ($attrCssClass != null)
+			{
+				$page->ClassList[] = $attrCssClass->Value;
+			}
+				
+			$attrCodeBehindClassName = $element->GetAttribute("CodeBehindClassName");
+			if ($attrCodeBehindClassName != null)
+			{
+				$page->CodeBehindClassName = $attrCodeBehindClassName->Value;
+		
+				if (class_exists($page->CodeBehindClassName))
+				{
+					$page->ClassReference = new $page->CodeBehindClassName();
+					$page->ClassReference->Page = $page;
+					$page->IsPostback = ($_SERVER["REQUEST_METHOD"] == "POST");
+				}
+				else
+				{
+					System::WriteErrorLog("Code-behind for '" . $page->ClassName . "' not found");
+				}
+			}
+			return $page;
+		}
+		
+		/**
+		 * Creates the metadata tag for the given metadata.
+		 * @param WebPageMetadata $metadata
+		 * @return HTMLControl The HTMLControl that represents the META HTML tag referencing the given metadata.
+		 */
+		public static function CreateMetaTag(WebPageMetadata $metadata)
+		{
+			$tag = new HTMLControl();
+			$tag->TagName = "meta";
+			$tag->HasContent = false;
+			
+			switch ($metadata->Type)
+			{
+				case WebPageMetadataType::Name:
+				{
+					$tag->Attributes[] = new WebControlAttribute("name", $metadata->Name);
+					break;
+				}
+				case WebPageMetadataType::HTTPEquivalent:
+				{
+					$tag->Attributes[] = new WebControlAttribute("http-equiv", $metadata->Name);
+					break;
+				}
+				case WebPageMetadataType::Property:
+				{
+					$tag->Attributes[] = new WebControlAttribute("property", $metadata->Name);
+					break;
+				}
+			}
+			
+			$tag->Attributes[] = new WebControlAttribute("content", $metadata->Content);
+			return $tag;
+		}
+		/**
+		 * Creates the resource link tag for the given resource link.
+		 * @param WebResourceLink $link
+		 * @return HTMLControl The HTMLControl that represents the LINK HTML tag referencing the given resource link.
+		 */
+		public static function CreateResourceLinkTag(WebResourceLink $link)
+		{
+			$tag = new HTMLControl();
+			$tag->TagName = "link";
+			$tag->HasContent = false;
+			$tag->Attributes[] = new WebControlAttribute("rel", $link->Relationship);
+			$tag->Attributes[] = new WebControlAttribute("type", $link->ContentType);
+			$tag->Attributes[] = new WebControlAttribute("href", System::ExpandRelativePath($link->URL));
+			return $tag;
+		}
+		public static function CreateScriptTag(WebScript $script)
+		{
+			$tag= new HTMLControl();
+			$tag->TagName = "script";
+			if ($script->ContentType != "")
+			{
+				$tag->Attributes[] = new WebControlAttribute("type", $script->ContentType);
+			}
+			if ($script->Content != "")
+			{
+				$tag->InnerHTML = $script->Content;
+			}
+			if ($script->FileName != "")
+			{
+				$tag->Attributes[] = new WebControlAttribute("src", System::ExpandRelativePath($script->FileName));
+			}
+			return $tag;
+		}
+		/**
+		 * Creates the style sheet tag for the given style sheet.
+		 * @param WebStyleSheet $stylesheet
+		 * @return HTMLControl The HTMLControl that represents the LINK HTML tag referencing the given style sheet.
+		 */
+		public static function CreateStyleSheetTag(WebStyleSheet $stylesheet)
+		{
+			return WebPage::CreateResourceLinkTag(new WebResourceLink($stylesheet->FileName, "stylesheet", (($stylesheet->ContentType == "") ? "text/css" : $stylesheet->ContentType)));
+		}
+		
 		public function __construct()
 		{
 			$this->BreadcrumbItems = array();
@@ -45,6 +292,7 @@
 			$this->OpenGraph = new WebOpenGraphSettings();
 			$this->ResourceLinks = array();
 			$this->ClassList = array();
+			$this->MasterPage = null;
 			$this->Scripts = array();
 			$this->StyleSheets = array();
 			$this->Styles = array();
@@ -53,7 +301,10 @@
 			
 			$this->IsPartial = isset($_GET["partial"]);
 			
-			$this->BeforeConstruct();
+			$ce = new CancelEventArgs();
+			$this->OnCreating($ce);
+			if ($ce->Cancel) return;
+			
 			if (is_array($this->Variables))
 			{
 				foreach ($this->Variables as $variable)
@@ -68,28 +319,67 @@
 					}
 				}
 			}
-			$this->AfterConstruct();
+			$this->OnCreated(EventArgs::GetEmptyInstance());
 		}
         
         private $isInitialized;
-        protected function Initialize()
+        
+        public function Initialize()
         {
+        	if ($this->isInitialized) return true;
+        	
+        	$ce = new CancelEventArgs();
+            $this->OnInitializing($ce);
+            if ($ce->Cancel) return false;
             
+            $this->OnInitialized();
+            $this->isInitialized = true;
+            return true;
         }
-		protected function BeforeConstruct()
-		{
-		}
-		protected function AfterConstruct()
-		{
-		}
-        protected function BeforeHeader()
+        
+        protected function OnInitializing(CancelEventArgs $e)
         {
-            
+        	
         }
-        protected function AfterHeader()
+        protected function OnInitialized()
         {
-            
+        	
         }
+
+        /**
+         * The function called before the page constructor is called.
+         * @param CancelEventArgs $e The arguments for this event handler.
+         */
+        protected function OnCreating(CancelEventArgs $e)
+        {
+        	
+        }
+        /**
+         * The function called after the page constructor has completed.
+         * @param EventArgs $e The arguments for this event handler.
+         */
+        protected function OnCreated(EventArgs $e)
+        {
+        	
+        }
+
+        /**
+         * The function called before the page has started rendering.
+         * @param RenderedEventArgs $e The arguments for this event handler.
+         */
+        protected function OnRendering(RenderingEventArgs $e)
+        {
+        	
+        }
+        /**
+         * The function called after the page has completely rendered.
+         * @param RenderedEventArgs $e The arguments for this event handler.
+         */
+        protected function OnRendered(RenderedEventArgs $e)
+        {
+        	
+        }
+        
         /**
          * Performs any necessary processing before the main content of the Web page. Designed for use by page developers.
          */
@@ -197,13 +487,13 @@
 			return ($variable->IsSet == "true");
 		}
         
-        public function BeginContent()
+        public function Render()
         {
-            if (!$this->isInitialized)
-            {
-                $this->Initialize();
-                $this->isInitialized = true;
-            }
+        	if (!$this->Initialize())
+        	{
+        		trigger_error("Could not initialize the WebPage");
+        		return;
+        	}
             
 			if (!$this->IsPartial)
 			{
@@ -211,98 +501,115 @@
 				{
 					echo("<!DOCTYPE html>\r\n");
 				}
-				echo("<html>\r\n");
-				echo("\t<head>\r\n");
-				$this->BeforeHeader();
-				echo("\t\t<title>" . $this->Title . "</title>\r\n");
-				echo("\t\t<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\" />\r\n");
-				echo("\t\t<meta name=\"viewport\" content=\"width=device-width,minimum-scale=1.0\" />\r\n");
-				if (is_array($this->Metadata))
+				
+				$tagHTML = new HTMLControl();
+				$tagHTML->TagName = "html";
+				
+				$tagHEAD = new HTMLControl();
+				$tagHEAD->TagName = "head";
+				
+				if ($this->Title != "")
 				{
-					foreach ($this->Metadata as $metadata)
-					{
-						echo("\t\t<meta ");
-						if ($metadata->IsHTTPEquivalent)
-						{
-							echo("http-equiv=\"");
-						}
-						else
-						{
-							echo("name=\"");
-						}
-						echo($metadata->Name);
-						echo("\" content=\"");
-						echo($metadata->Content);
-						echo("\" />\r\n");
-					}
+					$tagTITLE = new HTMLControl();
+					$tagTITLE->TagName = "title";
+					$tagTITLE->InnerHTML = $this->Title;
+					$tagHEAD->Controls[] = $tagTITLE;
 				}
 				
-				if (is_array($this->ResourceLinks))
-				{
-					foreach ($this->ResourceLinks as $link)
-					{
-						$this->OutputHeaderResourceLink($link);
-					}
-				}
+				// ========== BEGIN: Metadata ==========
+				$items = array();
+				$items[] = new WebPageMetadata("Content-Type", "text/html; charset=utf-8", true);
+				$items[] = new WebPageMetadata("viewport", "width=device-width,minimum-scale=1.0");
+				$items[] = new WebPageMetadata("X-UA-Compatible", "IE=edge", WebPageMetadataType::HTTPEquivalent);
 				
-				$this->OutputHeaderStyleSheet(new WebStyleSheet(System::$Configuration["WebFramework.StaticPath"] . "/dropins/CodeMirror/StyleSheets/CodeMirror.css"));
-				$this->OutputHeaderStyleSheet(new WebStyleSheet(System::$Configuration["WebFramework.StaticPath"] . "/dropins/WebFramework/StyleSheets/Main.css"));
-				if (is_array($this->StyleSheets))
+				if ($this->MasterPage != null)
 				{
-					foreach ($this->StyleSheets as $stylesheet)
+					foreach ($this->MasterPage->Metadata as $item)
 					{
-						$this->OutputHeaderStyleSheet($stylesheet);
+						$items[] = $item;
 					}
 				}
+				foreach ($this->Metadata as $item)
+				{
+					$items[] = $item;
+				}
+				foreach ($items as $item)
+				{
+					$tagHEAD->Controls[] = WebPage::CreateMetaTag($item);
+				}
+				// ========== END: Metadata ==========
+				
+				// ========== BEGIN: Resource Links ==========
+				$items = array();
 
-				$this->OutputHeaderScript(new WebScript(System::$Configuration["WebFramework.StaticPath"] . "/dropins/WebFramework/Scripts/WebFramework.js.php"));
-				$script = new WebScript();
-				$script->Content = "WebFramework.BasePath = \"" . System::GetConfigurationValue("Application.BasePath") . "\"";
-				$this->OutputHeaderScript($script);
-				
-				/*
-				$this->OutputHeaderScript(new WebScript(System::$Configuration["WebFramework.StaticPath"] . "/dropins/JH.Utilities/Scripts/JH.Utilities.js"));
-				$this->OutputHeaderScript(new WebScript(System::$Configuration["WebFramework.StaticPath"] . "/dropins/XMLHttpRequest/Scripts/XMLHttpRequest.js"));
-				$this->OutputHeaderScript(new WebScript(System::$Configuration["WebFramework.StaticPath"] . "/dropins/CodeMirror/Scripts/CodeMirror.js"));
-				$this->OutputHeaderScript(new WebScript(System::$Configuration["WebFramework.StaticPath"] . "/dropins/CodeMirror/Scripts/Modes/xml/xml.js"));
-				$this->OutputHeaderScript(new WebScript(System::$Configuration["WebFramework.StaticPath"] . "/dropins/CodeMirror/Scripts/Modes/javascript/javascript.js"));
-				$this->OutputHeaderScript(new WebScript(System::$Configuration["WebFramework.StaticPath"] . "/dropins/CodeMirror/Scripts/Modes/css/css.js"));
-				$this->OutputHeaderScript(new WebScript(System::$Configuration["WebFramework.StaticPath"] . "/dropins/CodeMirror/Scripts/Modes/htmlmixed/htmlmixed.js"));
-				
-				$this->OutputHeaderScript(new WebScript(System::$Configuration["WebFramework.StaticPath"] . "/dropins/WebFramework/Scripts/json2.min.js"));
-				$this->OutputHeaderScript(new WebScript(System::$Configuration["WebFramework.StaticPath"] . "/dropins/WebFramework/Scripts/WebFramework.js"));
-				$this->OutputHeaderScript(new WebScript(System::$Configuration["WebFramework.StaticPath"] . "/dropins/WebFramework/Scripts/MousePosition.js"));
-				$this->OutputHeaderScript(new WebScript(System::$Configuration["WebFramework.StaticPath"] . "/dropins/WebFramework/Scripts/PrependArgument.js"));
-				$this->OutputHeaderScript(new WebScript(System::$Configuration["WebFramework.StaticPath"] . "/dropins/WebFramework/Scripts/WindowDimensions.js"));
-				
-				$this->OutputHeaderScript(new WebScript(System::$Configuration["WebFramework.StaticPath"] . "/dropins/WebFramework/Scripts/Controls/AdditionalDetailWidget.js"));
-				$this->OutputHeaderScript(new WebScript(System::$Configuration["WebFramework.StaticPath"] . "/dropins/WebFramework/Scripts/Controls/CheckBox.js"));
-				$this->OutputHeaderScript(new WebScript(System::$Configuration["WebFramework.StaticPath"] . "/dropins/WebFramework/Scripts/Controls/CodeEditor.js"));
-				$this->OutputHeaderScript(new WebScript(System::$Configuration["WebFramework.StaticPath"] . "/dropins/WebFramework/Scripts/Controls/Disclosure.js"));
-				$this->OutputHeaderScript(new WebScript(System::$Configuration["WebFramework.StaticPath"] . "/dropins/WebFramework/Scripts/Controls/DropDown.js"));
-				$this->OutputHeaderScript(new WebScript(System::$Configuration["WebFramework.StaticPath"] . "/dropins/WebFramework/Scripts/Controls/FlyoutTabContainer.js"));
-				$this->OutputHeaderScript(new WebScript(System::$Configuration["WebFramework.StaticPath"] . "/dropins/WebFramework/Scripts/Controls/ListView.js"));
-				$this->OutputHeaderScript(new WebScript(System::$Configuration["WebFramework.StaticPath"] . "/dropins/WebFramework/Scripts/Controls/Menu.js"));
-				$this->OutputHeaderScript(new WebScript(System::$Configuration["WebFramework.StaticPath"] . "/dropins/WebFramework/Scripts/Controls/Notification.js"));
-				$this->OutputHeaderScript(new WebScript(System::$Configuration["WebFramework.StaticPath"] . "/dropins/WebFramework/Scripts/Controls/Popup.js"));
-				$this->OutputHeaderScript(new WebScript(System::$Configuration["WebFramework.StaticPath"] . "/dropins/WebFramework/Scripts/Controls/ProgressBar.js"));
-				$this->OutputHeaderScript(new WebScript(System::$Configuration["WebFramework.StaticPath"] . "/dropins/WebFramework/Scripts/Controls/Ribbon.js"));
-				$this->OutputHeaderScript(new WebScript(System::$Configuration["WebFramework.StaticPath"] . "/dropins/WebFramework/Scripts/Controls/SplitContainer.js"));
-				$this->OutputHeaderScript(new WebScript(System::$Configuration["WebFramework.StaticPath"] . "/dropins/WebFramework/Scripts/Controls/TabContainer.js"));
-				$this->OutputHeaderScript(new WebScript(System::$Configuration["WebFramework.StaticPath"] . "/dropins/WebFramework/Scripts/Controls/TextBox.js"));
-				$this->OutputHeaderScript(new WebScript(System::$Configuration["WebFramework.StaticPath"] . "/dropins/WebFramework/Scripts/Controls/ToolTip.js"));
-				$this->OutputHeaderScript(new WebScript(System::$Configuration["WebFramework.StaticPath"] . "/dropins/WebFramework/Scripts/Controls/Window.js"));
-				*/
-				
-				if (is_array($this->Scripts))
+				if ($this->MasterPage != null)
 				{
-					foreach ($this->Scripts as $script)
+					foreach ($this->MasterPage->ResourceLinks as $item)
 					{
-						$this->OutputHeaderScript($script);
+						$items[] = $item;
 					}
 				}
+				foreach ($this->ResourceLinks as $item)
+				{
+					$items[] = $item;
+				}
+				foreach ($items as $item)
+				{
+					$tagHEAD->Controls[] = WebPage::CreateResourceLinkTag($item);
+				}
+				// ========== END: Resource Links ==========
+
+				// ========== BEGIN: StyleSheets ==========
+				$items = array();
+				$items[] = new WebStyleSheet("$(Configuration:WebFramework.StaticPath)/StyleSheets/Main.css");
 				
-				// BEGIN: OpenGraph support
+				if ($this->MasterPage != null)
+				{
+					foreach ($this->MasterPage->StyleSheets as $item)
+					{
+						$items[] = $item;
+					}
+				}
+				foreach ($this->StyleSheets as $item)
+				{
+					$items[] = $item;
+				}
+				foreach ($items as $item)
+				{
+					$tagHEAD->Controls[] = WebPage::CreateStyleSheetTag($item);
+				}
+				// ========== END: StyleSheets ==========
+				
+				// ========== BEGIN: Scripts ==========
+				$items = array();
+				
+				// Bring in WebFX first
+				$items[] = new WebScript("$(Configuration:WebFramework.StaticPath)/Scripts/WebFramework.js.php", "text/javascript");
+				
+				// Update the WebFX application base path
+				$item = new WebScript();
+				$item->ContentType = "text/javascript";
+				$item->Content = "WebFramework.BasePath = \"" . System::GetConfigurationValue("Application.BasePath") . "\";";
+				$items[] = $item;
+				
+				if ($this->MasterPage != null)
+				{
+					foreach ($this->MasterPage->Scripts as $item)
+					{
+						$items[] = $item;
+					}
+				}
+				foreach ($this->Scripts as $item)
+				{
+					$items[] = $item;
+				}
+				foreach ($items as $item)
+				{
+					$tagHEAD->Controls[] = WebPage::CreateScriptTag($item);
+				}
+				// ========== END: Scripts ==========
+				
+				// ========== BEGIN: OpenGraph Support ==========
 				if ($this->OpenGraph->Enabled)
 				{
 					$og_title = $this->OpenGraph->Title;
@@ -314,24 +621,21 @@
 					
 					if ($og_title != null) $og_title = $this->Title;
 					
-					echo("\r\n\t\t<!-- Open Graph Specification -->\r\n");
-					echo("\t\t<meta property=\"og:title\" content=\"" . $og_title . "\" />\r\n");
-					echo("\t\t<meta property=\"og:type\" content=\"" . $og_type . "\" />\r\n");
-					echo("\t\t<meta property=\"og:url\" content=\"" . $og_url . "\" />\r\n");
-					echo("\t\t<meta property=\"og:site_name\" content=\"" . $og_site_name . "\" />\r\n");
-					echo("\t\t<meta property=\"og:image\" content=\"" . $og_image . "\" />\r\n");
-					echo("\t\t<meta property=\"og:description\" content=\"" . $og_description . "\" />\r\n\r\n");
+					$tagHEAD->Controls[] = WebPage::CreateMetaTag(new WebPageMetadata("og:title", $og_title, WebPageMetadataType::Property));
+					$tagHEAD->Controls[] = WebPage::CreateMetaTag(new WebPageMetadata("og:type", $og_type, WebPageMetadataType::Property));
+					$tagHEAD->Controls[] = WebPage::CreateMetaTag(new WebPageMetadata("og:url", $og_url, WebPageMetadataType::Property));
+					$tagHEAD->Controls[] = WebPage::CreateMetaTag(new WebPageMetadata("og:site_name", $og_site_name, WebPageMetadataType::Property));
+					$tagHEAD->Controls[] = WebPage::CreateMetaTag(new WebPageMetadata("og:image", $og_image, WebPageMetadataType::Property));
+					$tagHEAD->Controls[] = WebPage::CreateMetaTag(new WebPageMetadata("og:description", $og_description, WebPageMetadataType::Property));
 				}
-				// END: OpenGraph support
+				// ========== END: OpenGraph Support ==========
 				
-				$this->AfterHeader();
-				echo("\t</head>\r\n");
-				echo("\t<body");
+				$tagHTML->Controls[] = $tagHEAD;
+				
+				$tagBODY = new HTMLControl();
+				$tagBODY->TagName = "body";
+				
 				$classList = array();
-				if ($this->CssClass != null)
-				{
-					$classList[] = $this->CssClass;
-				}
 				if (is_array($this->ClassList))
 				{
 					foreach ($this->ClassList as $item)
@@ -339,65 +643,112 @@
 						$classList[] = $item;
 					}
 				}
-
-				$count = count($classList);
-				if ($count > 0)
-				{
-					echo(" class=\"");
-					$i = 0;
-					foreach ($classList as $item)
-					{
-						echo($item);
-						$i++;
-						if ($i > $count - 1)
-						{
-							echo(" ");
-						}
-					}
-					echo("\"");
-				}
-				if (is_array($this->Styles) && count($this->Styles) > 0)
-				{
-					echo(" style=\"");
-					foreach ($this->Styles as $key => $value)
-					{
-						echo($key . ": " . $value . ";");
-					}
-					echo("\"");
-				}
-				echo(">\r\n");
 				
-				echo("<div class=\"WindowModalBackground\" id=\"smwbKageModal__33661E2DD4B44AC39AD7EA460DF79355\">&nbsp;</div>");
+				$tagBODY->ClassList = $classList;
+				$tagBODY->StyleRules = $this->Styles;
 				
 				$this->BeforeVariablesInitialize();
-				if (is_array($this->Variables))
+				if (count($this->Variables) > 0)
 				{
-					if (count($this->Variables) > 0)
+					$form = new HTMLControlForm();
+					$form->ClientID = "WebPageForm";
+					$form->Method = HTMLControlFormMethod::Post;
+					foreach ($this->Variables as $variable)
 					{
-						echo("<form id=\"WebPageForm\" method=\"POST\">");
-						foreach ($this->Variables as $variable)
+						$input = new HTMLControlInput();
+						$input->Type = HTMLControlInputType::Hidden;
+						$input->ClientID = "WebPageVariable_" . $variable->Name . "_Value";
+						$input->Name = "WebPageVariable_" . $variable->Name . "_Value";
+						if (isset($_POST["WebPageVariable_" . $variable->Name . "_Value"]))
 						{
-							echo("<input type=\"hidden\" id=\"WebPageVariable_" . $variable->Name . "_Value\" name=\"WebPageVariable_" . $variable->Name . "_Value\" ");
-							if (isset($_POST["WebPageVariable_" . $variable->Name . "_Value"]))
-							{
-								$variable->Value = $_POST["WebPageVariable_" . $variable->Name . "_Value"];
-							}
-							echo("value=\"" . $variable->Value . "\" />");
-							
-							echo("<input type=\"hidden\" id=\"WebPageVariable_" . $variable->Name . "_IsSet\" name=\"WebPageVariable_" . $variable->Name . "_IsSet\" ");
-							if (isset($_POST["WebPageVariable_" . $variable->Name . "_IsSet"]))
-							{
-								$variable->IsSet = $_POST["WebPageVariable_" . $variable->Name . "_IsSet"];
-							}
-							echo("value=\"" . (($variable->IsSet == "true") ? "true" : "false") . "\" />");
+							$variable->Value = $_POST["WebPageVariable_" . $variable->Name . "_Value"];
 						}
+						$input->Value = $variable->Value;
+						$form->Controls[] = $input;
+						
+						$input = new HTMLControlInput();
+						$input->Type = HTMLControlInputType::Hidden;
+						$input->ClientID = "WebPageVariable_" . $variable->Name . "_IsSet";
+						$input->Name = "WebPageVariable_" . $variable->Name . "_IsSet";
+						if (isset($_POST["WebPageVariable_" . $variable->Name . "_IsSet"]))
+						{
+							$variable->IsSet = $_POST["WebPageVariable_" . $variable->Name . "_IsSet"];
+						}
+						$input->Value = (($variable->IsSet == "true") ? "true" : "false");
+						$form->Controls[] = $input;
 					}
+					$tagBODY->Controls[] = $form;
 				}
 				$this->AfterVariablesInitialize();
 				
-				$this->BeforeFullContent();
+				$re = new RenderingEventArgs(RenderMode::Complete);
+				$this->OnRendering($re);
+				if ($re->Cancel) return;
 			}
-			$this->BeforeContent();
+			else
+			{
+				$re = new RenderingEventArgs(RenderMode::Partial);
+				$this->OnRendering($re);
+				if ($re->Cancel) return;
+			}
+			$re = new RenderingEventArgs(RenderMode::Any);
+			$this->OnRendering($re);
+			if ($re->Cancel) return;
+			
+			if (is_callable($this->Content) && count($this->Controls) == 0)
+			{
+				$tagBODY->Content = $this->Content;
+			}
+			else if (!is_callable($this->Content) && count($this->Controls) > 0)
+			{
+				$controls = $this->Controls;
+				if ($this->MasterPage != null)
+				{
+					$controls = $this->MergeMasterPageControls($this->MasterPage->Controls);
+				}
+				foreach ($controls as $ctl)
+				{
+					$tagBODY->Controls[] = $ctl;
+				}
+			}
+			$tagHTML->Controls[] = $tagBODY;
+			$tagHTML->Render();
+
+			$this->OnRendered(new RenderedEventArgs(RenderMode::Any));
+			if ($this->IsPartial)
+			{
+				$this->OnRendered(new RenderedEventArgs(RenderMode::Partial));
+			}
+			else
+			{
+				$this->OnRendered(new RenderedEventArgs(RenderMode::Complete));
+			}
+        }
+        
+        private function MergeMasterPageControls($controls)
+        {
+        	$newControls = array();
+        	if ($this->MasterPage != null)
+        	{
+        		foreach ($controls as $control)
+        		{
+        			if (get_class($control) == "WebFX\\Controls\\SectionPlaceholder")
+        			{
+        				$pageControls = $this->Controls;
+        				foreach ($pageControls as $pageControl)
+        				{
+        					if (get_class($pageControl) != "WebFX\\Controls\\Section") continue;
+        					$newControls[] = $pageControl;
+        				}
+        			}
+        			else
+        			{
+        				$control->Controls = $this->MergeMasterPageControls($control->Controls);
+        				$newControls[] = $control;
+        			}
+        		}
+        	}
+        	return $newControls;
         }
 		
 		protected function BeforeVariablesInitialize()
@@ -406,79 +757,5 @@
 		protected function AfterVariablesInitialize()
 		{
 		}
-		
-		private function OutputHeaderStyleSheet($stylesheet)
-		{
-			$this->OutputHeaderResourceLink(new WebResourceLink($stylesheet->FileName, "stylesheet", $stylesheet->ContentType));
-		}
-		private function OutputHeaderResourceLink($link)
-		{
-			echo("\t\t<link rel=\"" . $link->Relationship . "\" type=\"");
-			echo($link->ContentType);
-			echo("\" href=\"");
-			echo(System::ExpandRelativePath($link->URL));
-			echo("\" />\r\n");
-		}
-		private function OutputHeaderScript($script)
-		{
-			echo("\t\t<script type=\"");
-			echo($script->ContentType);
-			echo("\"");
-			if ($script->FileName != null)
-			{
-				echo(" src=\"");
-				echo(System::ExpandRelativePath($script->FileName));
-				echo("\"");
-			}
-			echo(">");
-			if ($script->Content != null)
-			{
-				echo($script->Content);
-			}
-			echo("</script>\r\n");
-		}
-		
-		/**
-		 * Renders the complete Web page, including beginning and ending content. Designed for use by end-users.
-		 */
-        public function Render()
-        {
-            $this->BeginContent();
-            $this->RenderContent();
-            $this->EndContent();
-        }
-        
-        /**
-         * Renders the ending content of the Web page. Designed for use by end-users.
-         */
-        public function EndContent()
-        {
-			$this->AfterContent();
-			if (!$this->IsPartial)
-			{
-				$this->AfterFullContent();
-				
-				if (is_array($this->Variables))
-				{
-					if (count($this->Variables) > 0)
-					{
-						echo("</form>");
-					}
-				}
-				
-				if ($this->ContextMenu != null)
-				{
-					if (get_class($this->ContextMenu) == "WebMenuControl")
-					{
-						$this->ContextMenu->ID = "ContextMenu";
-						$this->ContextMenu->Render();
-						echo("<script type=\"text/javascript\">document.addEventListener('mousedown', function(e) { ContextMenu.Show(); });</script>");
-					}
-				}
-				
-				echo("\t</body>\r\n");
-				echo("</html>");
-			}
-        }
     }
 ?>
