@@ -568,12 +568,18 @@
 			return $retval;
 		}
 	}
+
+	require_once("Enumeration.inc.php");
+	
+	require_once("RenderMode.inc.php");
+	
+	require_once("EventArgs.inc.php");
+	require_once("CancelEventArgs.inc.php");
+	require_once("RenderEventArgs.inc.php");
 	
 	require_once("Enum.inc.php");
 	require_once("StringMethods.inc.php");
 	require_once("JH.Utilities.inc.php");
-	
-	require("Enumeration.inc.php");
 
 	/**
 	 * Provides an enumeration of predefined values for horizontal alignment of content.
