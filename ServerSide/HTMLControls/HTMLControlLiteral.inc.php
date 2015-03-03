@@ -5,7 +5,8 @@
 	use WebFX\WebControl;
 	
 	use WebFX\WebControlAttribute;
-	
+	use WebFX\System;
+		
 	class HTMLControlLiteral extends HTMLControl
 	{
 		public $Value;
@@ -19,7 +20,7 @@
 		
 		protected function RenderContent()
 		{
-			echo($this->Value);
+			echo(System::ExpandRelativePath($this->Value));
 		}
 	}
 ?>
