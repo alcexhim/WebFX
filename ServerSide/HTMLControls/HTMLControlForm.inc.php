@@ -1,6 +1,7 @@
 <?php
 	namespace WebFX\HTMLControls;
 	
+	use WebFX\Enumeration;
 	use WebFX\HTMLControl;
 	use WebFX\WebControl;
 	
