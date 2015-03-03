@@ -6,15 +6,16 @@
 	
 	use WebFX\WebControlAttribute;
 	use WebFX\System;
-		
+	
 	class HTMLControlLiteral extends HTMLControl
 	{
 		public $Value;
 		
-		public function __construct($value)
+		public function __construct($value = null)
 		{
 			parent::__construct();
 			
+			if ($value == null) $value = "";
 			$this->Value = $value;
 		}
 		
