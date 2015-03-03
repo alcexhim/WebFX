@@ -1,0 +1,34 @@
+ul.Menu
+{
+	padding: 0px;
+	margin: 0px;
+	
+	&.Vertical
+	{
+		&> li
+		{
+			display: block;
+		}
+	}
+	&.Horizontal
+	{
+		display: inline-block;
+		&> li
+		{
+			display: inline-block;
+			&> a
+			{
+				color: #8F8E8E;
+				display: block;
+				
+				text-decoration: none;
+				transition: color linear 0.3s;
+				
+				&:hover
+				{
+					color: @ThemeColor;
+				}
+			}
+		}
+	}
+}
