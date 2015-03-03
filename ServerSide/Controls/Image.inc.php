@@ -20,6 +20,7 @@
 		
 		protected function OnInitialize()
 		{
+			$this->Attributes = array();
 			if ($this->AlternateText != "")
 			{
 				$this->Attributes[] = new WebControlAttribute("alt", $this->AlternateText);
