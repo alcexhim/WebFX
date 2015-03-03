@@ -1,12 +1,12 @@
 <?php
-	namespace WebFX\Controls;
+	namespace WebFX\HTMLControls;
 	
 	use WebFX\System;
-	use WebFX\WebControl;
+	use WebFX\HTMLControl;
 	use WebFX\WebControlAttribute;
 	use WebFX\WebScript;
-	
-	class Image extends WebControl
+		
+	class Image extends HTMLControl
 	{
 		public $AlternateText;
 		public $ImageUrl;
