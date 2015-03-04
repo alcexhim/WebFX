@@ -1,3 +1,56 @@
+function Menu(parentElement)
+{
+	this.ParentElement = parentElement;
+	this.set_Expanded = function(value)
+	{
+		switch (value)
+		{
+			case true:
+			{
+				this.ParentElement.parentNode.className = "Opened";
+				break;
+			}
+			case false:
+			{
+				this.ParentElement.parentNode.className = "";
+				break;
+			}
+		}
+	};
+	
+	for (var i = 0; i < this.ParentElement.childNodes.length; i++)
+	{
+		this.ParentElement.childNodes[i].childNodes[0].addEventListener("click", function(e)
+		{
+			if (this.parentNode.childNodes.length > 1)
+			{
+				if (this.parentNode.className == "Opened")
+				{
+					this.parentNode.className = "";
+				}
+				else
+				{
+					this.parentNode.className = "Opened";
+				}
+			}
+			
+			this.blur();
+			e.preventDefault();
+			e.stopPropagation();
+			return false;
+		});
+	}
+}
+
+window.addEventListener("load", function(e)
+{
+	var items = document.getElementsByClassName("Menu");
+	for (var i = 0; i < items.length; i++)
+	{
+		items[i].NativeObject = new Menu(items[i]);
+	}
+});
+
 function ContextMenu()
 {
 	this.Items = [];
@@ -77,32 +130,5 @@ function MenuItemCommand(id, title, onclick)
 	this.Execute = function()
 	{
 		if (this.OnClientClick != null) this.OnClientClick();
-	};
-}
-function Menu(id)
-{
-	this.ID = id;
-	this.Show = function()
-	{
-		var obj = document.getElementById("Menu_" + this.ID);
-		obj.style.display = "block";
-	};
-	this.Hide = function()
-	{
-		var obj = document.getElementById("Menu_" + this.ID);
-		obj.style.display = "none";
-	};
-	
-	this.Toggle = function()
-	{
-		var obj = document.getElementById("Menu_" + this.ID);
-		if (obj.style.display == "none")
-		{
-			obj.style.display = "block";
-		}
-		else
-		{
-			obj.style.display = "none";
-		}
 	};
 }
