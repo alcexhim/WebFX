@@ -7,7 +7,8 @@
 	use WebFX\HTMLControls\HTMLControlFormMethod;
 	use WebFX\HTMLControls\HTMLControlInput;
 	use WebFX\HTMLControls\HTMLControlInputType;
-
+	use WebFX\Parser\WebFXPage;
+				
 	/**
 	 * Contains functionality common to all WebFX Web pages. 
 	 * @author Michael Becker
@@ -24,6 +25,12 @@
 		public $ClassList;
 		
 		/**
+		 * The class reference for this WebPage.
+		 * @var WebFXPage
+		 */
+		public $ClassReference;
+		
+		/**
 		 * The user function that is called when this WebPage is rendered.
 		 * @var callable
 		 */
@@ -34,6 +41,20 @@
 		 * @var WebControl[]
 		 */
 		public $Controls;
+		
+		/**
+		 * Retrieves all controls, including those on the MasterPage.
+		 * @var WebControl[]
+		 */
+		public function GetAllControls()
+		{
+			$controls = $this->Controls;
+			if ($this->MasterPage != null)
+			{
+				$controls = $this->MergeMasterPageControls($this->MasterPage->Controls);
+			}
+			return $controls;
+		}
 		
 		/**
 		 * The WebPage from which this WebPage inherits.
@@ -69,11 +90,31 @@
 		 * @var boolean
 		 */
 		public $IsPartial;
+
+		/**
+		 * Retrieves the control with the specified ID in this control's child control collection.
+		 * @param string $id The ID of the control to search for.
+		 * @return WebControl|NULL The control with the specified ID, or null if no control with the specified ID was found.
+		 */
+		public function GetControlByID($id, $recurse = true)
+		{
+			$ctls = $this->GetAllControls();
+			foreach ($ctls as $ctl)
+			{
+				if ($ctl->ID == $id) return $ctl;
+				if ($recurse)
+				{
+					$ctl1 = $ctl->GetControlByID($id, true);
+					if ($ctl1 != null) return $ctl1;
+				}
+			}
+			return null;
+		}
 		
 		public static function FromMarkup($element, $parser)
 		{
 			$page = new WebPage();
-				
+			
 			$attFileName = $element->GetAttribute("FileName");
 			if ($attFileName != null)
 			{
@@ -194,16 +235,25 @@
 			if ($attrCodeBehindClassName != null)
 			{
 				$page->CodeBehindClassName = $attrCodeBehindClassName->Value;
-		
+				
 				if (class_exists($page->CodeBehindClassName))
 				{
 					$page->ClassReference = new $page->CodeBehindClassName();
 					$page->ClassReference->Page = $page;
 					$page->IsPostback = ($_SERVER["REQUEST_METHOD"] == "POST");
+					
+					if (method_exists($page->ClassReference, "OnClassLoaded"))
+					{
+						$page->ClassReference->OnClassLoaded(EventArgs::GetEmptyInstance());
+					}
+					else
+					{
+						System::WriteErrorLog("Code-behind for '" . $page->CodeBehindClassName . "' does not define an 'OnClassLoaded' entry point");
+					}
 				}
 				else
 				{
-					System::WriteErrorLog("Code-behind for '" . $page->ClassName . "' not found");
+					System::WriteErrorLog("Code-behind for '" . $page->CodeBehindClassName . "' not found");
 				}
 			}
 			return $page;
@@ -332,7 +382,15 @@
             $this->OnInitializing($ce);
             if ($ce->Cancel) return false;
             
-            $this->OnInitialized();
+            if ($this->ClassReference != null)
+            {
+            	$this->ClassReference->OnInitializing($ce);
+            	if ($ce->Cancel) return false;
+	            
+            	$this->ClassReference->OnInitialized(EventArgs::GetEmptyInstance());
+            }
+            
+            $this->OnInitialized(EventArgs::GetEmptyInstance());
             $this->isInitialized = true;
             return true;
         }
@@ -341,7 +399,7 @@
         {
         	
         }
-        protected function OnInitialized()
+        protected function OnInitialized(EventArgs $e)
         {
         	
         }
@@ -706,6 +764,7 @@
 				{
 					$controls = $this->MergeMasterPageControls($this->MasterPage->Controls);
 				}
+				
 				foreach ($controls as $ctl)
 				{
 					$tagBODY->Controls[] = $ctl;

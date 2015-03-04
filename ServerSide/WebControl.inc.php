@@ -47,6 +47,28 @@
 		
 		public $ParseChildElements;
 		
+		/**
+		 * Retrieves the control with the specified ID in this control's child control collection.
+		 * @param string $id The ID of the control to search for.
+		 * @return WebControl|NULL The control with the specified ID, or null if no control with the specified ID was found.
+		 */
+		public function GetControlByID($id, $recurse = true)
+		{
+			if (is_array($this->Controls))
+			{
+				foreach ($this->Controls as $ctl)
+				{
+					if ($ctl->ID == $id) return $ctl;
+					if ($recurse)
+					{
+						$ctl1 = $ctl->GetControlByID($id, true);
+						if ($ctl1 != null) return $ctl1;
+					}
+				}
+			}
+			return null;
+		}
+		
 		public function FindParentPage()
 		{
 			$parent = $this->ParentObject;
