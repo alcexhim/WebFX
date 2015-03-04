@@ -59,6 +59,15 @@
 			if ($this->MaximumHeight != null) $this->StyleRules[] = new WebStyleSheetRule("max-height", $this->MaximumHeight);
 		}
 		
+		public function GetItemByID($id)
+		{
+			foreach ($this->Items as $item)
+			{
+				if ($item->ID == $id) return $item;
+			}
+			return null;
+		}
+		
 		protected function RenderBeginTag()
 		{
 			if ($this->Orientation == "Horizontal" || $this->Orientation == MenuOrientation::Horizontal)
@@ -88,6 +97,10 @@
 				if ($menuItem->Selected)
 				{
 					$li->ClassList[] = "Selected";
+				}
+				if (count($menuItem->Items) > 0)
+				{
+					$li->ClassList[] = "HasChildren";
 				}
 				
 				$a = new Anchor();
@@ -148,22 +161,17 @@
 			}
 			else if (get_class($menuItem) == "WebFX\\Controls\\MenuItemHeader")
 			{
-				$span = new HTMLControl();
-				$span->TagName = "span";
-				$span->ClassList[] = "MenuItem";
+				$li = new HTMLControl();
+				$li->TagName = "li";
+				$li->ClassList[] = "Header";
 				
 				$spanHeader = new HTMLControl();
 				$spanHeader->TagName = "span";
-				$spanHeader->ClassList[] = "MenuItemTitle";
+				$spanHeader->ClassList[] = "Text";
 				$spanHeader->InnerHTML = $menuItem->Title;
-				$span->Controls[] = $spanHeader;
+				$li->Controls[] = $spanHeader;
 				
-				$spanHeader = new HTMLControl();
-				$spanHeader->TagName = "span";
-				$spanHeader->ClassList[] = "MenuItemSubtitle";
-				$spanHeader->InnerHTML = $menuItem->Subtitle;
-				$span->Controls[] = $spanHeader;
-				return $span;
+				return $li;
 			}
 			else if (get_class($menuItem) == "WebFX\\Controls\\MenuItemSeparator")
 			{
@@ -205,6 +213,15 @@
 		public $OnClientClick;
 		public $Selected;
 		public $Description;
+		
+		public function GetItemByID($id)
+		{
+			foreach ($this->Items as $item)
+			{
+				if ($item->ID == $id) return $item;
+			}
+			return null;
+		}
 		
 		public function __construct($title = null, $targetURL = null, $onClientClick = null, $description = null)
 		{

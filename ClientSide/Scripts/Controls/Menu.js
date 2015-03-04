@@ -7,12 +7,12 @@ function Menu(parentElement)
 		{
 			case true:
 			{
-				this.ParentElement.parentNode.className = "Opened";
+				WebFramework.ClassList.Add(this.ParentElement.parentNode, "Opened");
 				break;
 			}
 			case false:
 			{
-				this.ParentElement.parentNode.className = "";
+				WebFramework.ClassList.Remove(this.ParentElement.parentNode, "Opened");
 				break;
 			}
 		}
@@ -24,14 +24,7 @@ function Menu(parentElement)
 		{
 			if (this.parentNode.childNodes.length > 1)
 			{
-				if (this.parentNode.className == "Opened")
-				{
-					this.parentNode.className = "";
-				}
-				else
-				{
-					this.parentNode.className = "Opened";
-				}
+				WebFramework.ClassList.Toggle(this.parentNode, "Opened");
 			}
 			
 			this.blur();
