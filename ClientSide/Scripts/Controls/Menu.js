@@ -35,9 +35,13 @@ function Menu(parentElement)
 			}
 			
 			this.blur();
-			e.preventDefault();
-			e.stopPropagation();
-			return false;
+			
+			if (this.href == "" || this.href == "#")
+			{
+				e.preventDefault();
+				e.stopPropagation();
+				return false;
+			}
 		});
 	}
 }
