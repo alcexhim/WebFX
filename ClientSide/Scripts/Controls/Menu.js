@@ -29,7 +29,7 @@ function Menu(parentElement)
 			
 			this.blur();
 			
-			if (this.href == "" || this.href == "#")
+			if (this.href == "" || this.href == window.location.href + "#")
 			{
 				e.preventDefault();
 				e.stopPropagation();
