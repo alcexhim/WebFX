@@ -725,8 +725,9 @@
 			}
         }
         
-        private function MergeMasterPageControls($controls)
+        private function MergeMasterPageControls($controls = null)
         {
+        	if ($controls == null) $controls = array();
         	$newControls = array();
         	if ($this->MasterPage != null)
         	{
