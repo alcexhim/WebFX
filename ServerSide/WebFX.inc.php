@@ -658,7 +658,8 @@
 	require("WebPageVariable.inc.php");
 	
 	require("HTMLControl.inc.php");
-	
+
+	require("Parser/ControlLoader.inc.php");
 	require("Parser/WebFXParser.inc.php");
 	
 	System::$Configuration = array();
