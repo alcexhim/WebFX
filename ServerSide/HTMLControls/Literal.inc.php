@@ -7,7 +7,7 @@
 	use WebFX\WebControlAttribute;
 	use WebFX\System;
 	
-	class HTMLControlLiteral extends HTMLControl
+	class Literal extends HTMLControl
 	{
 		public $Value;
 		
