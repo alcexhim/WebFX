@@ -91,7 +91,7 @@
 				}
 				
 				$a = new Anchor();
-				$a->TargetURL = $menuItem->NavigateUrl;
+				$a->TargetURL = $menuItem->TargetURL;
 				if ($menuItem->OnClientClick != null)
 				{
 					$a->Attributes[] = new WebControlAttribute("onclick", $menuItem->OnClientClick);
@@ -201,16 +201,16 @@
 		public $Items;
 		public $IconName;
 		public $Title;
-		public $NavigateUrl;
+		public $TargetURL;
 		public $OnClientClick;
 		public $Selected;
 		public $Description;
 		
-		public function __construct($title = null, $navigateUrl = "#", $onClientClick = null, $description = null)
+		public function __construct($title = null, $targetURL = null, $onClientClick = null, $description = null)
 		{
 			parent::__construct();
 			$this->Title = $title;
-			$this->NavigateUrl = $navigateUrl;
+			$this->TargetURL = $targetURL;
 			$this->OnClientClick = $onClientClick;
 			$this->Description = $description;
 		}
