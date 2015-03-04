@@ -445,6 +445,72 @@ WebFramework.AddEventListener = function(parent, eventTypeOrName, callback)
 	}
 };
 
+WebFramework.ClassList = 
+{
+	"Add": function (object, className)
+	{
+		if (object.classList && object.classList.add)
+		{
+			object.classList.add(className);
+			return true;
+		}
+
+		var splits = object.className.split(" ");
+		for (var i = 0; i < splits.length; i++)
+		{
+			if (splits[i] == className) return true;
+		}
+		splits.push(className);
+		object.className = splits.join(" ");
+		return false;
+	},
+	"Remove": function (object, className)
+	{
+		if (object.classList && object.classList.remove)
+		{
+			object.classList.remove(className);
+			return true;
+		}
+
+		var splits = object.className.split(" ");
+		var newsplits = new Array();
+		for (var i = 0; i < splits.length; i++)
+		{
+			if (splits[i] == className) continue;
+			newsplits.push(splits[i]);
+		}
+		object.className = newsplits.join(" ");
+		return false;
+	},
+	"Contains": function (object, className)
+	{
+		if (object.classList && object.classList.contains)
+		{
+			return object.classList.contains(className);
+		}
+
+		if (!object.className) return false;
+
+		var splits = object.className.split(" ");
+		for (var i = 0; i < splits.length; i++)
+		{
+			if (splits[i] == className) return true;
+		}
+		return false;
+	},
+	"Toggle": function (object, className)
+	{
+		if (WebFramework.ClassList.Contains(object, className))
+		{
+			WebFramework.ClassList.Remove(object, className);
+		}
+		else
+		{
+			WebFramework.ClassList.Add(object, className);
+		}
+	}
+};
+
 var WebPage =
 {
 	"Postback": function(url)
