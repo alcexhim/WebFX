@@ -12,7 +12,7 @@
 	 * Provides an HTMLControl for the <A> HTML tag.
 	 * @author Michael Becker
 	 */
-	class HTMLControlAnchor extends HTMLControl
+	class Anchor extends HTMLControl
 	{
 		public function __construct()
 		{
