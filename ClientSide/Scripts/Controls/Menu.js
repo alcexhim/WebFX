@@ -44,6 +44,7 @@ window.addEventListener("load", function(e)
 	var items = document.getElementsByClassName("Menu");
 	for (var i = 0; i < items.length; i++)
 	{
+		if (items[i].NativeObject) continue;
 		items[i].NativeObject = new Menu(items[i]);
 	}
 });
