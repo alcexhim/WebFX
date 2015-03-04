@@ -1,6 +1,13 @@
 <?php
 	namespace WebFX\Parser;
+
+	use WebFX\HTMLControl;
+	use WebFX\HTMLControls\Literal;
 	
+	use WebFX\WebControlAttribute;
+	use WebFX\WebPageMessage;
+	use WebFX\System;
+		
 	class ControlLoader
 	{
 		public static $Messages;
@@ -44,6 +51,7 @@
 						else
 						{
 							ControlLoader::$Messages[] = new WebPageMessage("Unknown class " . $realname . " (" . $prefix . ":" . $name . ")", WebPageMessageSeverity::Error);
+							System::WriteErrorLog("Unknown class " . $realname . " (" . $prefix . ":" . $name . ")");
 							continue;
 						}
 						ControlLoader::LoadAttributes($elem2, $obj1);
@@ -150,7 +158,7 @@
 			}
 			else if (get_class($elem) == "UniversalEditor\\ObjectModels\\Markup\\MarkupLiteralElement")
 			{
-				$parent->Controls[] = new HTMLControlLiteral($elem->Value);
+				$parent->Controls[] = new Literal($elem->Value);
 			}
 		}
 	}
