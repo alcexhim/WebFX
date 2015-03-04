@@ -17,6 +17,24 @@ table.ListView tr td
 table.ListView
 {
 	position: relative;
+	-moz-user-select: none;
+	
+	&:not(.RowCheckBoxes) th.RowCheckBoxes *, &:not(.RowCheckBoxes) td.RowCheckBoxes *
+	{
+		display: none;
+	}
+	th
+	{
+		&.RowCheckBoxes
+		{
+			width: 64px;
+		}
+	}
+	&:not(.RowCheckBoxes) th.RowCheckBoxes
+	{
+		display: none;
+	}
+	
 	a.NavigateURL
 	{
 		cursor: pointer;
@@ -26,6 +44,47 @@ table.ListView
 	&:not(.AllowFiltering) > thead > tr.Filter
 	{
 		display: none;
+	}
+	&> thead
+	{
+		border-bottom-style: solid;
+		border-bottom-width: 1px;
+	}
+	&.HasBorder
+	{
+		border-style: solid;
+		border-width: 1px;
+	}
+	&.GridLines tr
+	{
+		td, th
+		{
+			border-style: solid;
+			border-width: 1px;
+			&:first-child
+			{
+				border-left: none;
+			}
+			&:last-child
+			{
+				border-right: none;
+			}
+		}
+		&:first-child td, th
+		{
+			border-top: none;
+		}
+		&:last-child td, th
+		{
+			border-bottom: none;
+		}
+	}
+	&:not(.RowCheckBoxes).GridLines tr td,th
+	{
+		&:nth-child(2)
+		{
+			border-left: none !important;
+		}
 	}
 }
 

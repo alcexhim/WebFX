@@ -7,7 +7,7 @@
 	use WebFX\WebScript;
 	use WebFX\WebStyleSheetRule;
 	
-	use WebFX\HTMLControls\HTMLControlAnchor;
+	use WebFX\HTMLControls\Anchor;
 	use WebFX\HTMLControls\HTMLControlTable;
 	
 	use WebFX\HTMLControls\HTMLControlForm;
@@ -67,6 +67,8 @@
 		public $OnRetrieveContent;
 		public $UserData;
 		
+		public $ParseChildElements;
+		
 		public function __construct($name = null, $content = null, $text = null, $onRetrieveContent = null, $userData = null)
 		{
 			$this->Name = $name;
@@ -75,6 +77,8 @@
 			$this->Text = $text;
 			$this->OnRetrieveContent = $onRetrieveContent;
 			$this->UserData = $userData;
+			
+			$this->ParseChildElements = true;
 		}
 	}
 	class ListView extends WebControl
@@ -85,7 +89,9 @@
 		
 		public $Columns;
 		public $Items;
-		
+
+		public $EnableHotTracking;
+		public $ShowBorder;
 		public $ShowGridLines;
 		public $HighlightAlternateRows;
 		
@@ -109,10 +115,12 @@
 			$this->Items = array();
 			$this->AllowFiltering = true;
 			$this->Mode = ListViewMode::Detail;
-			
+
+			$this->ShowBorder = true;
 			$this->ShowGridLines = true;
 			$this->HighlightAlternateRows = false;
 			$this->EnableAddRemoveRows = false;
+			$this->EnableHotTracking = true;
 			
 			$this->ParseChildElements = true;
 		}
@@ -141,6 +149,14 @@
 					{
 						$table = new HTMLControlTable();
 						$table->ClassList[] = "ListView";
+						if ($this->ShowBorder)
+						{
+							$table->ClassList[] = "HasBorder";
+						}
+						if ($this->EnableHotTracking)
+						{
+							$table->ClassList[] = "HotTracking";
+						}
 						if ($this->ShowGridLines)
 						{
 							$table->ClassList[] = "GridLines";
@@ -200,7 +216,7 @@
 							}
 							else if (get_class($column) == "WebFX\\Controls\\ListViewColumn")
 							{
-								$link = new HTMLControlAnchor();
+								$link = new Anchor();
 								$link->TargetScript = "lvListView.Sort('" . $column->Name . "'); return false;";
 								$link->InnerHTML = $column->Title;
 								$link->Render();

@@ -2,17 +2,8 @@ table.ListView
 {
 	border-collapse: collapse;
 	
-	&:not(.RowCheckBoxes) th.RowCheckBoxes *, &:not(.RowCheckBoxes) td.RowCheckBoxes *
-	{
-		display: none;
-	}
-	
 	th
 	{
-		&.RowCheckBoxes
-		{
-			width: 64px;
-		}
 		a
 		{
 			color: #888888;
@@ -28,11 +19,6 @@ table.ListView
 				background-color: #FAFBFC;
 			}
 		}
-	}
-	
-	&:not(.RowCheckBoxes) th.RowCheckBoxes
-	{
-		width: 0px;
 	}
 	
 	&> tbody > tr
@@ -108,7 +94,7 @@ table.ListView
 		}
 	}
 	
-	&:not(.Borderless)
+	&.HasBorder
 	{
 		border: solid 1px #EEEEEE;
 	}
