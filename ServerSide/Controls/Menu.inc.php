@@ -9,8 +9,8 @@
 	use WebFX\WebStyleSheetRule;
 	
 	use WebFX\HTMLControl;
-	use WebFX\HTMLControls\HTMLControlAnchor;
-			
+	use WebFX\HTMLControls\Anchor;
+	
 	/**
 	 * Provides an enumeration of predefined values for orientation of a menu.
 	 * @author Michael Becker
@@ -90,7 +90,7 @@
 					$li->ClassList[] = "Selected";
 				}
 				
-				$a = new HTMLControlAnchor();
+				$a = new Anchor();
 				$a->TargetURL = $menuItem->NavigateUrl;
 				if ($menuItem->OnClientClick != null)
 				{
