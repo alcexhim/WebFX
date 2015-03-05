@@ -1,51 +1,149 @@
-function ToolTip(id)
+window.addEventListener('load', function (e)
 {
-	this.ID = id;
-	
-	var ToolTip = document.getElementById("ToolTip_" + id);
-	var ToolTip_Activator = document.getElementById("ToolTip_" + id + "_Activator");
-	
-	ToolTip_Activator.Parent = this;
-	ToolTip_Activator.onmouseover = function(e)
+	var tooltips = document.getElementsByTagName("*");
+	for (var i = 0; i < tooltips.length; i++)
 	{
-		this.Parent.Show(e.clientX + 32, e.clientY + 32, 500);
-	};
-	ToolTip_Activator.onmouseout = function(e)
-	{
-		this.Parent.Hide();
-	};
-	
-	ToolTip.Parent = this;
-	ToolTip.onmouseout = function(e)
-	{
-		this.Parent.Hide();
-	};
-	
-	this.Show = function(x, y, delay)
-	{
-		if (delay)
+		(function(tt)
 		{
-			this.HTimer = window.setTimeout(function(parent, x, y)
-			{
-				parent.Show();
-			}, delay, this);
-		}
-		else
-		{
-			var ToolTip = document.getElementById("ToolTip_" + this.ID);
-			if (!x) x = MousePosition.X + 32;
-			if (!y) y = MousePosition.Y + 32;
-			
-			ToolTip.style.left = x + "px";
-			ToolTip.style.top = y + "px";
-			ToolTip.style.display = "block";
-		}
-	};
-	this.Hide = function()
-	{
-		if (this.HTimer) window.clearTimeout(this.HTimer);
+			if (typeof(tt.attributes["data-tooltip-content"]) === 'undefined' && typeof(tt.attributes["data-tooltip-title"]) === 'undefined') return;
 		
-		var ToolTip = document.getElementById("ToolTip_" + this.ID);
-		ToolTip.style.display = "none";
-	};
+			var delay = 1000;
+			if (tt.attributes["data-tooltip-delay"])
+			{
+				delay = tt.attributes["data-tooltip-delay"];
+			}
+
+			tt.tooltipTimer = null;
+			tt.onmousemove = function(e)
+			{
+				tt.mouseX = e.clientX;
+				tt.mouseY = e.clientY;
+			};
+			tt.onmouseover = function(e)
+			{
+				if (WebFramework.ClassList.Contains(tt, "Disabled")) return;
+				
+				if (ToolTip.Timer != null) window.clearTimeout(ToolTip.Timer);
+				tt.tooltipTimer = window.setTimeout(function(tt)
+				{
+					var x = tt.mouseX;
+					var y = tt.mouseY;
+					
+					var tooltipTitle = (tt.attributes["data-tooltip-title"] != null ? tt.attributes["data-tooltip-title"].value : "");
+					var tooltipContent = (tt.attributes["data-tooltip-content"] != null ? tt.attributes["data-tooltip-content"].value : "");
+					var tooltipContextHelpURL = (tt.attributes["data-tooltip-contexthelpurl"] != null ? tt.attributes["data-tooltip-contexthelpurl"].value : "");
+					var tooltipContextHelpTargetName = (tt.attributes["data-tooltip-contexthelptarget"] != null ? tt.attributes["data-tooltip-contexthelptarget"].value : "_blank");
+				
+					if (tooltipTitle == "" || tooltipContent == "") return;
+					
+					ToolTip.Show(tooltipContent, tooltipTitle, x, y, tooltipContextHelpURL, tooltipContextHelpTargetName);
+				}, delay, tt);
+			};
+			tt.onmouseout = function(e)
+			{
+				ToolTip.Hide();
+			};
+		})(tooltips[i]);
+	}
+});
+
+function ToolTip()
+{
 }
+
+ToolTip.CurrentContextHelpURL = "";
+ToolTip.CurrentContextHelpTargetName = null;
+
+ToolTip.ParentElement = null;
+ToolTip.Timer = null;
+
+ToolTip.Show = function(content, title, x, y, contextHelpURL, contextHelpTargetName)
+{
+	if (ToolTip.ParentElement == null)
+	{
+		ToolTip.ParentElement = document.createElement("div");
+		ToolTip.ParentElement.className = "ToolTip";
+
+		var ttTitleElement = document.createElement("div");
+		ttTitleElement.className = "Title";
+		ToolTip.ParentElement.appendChild(ttTitleElement);
+		
+		var ttContentElement = document.createElement("div");
+		ttContentElement.className = "Content";
+		ToolTip.ParentElement.appendChild(ttContentElement);
+		
+		var ttContextHelpElement = document.createElement("div");
+		ttContextHelpElement.className = "ContextHelp";
+		ToolTip.ParentElement.appendChild(ttContextHelpElement);
+		
+		document.body.appendChild(ToolTip.ParentElement);
+	}
+	
+	var tooltipTitleElement = ToolTip.ParentElement.childNodes[0];
+	var tooltipContentElement = ToolTip.ParentElement.childNodes[1];
+	var tooltipContextHelpElement = ToolTip.ParentElement.childNodes[2];
+	
+	if (title != "")
+	{
+		tooltipTitleElement.innerHTML = title;
+	}
+	else
+	{
+		tooltipTitleElement.style.display = "none";
+	}
+	
+	if (content != "")
+	{
+		tooltipContentElement.innerHTML = content;
+	}
+	else
+	{
+		tooltipContentElement.style.display = "none";
+	}
+	
+	if (contextHelpURL)
+	{
+		tooltipContextHelpElement.style.display = "block";
+		ToolTip.CurrentContextHelpURL = contextHelpURL;
+	}
+	else
+	{
+		tooltipContextHelpElement.style.display = "none";
+	}
+	
+	if (contextHelpTargetName)
+	{
+		ToolTip.CurrentContextHelpTargetName = contextHelpTargetName;
+	}
+	
+	ToolTip.ParentElement.style.left = x + "px";
+	ToolTip.ParentElement.style.top = (y + 16) + "px";
+	
+	WebFramework.ClassList.Add(ToolTip.ParentElement, "Visible");
+};
+ToolTip.Hide = function()
+{
+	ToolTip.CurrentContextHelpURL = "";
+	ToolTip.CurrentContextHelpTargetName = "_blank";
+	if (ToolTip.Timer != null) window.clearTimeout(ToolTip.Timer);
+	
+	if (ToolTip.ParentElement == null) return;
+	WebFramework.ClassList.Remove(ToolTip.ParentElement, "Visible");
+};
+
+
+window.addEventListener("keydown", function (e)
+{
+	switch (e.keyCode)
+	{
+		case KeyboardKeys.F1: /* F1 */
+		{
+			if (ToolTip.CurrentContextHelpURL != "")
+			{
+				var path = WebFramework.ExpandRelativePath(ToolTip.CurrentContextHelpURL);
+				window.open(path, ToolTip.CurrentContextHelpTargetName);
+			}
+			break;
+		}
+	}
+});

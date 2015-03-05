@@ -268,79 +268,6 @@ window.addEventListener('load', function (e)
 
 		Ribbons.push(ribbon);
 	}
-
-	var tooltips = document.getElementsByTagName("*");
-
-	for (var i = 0; i < tooltips.length; i++)
-	{
-		(function(tt)
-		{
-			if (typeof(tt.attributes["data-tooltip-content"]) === 'undefined' && typeof(tt.attributes["data-tooltip-title"]) === 'undefined') return;
-		
-			var delay = 1000;
-			if (tt.attributes["data-tooltip-delay"])
-			{
-				delay = tt.attributes["data-tooltip-delay"];
-			}
-
-			tt.tooltipTimer = null;
-			tt.onmousemove = function(e)
-			{
-				tt.mouseX = e.clientX;
-				tt.mouseY = e.clientY;
-			};
-			tt.onmouseover = function(e)
-			{
-				// alert(ribbonTooltips[i].attributes["data-control-id"].value);
-				if (tt.classList.contains("Disabled")) return;
-
-				if (tt.tooltipTimer != null) window.clearTimeout(tt.tooltipTimer);
-				tt.tooltipTimer = window.setTimeout(function(tt)
-				{
-					var x = tt.mouseX;
-					var y = tt.mouseY;
-
-					var tooltip = document.getElementById("Tooltip");
-
-					var tooltipTitle = (tt.attributes["data-tooltip-title"] != null ? tt.attributes["data-tooltip-title"].value : "");
-					var tooltipContent = (tt.attributes["data-tooltip-content"] != null ? tt.attributes["data-tooltip-content"].value : "");
-					var tooltipContextHelpURL = (tt.attributes["data-tooltip-contexthelpurl"] != null ? tt.attributes["data-tooltip-contexthelpurl"].value : "");
-					var tooltipContextHelpTargetName = (tt.attributes["data-tooltip-contexthelptarget"] != null ? tt.attributes["data-tooltip-contexthelptarget"].value : "_blank");
-				
-					if (tooltipTitle == "" || tooltipContent == "") return;
-
-					var tooltipTitleElement = document.getElementById("Tooltip_Title");
-					tooltipTitleElement.innerHTML = tooltipTitle;
-					var tooltipContentElement = document.getElementById("Tooltip_Content");
-					var tooltipContextHelpElement = document.getElementById("Tooltip_ContextHelp");
-					if (tooltipContextHelpURL != "")
-					{
-						tooltipContextHelpElement.style.display = "block";
-					}
-					else
-					{
-						tooltipContextHelpElement.style.display = "none";
-					}
-					Ribbon.CurrentContextHelpURL = tooltipContextHelpURL;
-					Ribbon.CurrentContextHelpTargetName = tooltipContextHelpTargetName;
-
-					tooltipContentElement.innerHTML = tooltipContent;
-
-					tooltip.style.left = x + "px";
-					tooltip.style.top = (y + 16) + "px";
-					tooltip.className = "RibbonTooltip Visible";
-				}, delay, tt);
-			};
-			tt.onmouseout = function(e)
-			{
-				var tooltip = document.getElementById("Tooltip");
-				tooltip.className = "RibbonTooltip";
-				Ribbon.CurrentContextHelpURL = "";
-				Ribbon.CurrentContextHelpTargetName = "_blank";
-				if (tt.tooltipTimer != null) window.clearTimeout(tt.tooltipTimer);
-			};
-		})(tooltips[i]);
-	}
 });
 window.addEventListener("keydown", function (e)
 {
@@ -352,15 +279,6 @@ window.addEventListener("keydown", function (e)
 			for (var i = 0; i < Ribbons.length; i++)
 			{
 				Ribbons[i].SetApplicationMenuVisible(false);
-			}
-			break;
-		}
-		case 112: /* F1 */
-		{
-			if (Ribbon.CurrentContextHelpURL != "")
-			{
-				var path = Ribbon.CurrentContextHelpURL.replace(/~\//g, ApplicationPath + "/");
-				window.open(path, Ribbon.CurrentContextHelpTargetName);
 			}
 			break;
 		}
