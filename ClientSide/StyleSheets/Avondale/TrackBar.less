@@ -1,3 +1,7 @@
+@ThumbSize: 30px;
+@TrackSize: 8px;
+@ThumbOffset: ((@ThumbSize - @TrackSize) / 2);
+
 div.TrackBar
 {
 	margin-bottom: 10px;
@@ -7,13 +11,11 @@ div.TrackBar
 	{
 		background-color: #A9ACB1;
 		border-radius: 16px;
-		height: 8px;
 		
 		&> div.Quantity
 		{
 			background-color: #017AFD;
 			border-radius: 15px;
-			transition: width linear 0.1s;
 		}
 		&> div.Thumb
 		{
@@ -21,10 +23,41 @@ div.TrackBar
 			border-radius: 100%;
 			box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.4);
 			cursor: move;
-			height: 30px;
-			top: -13px;
-			width: 30px;
-			transition: left linear 0.1s;
+			height: @ThumbSize;
+			width: @ThumbSize;
+		}
+	}
+	
+	&.Horizontal
+	{
+		&> div.Track
+		{
+			height: @TrackSize;
+			&> div.Quantity
+			{
+				transition: width linear 0.1s;
+			}
+			&> div.Thumb
+			{
+				top: -@ThumbOffset;
+				transition: left linear 0.1s;
+			}
+		}
+	}
+	&.Vertical
+	{
+		&> div.Track
+		{
+			width: @TrackSize;
+			&> div.Quantity
+			{
+				transition: height linear 0.1s;
+			}
+			&> div.Thumb
+			{
+				left: -@ThumbOffset;
+				transition: top linear 0.1s;
+			}
 		}
 	}
 	

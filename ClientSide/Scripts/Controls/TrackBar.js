@@ -82,8 +82,17 @@ function TrackBar(parentElement)
 		var intPos = decimalPos * 100;
 		var percentPos = intPos + "%";
 		
-		this.ThumbElement.style.left = percentPos;
-		this.QuantityElement.style.width = percentPos;
+		if (this.get_Orientation() == TrackBarOrientation.Vertical)
+		{
+			intPos = 100 - intPos;
+			this.ThumbElement.style.top = intPos + "%";
+			this.QuantityElement.style.top = intPos + "%";
+		}
+		else
+		{
+			this.ThumbElement.style.left = percentPos;
+			this.QuantityElement.style.width = percentPos;
+		}
 		
 		this.ParentElement.setAttribute("data-tooltip-content", this.ParentElement.getAttribute("data-current-value"));
 		return value;
@@ -104,15 +113,25 @@ function TrackBar(parentElement)
 		var e = MouseEventArgs.FromNativeEventArgs(ee);
 		if (e.Button == MouseButtons.Primary)
 		{
-			var elementWidth = this.NativeObject.ParentElement.clientWidth;
+			var elementSize = this.NativeObject.ParentElement.clientWidth;
 			var currentPos = e.X - this.NativeObject.TrackElement.offsetLeft;
+			if (this.NativeObject.get_Orientation() == TrackBarOrientation.Vertical)
+			{
+				elementSize = this.NativeObject.ParentElement.clientHeight;
+				currentPos = e.Y - this.NativeObject.TrackElement.offsetTop;
+			}
 			
-			var decimalPos = (currentPos / elementWidth);
+			var decimalPos = (currentPos / elementSize);
 			if (decimalPos < 0) decimalPos = 0;
 			if (decimalPos > 1) decimalPos = 1;
 			
 			var intPos = decimalPos * 100;
 			var percentPos = (intPos + "%");
+			
+			if (this.NativeObject.get_Orientation() == TrackBarOrientation.Vertical)
+			{
+				decimalPos = 1 - decimalPos;
+			}
 			
 			this.NativeObject.set_CurrentValue(parseInt(this.NativeObject.get_MinimumValue()) + (decimalPos * (this.NativeObject.get_MaximumValue() - this.NativeObject.get_MinimumValue())));
 		}
@@ -121,19 +140,28 @@ function TrackBar(parentElement)
 	this.BeginDrag = function(e)
 	{
 		TrackBar._draggingObject = this;
-		TrackBar._draggingStartX = e.X;
 	};
 	this.ContinueDrag = function(e)
 	{
-		var elementWidth = this.ParentElement.clientWidth;
+		var elementSize = this.ParentElement.clientWidth;
 		var currentPos = e.X - this.ParentElement.offsetLeft;
+		if (this.get_Orientation() == TrackBarOrientation.Vertical)
+		{
+			elementSize = this.ParentElement.clientHeight;
+			currentPos = e.Y - this.ParentElement.offsetTop;
+		}
 		
-		var decimalPos = (currentPos / elementWidth);
+		var decimalPos = (currentPos / elementSize);
 		if (decimalPos < 0) decimalPos = 0;
 		if (decimalPos > 1) decimalPos = 1;
 		
 		var intPos = decimalPos * 100;
 		var percentPos = (intPos + "%");
+
+		if (this.get_Orientation() == TrackBarOrientation.Vertical)
+		{
+			decimalPos = 1 - decimalPos;
+		}
 		
 		this.set_CurrentValue(parseInt(this.get_MinimumValue()) + (decimalPos * (this.get_MaximumValue() - this.get_MinimumValue())));
 	};
@@ -177,7 +205,6 @@ function TrackBar(parentElement)
  * @var TrackBar
  */
 TrackBar._draggingObject = null;
-TrackBar._draggingStartX = 0;
 
 window.addEventListener("load", function(e)
 {
