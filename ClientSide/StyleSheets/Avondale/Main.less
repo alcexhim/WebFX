@@ -1,12 +1,14 @@
 @import "Branding.less";
 
-@import "Header.less";
 @import "Footer.less";
+@import "FormView.less";
+@import "Header.less";
 @import "LinkButton.less";
 @import "ListView.less";
 @import "MainPage.less";
 @import "Menu.less";
 @import "Sidebar.less";
+@import "TextBox.less";
 
 @import "../../../../fonts/FontAwesome/FontAwesome.css";
 
@@ -24,4 +26,15 @@ body > div.Content
 	margin-bottom: @HeaderHeight;
 	
 	padding: 24px;
+}
+
+::selection
+{
+	background-color: @ThemeColor;
+	color: #FFFFFF;
+}
+::-moz-selection
+{
+	background-color: @ThemeColor;
+	color: #FFFFFF;
 }
