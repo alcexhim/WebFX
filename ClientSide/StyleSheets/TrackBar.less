@@ -1,0 +1,18 @@
+div.TrackBar
+{
+	&> div.Track
+	{
+		position: relative;
+		display: block;
+		width: 100%;
+		&> div.Quantity, div.Thumb
+		{
+			display: inline-block;
+			position: absolute;
+		}
+		&> div.Quantity
+		{
+			height: 100%;
+		}
+	}
+}
