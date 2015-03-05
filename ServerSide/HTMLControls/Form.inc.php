@@ -11,7 +11,7 @@
 	 * Provides an enumeration of predefined values for method of form submission.
 	 * @author Michael Becker
 	 */
-	abstract class HTMLControlFormMethod extends Enumeration
+	abstract class FormMethod extends Enumeration
 	{
 		/**
 		 * No method is specified
@@ -30,9 +30,9 @@
 		const Post = 2;
 	}
 	
-	class HTMLControlForm extends HTMLControl
+	class Form extends HTMLControl
 	{
-		public function __construct($id = null, $method = HTMLControlFormMethod::None)
+		public function __construct($id = null, $method = FormMethod::None)
 		{
 			parent::__construct($id);
 			
@@ -47,9 +47,14 @@
 		public $Action;
 		/**
 		 * The method of form submission.
-		 * @var HTMLControlFormMethod
+		 * @var FormMethod
 		 */
 		public $Method;
+		/**
+		 * The type of encoding used to submit this form. Known values are "application/x-www-form-urlencoded" (the default) and "multipart/form-data" (used in combination with the file input element.
+		 * @var string
+		 */
+		public $EncodingType;
 		
 		protected function RenderBeginTag()
 		{
@@ -57,17 +62,37 @@
 			{
 				$this->Attributes[] = new WebControlAttribute("action", $this->Action);
 			}
-			if ($this->Method != HTMLControlFormMethod::None)
+			if ($this->EncodingType != null)
+			{
+				$this->Attributes[] = new WebControlAttribute("enctype", $this->EncodingType);
+			}
+			if (is_string($this->Method))
+			{
+				switch (strtolower($this->Method))
+				{
+					case "get":
+					{
+						$this->Method = FormMethod::Get;
+						break;
+					}
+					case "post":
+					{
+						$this->Method = FormMethod::Post;
+						break;
+					}
+				}
+			}
+			if ($this->Method != FormMethod::None)
 			{
 				$methodstr = "";
 				switch ($this->Method)
 				{
-					case HTMLControlFormMethod::Get:
+					case FormMethod::Get:
 					{
 						$methodstr = "GET";
 						break;
 					}
-					case HTMLControlFormMethod::Post:
+					case FormMethod::Post:
 					{
 						$methodstr = "POST";
 						break;
