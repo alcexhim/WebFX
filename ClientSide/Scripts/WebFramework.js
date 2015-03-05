@@ -28,6 +28,60 @@ MouseButtons.XButton1 = 8;
  * The additional secondary button is being pressed.
  */
 MouseButtons.XButton2 = 16;
+
+function MouseEventArgs(button, x, y)
+{
+	this.Button = button;
+	this.X = x;
+	this.Y = y;
+	this.NativeEventArgs = null;
+
+	this.Control = false;
+	this.Alt = false;
+	this.Shift = false;
+}
+
+MouseEventArgs.FromNativeEventArgs = function(e)
+{
+	var ee = new MouseEventArgs(0);
+	ee.X = e.clientX;
+	ee.Y = e.clientY;
+	
+	ee.Control = e.ctrlKey;
+	ee.Alt = e.altKey;
+	ee.Shift = e.shiftKey;
+	
+	ee.NativeEventArgs = e;
+	
+	if (e.which)
+	{
+		switch (e.which)
+		{
+			case 1:
+			{
+				ee.Button |= MouseButtons.Primary;
+				break;
+			}
+			case 2:
+			{
+				ee.Button |= MouseButtons.Tertiary;
+				break;
+			}
+			case 3:
+			{
+				ee.Button |= MouseButtons.Secondary;
+				break;
+			}
+		}
+	}
+	else if (e.button)
+	{
+		if ((e.button & 1) == 1) ee.Button |= MouseButtons.Primary;
+		if ((e.button & 4) == 4) ee.Button |= MouseButtons.Tertiary;
+		if ((e.button & 2) == 2) ee.Button |= MouseButtons.Secondary;
+	}
+	return ee;
+};
 function KeyboardKeys()
 {
 };
