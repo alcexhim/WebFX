@@ -61,28 +61,70 @@ div.TrackBar
 		}
 	}
 	
-	&> div.Track > div.Quantity
+	&> div.Track
 	{
-		background-color: @ThemeColor;
+		&> div.Quantity
+		{
+			background-color: @ThemeColor;
+		}
+		&> div.Thumb
+		{
+			color: @ThemeColor;
+		}
 	}
-	&.ColorRed > div.Track > div.Quantity
+	&.ColorRed > div.Track
 	{
-		background-color: #FF5B57;
+		&> div.Quantity
+		{
+			background-color: @ThemeColorRed;
+		}
+		&> div.Thumb
+		{
+			color: @ThemeColorRed;
+		}
 	}
-	&.ColorBlue > div.Track > div.Quantity
+	&.ColorBlue > div.Track
 	{
-		background-color: #348FE2;
+		&> div.Quantity
+		{
+			background-color: @ThemeColorBlue;
+		}
+		&> div.Thumb
+		{
+			color: @ThemeColorBlue;
+		}
 	}
-	&.ColorPurple > div.Track > div.Quantity
+	&.ColorPurple > div.Track
 	{
-		background-color: #727CB6;
+		&> div.Quantity
+		{
+			background-color: @ThemeColorPurple;
+		}
+		&> div.Thumb
+		{
+			color: @ThemeColorPurple;
+		}
 	}
-	&.ColorOrange > div.Track > div.Quantity
+	&.ColorOrange > div.Track
 	{
-		background-color: #F59C1A; 
+		&> div.Quantity
+		{
+			background-color: @ThemeColorOrange; 
+		}
+		&> div.Thumb
+		{
+			color: @ThemeColorOrange; 
+		}
 	}
-	&.ColorBlack > div.Track > div.Quantity
+	&.ColorBlack > div.Track
 	{
-		background-color: #2D353C; 
+		&> div.Quantity
+		{
+			background-color: @ThemeColorBlack; 
+		}
+		&> div.Thumb
+		{
+			color: @ThemeColorBlack; 
+		}
 	}
 }
