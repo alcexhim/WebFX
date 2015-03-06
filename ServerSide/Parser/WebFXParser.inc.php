@@ -32,13 +32,24 @@
 		 */
 		public $Page;
 		
+		/**
+		 * Code executed before the page is initialized.
+		 * @param CancelEventArgs $e
+		 */
 		public function OnInitializing(CancelEventArgs $e)
 		{
 		}
+		/**
+		 * Code executed after the page is initialized.
+		 * @param EventArgs $e
+		 */
 		public function OnInitialized(EventArgs $e)
 		{
 		}
-
+		/**
+		 * Code executed after the class definition is loaded by the WebFX parser.
+		 * @param EventArgs $e
+		 */
 		public function OnClassLoaded(EventArgs $e)
 		{
 		}
