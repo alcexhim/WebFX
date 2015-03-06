@@ -17,6 +17,7 @@ function TrackBar(parentElement)
 	this.TrackElement = this.ParentElement.childNodes[0];
 	this.QuantityElement = this.TrackElement.childNodes[0];
 	this.ThumbElement = this.TrackElement.childNodes[1];
+	this.ThumbTextElement = this.ThumbElement.childNodes[0];
 	
 	this.get_Orientation = function()
 	{
@@ -95,6 +96,7 @@ function TrackBar(parentElement)
 		}
 		
 		this.ParentElement.setAttribute("data-tooltip-content", this.ParentElement.getAttribute("data-current-value"));
+		this.ThumbTextElement.innerHTML = value;
 		return value;
 	};
 	

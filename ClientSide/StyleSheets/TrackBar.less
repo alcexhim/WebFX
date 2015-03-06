@@ -10,6 +10,20 @@ div.TrackBar
 			display: inline-block;
 			position: absolute;
 		}
+		&> div.Thumb
+		{
+			&> span.Text
+			{
+				display: block;
+				font-size: 0.8em;
+				padding: 6px 0px;
+				text-align: center;
+			}
+		}
+	}
+	&:not(.ShowText) > div.Track > div.Thumb > span.Text
+	{
+		display: none;
 	}
 	&.Horizontal
 	{
