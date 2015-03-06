@@ -1,3 +1,5 @@
+HIGH PRIORITY: rewrite entire codebase and call it "Phast" (PHP Hypertext Application Server Technology)
+
 phpX parser 
 * Templating (Sections/SectionPlaceholders) seems to work, will need further testing
 * NEED to implement support for child element processing
