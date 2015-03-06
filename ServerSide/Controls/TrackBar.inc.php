@@ -35,6 +35,12 @@ use WebFX\WebControlAttribute;
 		public $MaximumValue;
 		
 		/**
+		 * True if the value should be shown in the trackbar thumb; false otherwise.
+		 * @var boolean
+		 */
+		public $ShowValue;
+		
+		/**
 		 * The current value of this TrackBar.
 		 * @var int
 		 */
@@ -52,6 +58,7 @@ use WebFX\WebControlAttribute;
 			
 			$this->TagName = "div";
 			$this->ClassList[] = "TrackBar";
+			$this->ShowValue = false;
 			$this->Size = null;
 			$this->Orientation = TrackBarOrientation::Horizontal;
 		}
@@ -62,6 +69,11 @@ use WebFX\WebControlAttribute;
 			$this->Attributes[] = new WebControlAttribute("data-maximum-value", $this->MaximumValue);
 			$this->Attributes[] = new WebControlAttribute("data-minimum-value", $this->MinimumValue);
 			$this->Attributes[] = new WebControlAttribute("data-current-value", $this->CurrentValue);
+			
+			if ($this->ShowValue)
+			{
+				$this->ClassName[] = "ShowValue";
+			}
 			
 			if (is_string($this->Orientation))
 			{
@@ -153,6 +165,12 @@ use WebFX\WebControlAttribute;
 					break;
 				}
 			}
+			
+			$spanThumbText = new HTMLControl("span");
+			$spanThumbText->ClassList[] = "Text";
+			$spanThumbText->InnerHTML = $this->CurrentValue;
+			$divThumb->Controls[] = $spanThumbText;
+			
 			$divTrack->Controls[] = $divThumb;
 			
 			$this->Controls[] = $divTrack;
