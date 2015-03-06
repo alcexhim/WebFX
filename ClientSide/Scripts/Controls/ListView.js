@@ -62,9 +62,20 @@ function ListView(parentElement)
 		{
 			(function(i)
 			{
-				parentElement.tBodies[0].rows[i].addEventListener("click", function(e)
+				var row = parentElement.tBodies[0].rows[i];
+				row.addEventListener("mousedown", function(e)
 				{
 					parentElement.NativeObject.SetSelectedRow(i);
+					e.preventDefault();
+					e.stopPropagation();
+					return false;
+				});
+				row.addEventListener("contextmenu", function(e)
+				{
+					parentElement.NativeObject.SetSelectedRow(i);
+					e.preventDefault();
+					e.stopPropagation();
+					return false;
 				});
 			})(i);
 		}
