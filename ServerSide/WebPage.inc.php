@@ -3,8 +3,8 @@
 	
 	use WebFX\Parser\ControlLoader;
 	
-	use WebFX\HTMLControls\HTMLControlForm;
-	use WebFX\HTMLControls\HTMLControlFormMethod;
+	use WebFX\HTMLControls\Form;
+	use WebFX\HTMLControls\FormMethod;
 	use WebFX\HTMLControls\HTMLControlInput;
 	use WebFX\HTMLControls\HTMLControlInputType;
 	use WebFX\Parser\WebFXPage;
@@ -75,7 +75,8 @@
          */
         public $StyleSheets;
 		public $Styles;
-		public $Variables;
+		public $ClientVariables;
+		public $ServerVariables;
 		public $OpenGraph;
 		
 		/**
@@ -163,7 +164,7 @@
 					$page->StyleSheets[] = new WebStyleSheet($attFileName->Value);
 				}
 			}
-			$tagVariables = $element->GetElement("Variables");
+			$tagVariables = $element->GetElement("ClientVariables");
 			if ($tagVariables != null)
 			{
 				foreach ($tagVariables->Elements as $elem)
@@ -177,7 +178,24 @@
 					$attValue = $elem->GetAttribute("Value");
 					if ($attValue != null) $value = $attValue->Value;
 						
-					$page->Variables[] = new WebVariable($attName->Value, $value);
+					$page->ClientVariables[] = new WebVariable($attName->Value, $value);
+				}
+			}
+			$tagVariables = $element->GetElement("ServerVariables");
+			if ($tagVariables != null)
+			{
+				foreach ($tagVariables->Elements as $elem)
+				{
+					if (get_class($elem) != "UniversalEditor\\ObjectModels\\Markup\\MarkupTagElement") continue;
+						
+					$attName = $elem->GetAttribute("Name");
+					if ($attName == null) continue;
+						
+					$value = "";
+					$attValue = $elem->GetAttribute("Value");
+					if ($attValue != null) $value = $attValue->Value;
+						
+					$page->ServerVariables[] = new WebVariable($attName->Value, $value);
 				}
 			}
 				
@@ -379,19 +397,36 @@
         	if ($this->isInitialized) return true;
         	
         	$ce = new CancelEventArgs();
-            $this->OnInitializing($ce);
-            if ($ce->Cancel) return false;
+        	
+        	if ($this->MasterPage != null)
+        	{
+        		if (!$this->MasterPage->Initialize()) return false;
+        	}
+        	
+        	if (method_exists($this, "OnInitializing"))
+        	{
+            	$this->OnInitializing($ce);
+            	if ($ce->Cancel) return false;
+        	}
             
             if ($this->ClassReference != null)
             {
-            	$this->ClassReference->OnInitializing($ce);
-            	if ($ce->Cancel) return false;
-	            
-            	$this->ClassReference->OnInitialized(EventArgs::GetEmptyInstance());
+            	if (method_exists($this->ClassReference, "OnInitializing"))
+            	{
+	            	$this->ClassReference->OnInitializing($ce);
+	            	if ($ce->Cancel) return false;
+            	}
+            	if (method_exists($this->ClassReference, "OnInitialized"))
+            	{
+            		$this->ClassReference->OnInitialized(EventArgs::GetEmptyInstance());
+            	}
             }
-            
-            $this->OnInitialized(EventArgs::GetEmptyInstance());
-            $this->isInitialized = true;
+
+            if (method_exists($this->OnInitialized, "OnInitializing"))
+            {
+	            $this->OnInitialized(EventArgs::GetEmptyInstance());
+            }
+           	$this->isInitialized = true;
             return true;
         }
         
@@ -482,9 +517,9 @@
 		 * @param string $name The name of the WebPageVariable to return. 
 		 * @return WebPageVariable|NULL The WebPageVariable with the given name, or NULL if no WebPageVariable with the given name is defined for this WebPage.
 		 */
-		public function GetVariable($name)
+		public function GetClientVariable($name)
 		{
-			foreach ($this->Variables as $variable)
+			foreach ($this->ClientVariables as $variable)
 			{
 				if ($variable->Name == $name) return $variable;
 			}
@@ -495,12 +530,38 @@
 		 * @param string $name The name of the WebPageVariable whose value is to be returned. 
 		 * @return string The value of the WebPageVariable with the given name, or the empty string ("") if no WebPageVariable with the given name is defined for this WebPage.
 		 */
-		public function GetVariableValue($name)
+		public function GetClientVariableValue($name)
 		{
-			$variable = $this->GetVariable($name);
+			$variable = $this->GetClientVariable($name);
 			if ($variable == null) return null;
 			return $variable->Value;
 		}
+
+		/**
+		 * Retrieves the WebPageVariable with the given name associated with this WebPage.
+		 * @param string $name The name of the WebPageVariable to return.
+		 * @return WebPageVariable|NULL The WebPageVariable with the given name, or NULL if no WebPageVariable with the given name is defined for this WebPage.
+		 */
+		public function GetServerVariable($name)
+		{
+			foreach ($this->ServerVariables as $variable)
+			{
+				if ($variable->Name == $name) return $variable;
+			}
+			return null;
+		}
+		/**
+		 * Retrieves the string value for the WebPageVariable with the given name associated with this WebPage.
+		 * @param string $name The name of the WebPageVariable whose value is to be returned.
+		 * @return string The value of the WebPageVariable with the given name, or the empty string ("") if no WebPageVariable with the given name is defined for this WebPage.
+		 */
+		public function GetServerVariableValue($name)
+		{
+			$variable = $this->GetServerVariable($name);
+			if ($variable == null) return null;
+			return $variable->Value;
+		}
+		
 		/**
 		 * Updates the WebPageVariable with the given name associated with this WebPage.
 		 * @param string $name The name of the WebPageVariable to update.
@@ -538,9 +599,21 @@
 		 * @param string $name The name of the WebPageVariable to search for.
 		 * @return boolean True if a WebPageVariable with the given name is defined and not null on this WebPage; false if either the variable is not defined or the variable is defined but does not have a value.
 		 */
-		public function IsVariableSet($name)
+		public function IsClientVariableSet($name)
 		{
-			$variable = $this->GetVariable($name);
+			$variable = $this->GetClientVariable($name);
+			if ($variable == null) return false;
+			return ($variable->IsSet == "true");
+		}
+
+		/**
+		 * Determines if a WebPageVariable with the given name has a value (is not null) on this WebPage.
+		 * @param string $name The name of the WebPageVariable to search for.
+		 * @return boolean True if a WebPageVariable with the given name is defined and not null on this WebPage; false if either the variable is not defined or the variable is defined but does not have a value.
+		 */
+		public function IsServerVariableSet($name)
+		{
+			$variable = $this->GetServerVariable($name);
 			if ($variable == null) return false;
 			return ($variable->IsSet == "true");
 		}
@@ -705,13 +778,13 @@
 				$tagBODY->ClassList = $classList;
 				$tagBODY->StyleRules = $this->Styles;
 				
-				$this->BeforeVariablesInitialize();
-				if (count($this->Variables) > 0)
+				$this->BeforeClientVariablesInitialize();
+				if (count($this->ClientVariables) > 0)
 				{
-					$form = new HTMLControlForm();
+					$form = new Form();
 					$form->ClientID = "WebPageForm";
-					$form->Method = HTMLControlFormMethod::Post;
-					foreach ($this->Variables as $variable)
+					$form->Method = FormMethod::Post;
+					foreach ($this->ClientVariables as $variable)
 					{
 						$input = new HTMLControlInput();
 						$input->Type = HTMLControlInputType::Hidden;
@@ -737,7 +810,7 @@
 					}
 					$tagBODY->Controls[] = $form;
 				}
-				$this->AfterVariablesInitialize();
+				$this->AfterClientVariablesInitialize();
 				
 				$re = new RenderingEventArgs(RenderMode::Complete);
 				$this->OnRendering($re);
@@ -811,10 +884,10 @@
         	return $newControls;
         }
 		
-		protected function BeforeVariablesInitialize()
+		protected function BeforeClientVariablesInitialize()
 		{
 		}
-		protected function AfterVariablesInitialize()
+		protected function AfterClientVariablesInitialize()
 		{
 		}
     }
